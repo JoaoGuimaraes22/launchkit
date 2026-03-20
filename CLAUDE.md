@@ -238,3 +238,125 @@ When helping someone customize a fresh clone:
 5. Follow `BOOTSTRAP.md` to gather project details before touching anything
 6. Always update both `en.json` and `pt.json` together if i18n is active
 7. Run `npm run lint && npm run build` after all changes
+
+---
+
+## Business Site Template
+
+When `node scripts/setup.js` selects **Business Site**, the portfolio components are replaced with a pre-built set of business components. Use `templates/business/BOOTSTRAP-BUSINESS.md` as the Claude kickstart.
+
+### Feature Detection (Business Site)
+
+| Feature | Active if this file exists |
+|---------|---------------------------|
+| Business site | `app/[locale]/components/Footer.tsx` |
+| i18n | `i18n-config.ts` |
+| Contact form | `app/api/contact/route.ts` |
+| FloatingCTA bar | `app/[locale]/components/FloatingCTA.tsx` |
+
+### Key Differences from Portfolio
+
+- **No sidebar** — all sections are full-width stacked
+- **No WebGL** — hero uses `<Image fill>` + dark overlay, CSS transitions only
+- **Footer present** — `Footer.tsx` is a full 3-column server component (`bg-zinc-900`)
+- **FloatingCTA** — fixed mobile bottom bar with Call / WhatsApp / Book buttons
+- **No Dialogflow** — no chatbot, no `app/api/chat/` route
+- **Dict key**: `dict.navbar` (not `dict.nav`) — links are an array `navbar.links[]`
+- **Navbar** reads links from `dict.navbar.links[]` — the array controls nav items
+
+### Business Site Components
+
+```text
+app/[locale]/components/
+  Navbar.tsx         CLIENT — transparent→white on scroll; links from dict.navbar.links[]
+  HeroContent.tsx    CLIENT — Image fill bg + overlay, two-line headline, stats, dual CTAs
+  About.tsx          SERVER — lg:grid-cols-2 side-by-side, about.jpg, stat cards
+  Services.tsx       SERVER — lg:grid-cols-3 grid, emoji icon in bg-indigo-50 container
+  Reviews.tsx        SERVER — lg:grid-cols-3 grid, star ratings, avatar initials
+  FAQ.tsx            CLIENT — accordion, single openIndex state, chevron rotates
+  Contact.tsx        CLIENT — form + contact info column, fetch /api/contact
+  Footer.tsx         SERVER — lg:grid-cols-3 (brand/nav/contact), bg-zinc-900
+  FloatingCTA.tsx    CLIENT — fixed bottom bar, md:hidden, Call/WhatsApp/Book
+  ScrollProgress.tsx fixed top indigo bar (shared with portfolio)
+  LangSetter.tsx     sets html[lang] attr (shared with portfolio)
+  LanguageSwitcher.tsx locale toggle (shared, present if i18n enabled)
+```
+
+### Business Site Dict Shape
+
+```json
+{
+  "navbar": {
+    "logo": "YOUR_BUSINESS",
+    "cta": "Book Now",
+    "links": [{ "id": "about", "label": "About" }, ...]
+  },
+  "hero": {
+    "title_line1": "YOUR", "title_line2": "HEADLINE",
+    "tagline": "...", "cta": "Book Now", "cta_secondary": "Learn More",
+    "stats": [{ "value": "0+", "label": "Clients Served" }]
+  },
+  "about": {
+    "title_line1": "ABOUT", "title_line2": "US",
+    "body": "...",
+    "stats": [{ "value": "0+", "label": "Years Experience" }]
+  },
+  "services": {
+    "title_line1": "OUR", "title_line2": "SERVICES",
+    "items": [{ "icon": "⭐", "title": "Service", "description": "..." }]
+  },
+  "reviews": {
+    "title_line1": "WHAT CLIENTS", "title_line2": "SAY",
+    "subtitle": "...",
+    "items": [{ "quote": "...", "name": "...", "role": "...", "rating": 5 }]
+  },
+  "faq": {
+    "title_line1": "COMMON", "title_line2": "QUESTIONS",
+    "items": [{ "question": "...", "answer": "..." }]
+  },
+  "contact": {
+    "title_line1": "GET IN", "title_line2": "TOUCH",
+    "body": "...",
+    "form_name": "Name", "form_email": "Email", "form_phone": "Phone",
+    "form_message": "Message", "form_submit": "Send Message", "form_success": "Message sent!",
+    "phone": "YOUR_PHONE", "email": "YOUR_EMAIL",
+    "address": "YOUR_ADDRESS", "hours": "Mon–Fri 9am–6pm",
+    "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
+  },
+  "footer": {
+    "tagline": "Short brand tagline.",
+    "address": "YOUR_ADDRESS", "hours": "Mon–Fri 9am–6pm",
+    "phone": "YOUR_PHONE", "email": "YOUR_EMAIL",
+    "copyright": "© 2025 YOUR_BUSINESS. All rights reserved.",
+    "nav_links": [{ "id": "about", "label": "About" }, ...]
+  },
+  "cta": {
+    "call_label": "Call Now", "phone": "YOUR_PHONE",
+    "whatsapp_label": "WhatsApp", "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "book_label": "Book Now"
+  }
+}
+```
+
+### Business Site Placeholder Markers
+
+- `YOUR_BUSINESS` — business name (Navbar logo, JSON-LD, Footer)
+- `YOUR_PHONE` — phone number with country code
+- `YOUR_WHATSAPP_NUMBER` — digits only, no spaces (for wa.me URL)
+- `YOUR_EMAIL` — contact email
+- `YOUR_ADDRESS` — physical address
+- `YOUR_DOMAIN` — site URL / Vercel domain
+
+### Business Site Bootstrap Flow
+
+1. Read `CLAUDE.md` completely
+2. Check active features using the business feature detection table above
+3. `grep -r "YOUR_" app dictionaries` — find remaining placeholders
+4. `grep -r "TODO: TEMPLATE" app` — find cleanup tasks
+5. Follow `templates/business/BOOTSTRAP-BUSINESS.md` to gather content
+6. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
+7. Update `app/[locale]/layout.tsx`: `SITE_URL`, title, description, `jsonLd`
+8. Replace all `indigo-` accent classes with brand color in business components
+9. If i18n disabled: collapse `app/[locale]/` → `app/` (see BOOTSTRAP-BUSINESS.md Step 4)
+10. Run `npm run lint && npm run build`

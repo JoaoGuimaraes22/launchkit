@@ -1,0 +1,115 @@
+{
+  "navbar": {
+    "logo": "YOUR_BUSINESS",
+    "cta": "Reservar",
+    "links": [
+      { "id": "about", "label": "Sobre" },
+      { "id": "services", "label": "Serviços" },
+      { "id": "reviews", "label": "Avaliações" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contacto" }
+    ]
+  },
+  "hero": {
+    "title_line1": "O SEU TÍTULO",
+    "title_line2": "AQUI",
+    "tagline": "Uma frase curta que apresenta a sua proposta de valor — quem serve, o que faz, porque é a melhor escolha.",
+    "cta": "Reservar Agora",
+    "cta_secondary": "Saber Mais",
+    "stats": [
+      { "value": "0+", "label": "Anos de Experiência" },
+      { "value": "0+", "label": "Clientes Satisfeitos" },
+      { "value": "0+", "label": "Avaliações 5 Estrelas" }
+    ]
+  },
+  "about": {
+    "title_line1": "SOBRE",
+    "title_line2": "NÓS",
+    "body": "Um parágrafo sobre o seu negócio — quem são, o que fazem e a quem servem. Seja direto e próximo.\n\nUm segundo parágrafo sobre a sua abordagem, valores ou o que os distingue da concorrência.",
+    "stats": [
+      { "value": "0+", "label": "Anos no Mercado" },
+      { "value": "0+", "label": "Clientes Satisfeitos" },
+      { "value": "0+", "label": "Projetos Concluídos" }
+    ]
+  },
+  "services": {
+    "title_line1": "OS NOSSOS",
+    "title_line2": "SERVIÇOS",
+    "items": [
+      { "icon": "⭐", "title": "Serviço Um", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." },
+      { "icon": "⭐", "title": "Serviço Dois", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." },
+      { "icon": "⭐", "title": "Serviço Três", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." },
+      { "icon": "⭐", "title": "Serviço Quatro", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." },
+      { "icon": "⭐", "title": "Serviço Cinco", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." },
+      { "icon": "⭐", "title": "Serviço Seis", "description": "Uma descrição curta deste serviço e o valor que entrega ao cliente." }
+    ]
+  },
+  "reviews": {
+    "title_line1": "O QUE OS CLIENTES",
+    "title_line2": "DIZEM",
+    "subtitle": "Feedback real de clientes reais.",
+    "items": [
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 },
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 },
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 },
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 },
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 },
+      { "quote": "Avaliação de exemplo — substitua por uma citação real de um cliente satisfeito sobre a experiência ou resultado.", "name": "Nome do Cliente", "role": "Cargo ou Empresa", "rating": 5 }
+    ]
+  },
+  "faq": {
+    "title_line1": "PERGUNTAS",
+    "title_line2": "FREQUENTES",
+    "items": [
+      { "question": "Que áreas servem?", "answer": "Resposta de exemplo — indique a sua área de serviço ou cobertura geográfica." },
+      { "question": "Como posso marcar uma consulta/serviço?", "answer": "Resposta de exemplo — descreva o processo de marcação (telefone, formulário, online, etc.)." },
+      { "question": "Quais são os horários?", "answer": "Resposta de exemplo — indique os horários de funcionamento e disponibilidade ao fim de semana/urgências." },
+      { "question": "Qual é o preço?", "answer": "Resposta de exemplo — descreva a abordagem de preços (fixo, orçamento, pacotes, etc.)." },
+      { "question": "Têm garantia?", "answer": "Resposta de exemplo — descreva qualquer garantia, satisfação ou política de devolução." },
+      { "question": "Quanto tempo demora?", "answer": "Resposta de exemplo — indique os prazos típicos para os serviços mais comuns." }
+    ]
+  },
+  "contact": {
+    "title_line1": "ENTRE EM",
+    "title_line2": "CONTACTO",
+    "body": "Tem uma questão ou quer marcar um serviço? Envie-nos uma mensagem e respondemos em 24 horas.",
+    "form_name": "Nome",
+    "form_email": "Email",
+    "form_phone": "Telefone",
+    "form_message": "Mensagem",
+    "form_name_placeholder": "O Seu Nome",
+    "form_email_placeholder": "o.seu@email.com",
+    "form_phone_placeholder": "+351 000 000 000",
+    "form_message_placeholder": "Diga-nos como podemos ajudar...",
+    "form_submit": "Enviar Mensagem",
+    "form_success": "Mensagem enviada! Respondemos em breve.",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "address": "YOUR_ADDRESS",
+    "hours": "Seg–Sex 9h–18h",
+    "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
+  },
+  "footer": {
+    "tagline": "Tagline curta — o que fazemos numa frase.",
+    "address": "YOUR_ADDRESS",
+    "hours": "Seg–Sex 9h–18h",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "copyright": "© 2025 YOUR_BUSINESS. Todos os direitos reservados.",
+    "nav_links": [
+      { "id": "about", "label": "Sobre" },
+      { "id": "services", "label": "Serviços" },
+      { "id": "reviews", "label": "Avaliações" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contacto" }
+    ]
+  },
+  "cta": {
+    "call_label": "Ligar Agora",
+    "phone": "YOUR_PHONE",
+    "whatsapp_label": "WhatsApp",
+    "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "book_label": "Reservar"
+  }
+}

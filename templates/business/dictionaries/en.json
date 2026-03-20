@@ -1,0 +1,115 @@
+{
+  "navbar": {
+    "logo": "YOUR_BUSINESS",
+    "cta": "Book Now",
+    "links": [
+      { "id": "about", "label": "About" },
+      { "id": "services", "label": "Services" },
+      { "id": "reviews", "label": "Reviews" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contact" }
+    ]
+  },
+  "hero": {
+    "title_line1": "YOUR HEADLINE",
+    "title_line2": "GOES HERE",
+    "tagline": "A short sentence that states your unique value — who you serve, what you do, why you're the best choice.",
+    "cta": "Book Now",
+    "cta_secondary": "Learn More",
+    "stats": [
+      { "value": "0+", "label": "Years Experience" },
+      { "value": "0+", "label": "Clients Served" },
+      { "value": "0+", "label": "5-Star Reviews" }
+    ]
+  },
+  "about": {
+    "title_line1": "ABOUT",
+    "title_line2": "US",
+    "body": "A paragraph about your business — who you are, what you do, and who you serve. Keep it warm and direct.\n\nA second paragraph about your approach, values, or what sets you apart from the competition.",
+    "stats": [
+      { "value": "0+", "label": "Years in Business" },
+      { "value": "0+", "label": "Happy Clients" },
+      { "value": "0+", "label": "Projects Completed" }
+    ]
+  },
+  "services": {
+    "title_line1": "OUR",
+    "title_line2": "SERVICES",
+    "items": [
+      { "icon": "⭐", "title": "Service One", "description": "A short description of this service and the value it delivers to the client." },
+      { "icon": "⭐", "title": "Service Two", "description": "A short description of this service and the value it delivers to the client." },
+      { "icon": "⭐", "title": "Service Three", "description": "A short description of this service and the value it delivers to the client." },
+      { "icon": "⭐", "title": "Service Four", "description": "A short description of this service and the value it delivers to the client." },
+      { "icon": "⭐", "title": "Service Five", "description": "A short description of this service and the value it delivers to the client." },
+      { "icon": "⭐", "title": "Service Six", "description": "A short description of this service and the value it delivers to the client." }
+    ]
+  },
+  "reviews": {
+    "title_line1": "WHAT CLIENTS",
+    "title_line2": "SAY",
+    "subtitle": "Real feedback from real clients.",
+    "items": [
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 },
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 },
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 },
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 },
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 },
+      { "quote": "Placeholder review — replace with a real quote from a happy client about the experience or result.", "name": "Client Name", "role": "Role or Company", "rating": 5 }
+    ]
+  },
+  "faq": {
+    "title_line1": "COMMON",
+    "title_line2": "QUESTIONS",
+    "items": [
+      { "question": "What areas do you serve?", "answer": "Placeholder answer — replace with your actual service area or coverage zone." },
+      { "question": "How do I book an appointment?", "answer": "Placeholder answer — describe your booking process (call, form, online, etc.)." },
+      { "question": "What are your hours?", "answer": "Placeholder answer — list your operating hours and any weekend/emergency availability." },
+      { "question": "How much does it cost?", "answer": "Placeholder answer — describe your pricing approach (fixed, quote-based, packages, etc.)." },
+      { "question": "Do you offer a guarantee?", "answer": "Placeholder answer — describe any warranty, satisfaction guarantee, or return policy." },
+      { "question": "How long does it take?", "answer": "Placeholder answer — give typical timeframes for your most common services." }
+    ]
+  },
+  "contact": {
+    "title_line1": "GET IN",
+    "title_line2": "TOUCH",
+    "body": "Have a question or ready to book? Send us a message and we'll get back to you within 24 hours.",
+    "form_name": "Name",
+    "form_email": "Email",
+    "form_phone": "Phone",
+    "form_message": "Message",
+    "form_name_placeholder": "Your Name",
+    "form_email_placeholder": "your@email.com",
+    "form_phone_placeholder": "+351 000 000 000",
+    "form_message_placeholder": "Tell us how we can help...",
+    "form_submit": "Send Message",
+    "form_success": "Message sent! We'll get back to you soon.",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "address": "YOUR_ADDRESS",
+    "hours": "Mon–Fri 9am–6pm",
+    "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
+  },
+  "footer": {
+    "tagline": "Short brand tagline — what you do in one sentence.",
+    "address": "YOUR_ADDRESS",
+    "hours": "Mon–Fri 9am–6pm",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "copyright": "© 2025 YOUR_BUSINESS. All rights reserved.",
+    "nav_links": [
+      { "id": "about", "label": "About" },
+      { "id": "services", "label": "Services" },
+      { "id": "reviews", "label": "Reviews" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contact" }
+    ]
+  },
+  "cta": {
+    "call_label": "Call Now",
+    "phone": "YOUR_PHONE",
+    "whatsapp_label": "WhatsApp",
+    "whatsapp": "YOUR_WHATSAPP_NUMBER",
+    "book_label": "Book Now"
+  }
+}
