@@ -1,0 +1,220 @@
+{
+  "nav": {
+    "home": "Home",
+    "work": "Projects",
+    "reviews": "Reviews",
+    "services": "Services",
+    "workflow": "Workflow",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "name": "YOUR NAME",
+    "card_bio": "Your Role · Your Specialty · Available for Freelance",
+    "title_line1": "YOUR TITLE",
+    "title_line2": "LINE TWO",
+    "tagline": "A short tagline that describes what you do and the value you deliver.",
+    "cta": "Start a Project",
+    "cta_secondary": "See My Work",
+    "stats": [
+      {
+        "value": "+0",
+        "label": "Projects Delivered"
+      },
+      {
+        "value": "+0",
+        "label": "Happy Clients"
+      },
+      {
+        "value": "+0",
+        "label": "Years Experience"
+      }
+    ]
+  },
+  "work": {
+    "title_line1": "SELECTED",
+    "title_line2": "PROJECTS",
+    "cta": "See all projects",
+    "projects": [
+      {
+        "slug": "example-project",
+        "title": "Example Project",
+        "description": "A short description of this project — what it is, who it's for, and what problem it solves.",
+        "long_description": "A longer description of the project. Explain the context, the challenge, and how you approached it.\n\nDescribe the key features you built and the decisions you made.\n\nEnd with the outcome or impact.",
+        "image": "/projects/example-project/1.png",
+        "images": [
+          "/projects/example-project/1.png",
+          "/projects/example-project/2.png",
+          "/projects/example-project/3.png"
+        ],
+        "tags": ["Web Design", "Development"],
+        "live": "https://example.com",
+        "github": null
+      }
+    ]
+  },
+  "testimonials": {
+    "title_line1": "WHAT CLIENTS",
+    "title_line2": "SAY",
+    "subtitle": "Real feedback from clients.",
+    "items": [
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      },
+      {
+        "quote": "Placeholder testimonial — replace with a real quote from a client about the impact of your work.",
+        "name": "Client Name",
+        "role": "Role, Company",
+        "avatar": null
+      }
+    ]
+  },
+  "services": {
+    "title_line1": "WHAT I",
+    "title_line2": "OFFER",
+    "stack_label": "Tech Stack",
+    "items": [
+      {
+        "icon": "🖥️",
+        "title": "Service One",
+        "description": "A short description of what this service includes and the value it delivers to clients.",
+        "details": ["Detail point one", "Detail point two", "Detail point three", "Detail point four", "Detail point five", "Detail point six"]
+      },
+      {
+        "icon": "🎨",
+        "title": "Service Two",
+        "description": "A short description of what this service includes and the value it delivers to clients.",
+        "details": ["Detail point one", "Detail point two", "Detail point three", "Detail point four", "Detail point five"]
+      },
+      {
+        "icon": "📈",
+        "title": "Service Three",
+        "description": "A short description of what this service includes and the value it delivers to clients.",
+        "details": ["Detail point one", "Detail point two", "Detail point three", "Detail point four", "Detail point five"]
+      },
+      {
+        "icon": "📱",
+        "title": "Service Four",
+        "description": "A short description of what this service includes and the value it delivers to clients.",
+        "details": ["Detail point one", "Detail point two", "Detail point three", "Detail point four", "Detail point five"]
+      }
+    ]
+  },
+  "process": {
+    "title_line1": "HOW I",
+    "title_line2": "WORK",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Discover",
+        "description": "Understand the goals, audience, and constraints before touching any design or code."
+      },
+      {
+        "number": "02",
+        "title": "Design",
+        "description": "Wireframes and mockups built around clarity — with your feedback at every step."
+      },
+      {
+        "number": "03",
+        "title": "Build",
+        "description": "Clean, performant code using the right tools for the job."
+      },
+      {
+        "number": "04",
+        "title": "Launch",
+        "description": "Deployment, SEO setup, and a handoff you actually understand."
+      }
+    ]
+  },
+  "about": {
+    "title_line1": "ABOUT",
+    "title_line2": "ME",
+    "bio": "YOUR_NAME — a brief bio about who you are, what you do, and who you work with.\n\nA second paragraph with more detail about your background, approach, or values.\n\nOptional third paragraph — something personal or what you're working on.",
+    "bio_callout": "Open to new projects — remote or local.",
+    "bio_cta": "Get in touch →",
+    "fun_facts": [
+      {
+        "emoji": "☕",
+        "title": "Fun fact one.",
+        "text": "A short, personal detail that makes you more human."
+      },
+      {
+        "emoji": "📚",
+        "title": "Fun fact two.",
+        "text": "Something you're learning or interested in right now."
+      },
+      {
+        "emoji": "🌍",
+        "title": "Fun fact three.",
+        "text": "Where you work from or how you prefer to collaborate."
+      },
+      {
+        "emoji": "⚡",
+        "title": "Fun fact four.",
+        "text": "A working style or value you hold."
+      }
+    ]
+  },
+  "contact": {
+    "title_line1": "LET'S",
+    "title_line2": "TALK",
+    "body": "Have a project in mind? I'd love to hear about it. Send me a message and I'll get back to you within 24 hours.",
+    "form_name": "Name",
+    "form_email": "Email",
+    "form_message": "Message",
+    "form_name_placeholder": "Your Name",
+    "form_email_placeholder": "your@email.com",
+    "form_message_placeholder": "Tell me about your project...",
+    "form_submit": "Send Message",
+    "form_success": "Message sent! I'll get back to you soon.",
+    "email_label": "Email me",
+    "email": "YOUR_EMAIL",
+    "github": "https://github.com/YOUR_GITHUB",
+    "linkedin": "https://www.linkedin.com/in/YOUR_LINKEDIN/"
+  }
+}

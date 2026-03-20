@@ -1,0 +1,67 @@
+[
+  {
+    "id": "3fce8b5d-7d7d-4c39-8880-6a4720ef8ed9",
+    "data": [
+      {
+        "text": "Posso ver o teu trabalho",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "7a7c89aa-6068-409b-8afd-d6204b3931d4",
+    "data": [
+      {
+        "text": "Que projetos já fizeste",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "c32c1e5a-19b5-40a4-b627-97f2140200b4",
+    "data": [
+      {
+        "text": "Mostra-me o teu portfólio",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "fb517709-3915-405c-9da3-8d510684b086",
+    "data": [
+      {
+        "text": "Que sites já criaste",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "f759baac-a74b-46a4-835e-8df741c8cd7c",
+    "data": [
+      {
+        "text": "Tens exemplos de trabalho",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "id": "c92c837a-f698-437b-971e-640e30fb0d30",
+  "name": "location",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João is based in Cascais, Portugal (GMT+1). He works with clients both locally and remotely across Europe and beyond — location is no barrier!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João está baseado em Cascais, Portugal (GMT+1). Trabalha com clientes localmente e remotamente em toda a Europa!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

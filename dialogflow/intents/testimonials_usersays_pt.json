@@ -1,0 +1,80 @@
+[
+  {
+    "id": "e21e8d20-ef15-4135-a367-6ce7e7ddb32d",
+    "data": [
+      {
+        "text": "Tens reviews",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "d331a907-6257-4563-b2df-ff4a61afa93c",
+    "data": [
+      {
+        "text": "O que dizem os clientes",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "fb4c9fe1-ec33-43ce-8b99-43e4ff7f6624",
+    "data": [
+      {
+        "text": "Tens testemunhos",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "4c9205cf-2469-4344-ba70-5b6085c64491",
+    "data": [
+      {
+        "text": "Posso ver feedback de clientes",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "16c6d14e-2cbb-49f4-9747-2576bf216eae",
+    "data": [
+      {
+        "text": "Tens referências",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "b7d6dfd5-a209-49cb-868e-c0dc8d663372",
+    "data": [
+      {
+        "text": "O que acham do teu trabalho",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

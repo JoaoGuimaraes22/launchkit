@@ -1,0 +1,51 @@
+{
+  "id": "cf5a2ff4-d966-4454-8b3f-ef7f9fc4f791",
+  "name": "Default Welcome Intent",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "input.welcome",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Hi! I'm João's assistant. Ask me about his services, pricing, projects, or availability!",
+            "Hey there! What would you like to know about João's work?"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "Olá! Sou o assistente do João. Pergunta-me sobre serviços, preços, projetos ou disponibilidade!",
+            "Olá! Como posso ajudar?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "WELCOME"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

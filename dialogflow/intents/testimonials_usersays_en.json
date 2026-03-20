@@ -1,0 +1,93 @@
+[
+  {
+    "id": "9c01e894-7a0f-4f2c-b555-1f7c9e05ab0c",
+    "data": [
+      {
+        "text": "Do you have reviews",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "75105434-35b1-45fd-98a0-7ca0bb42cc66",
+    "data": [
+      {
+        "text": "What do clients say",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "9e39318d-b7ab-44e4-83f4-4e00f78138e9",
+    "data": [
+      {
+        "text": "Do you have testimonials",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "59117ff5-ee68-4d87-b822-b390188241b1",
+    "data": [
+      {
+        "text": "Can I see feedback from clients",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "2fcc44f3-c419-4223-a5dd-594e7469e1ff",
+    "data": [
+      {
+        "text": "Are there any recommendations",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5d7809b1-8101-4e28-aa9e-d35d43d24e32",
+    "data": [
+      {
+        "text": "What do people think of your work",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "4f6efc11-5e40-4291-83cb-e83bbe15154e",
+    "data": [
+      {
+        "text": "Do you have references",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "id": "d3c7d4bf-8505-4edb-be43-c2b44319d5ce",
+  "name": "maintenance",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Yes! João offers post-launch support and maintenance. This includes bug fixes, content updates, performance monitoring, and feature additions. Ask about ongoing retainer options when you get in touch!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "Sim! O João oferece suporte e manutenção após o lançamento. Inclui correção de bugs, atualizações de conteúdo, monitorização de desempenho e novas funcionalidades. Pergunta sobre opções de retainer quando entrares em contacto!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

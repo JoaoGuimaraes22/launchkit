@@ -1,0 +1,45 @@
+{
+  "id": "a7f81759-8d03-4967-89c2-02793b713366",
+  "name": "about",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João Guimarães is a Web Designer, Developer, and Marketing Strategist based in Cascais, Portugal. With 3+ years of experience, he has launched 10+ websites for local businesses — helping them convert visitors into clients."
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "João Guimarães é um Web Designer, Programador e Estrategista de Marketing baseado em Cascais, Portugal. Com mais de 3 anos de experiência, já lançou mais de 10 websites para empresas locais."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

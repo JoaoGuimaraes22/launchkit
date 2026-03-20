@@ -1,0 +1,45 @@
+{
+  "id": "114dd034-da4a-41ba-9dec-3ba8b1593a11",
+  "name": "pricing",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Pricing depends on the project scope. A typical website starts from €800. João offers custom quotes — reach out via the contact form or email jssgmrs22@gmail.com for a free consultation!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O preço depende do âmbito do projeto. Um website típico começa a partir de €800. O João faz orçamentos personalizados — usa o formulário de contacto ou envia email para jssgmrs22@gmail.com!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

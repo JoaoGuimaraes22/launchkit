@@ -1,0 +1,45 @@
+{
+  "id": "ecaa3d88-6c67-4228-9cca-2712a970ee0d",
+  "name": "process",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João follows a clear 4-step process: 1) Discovery — understanding your goals and audience. 2) Design — crafting the look and feel in Figma. 3) Development — building the site with Next.js. 4) Launch — deploying, testing, and handing over. You're involved at every stage!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João segue um processo claro em 4 etapas: 1) Descoberta — perceber os teus objetivos. 2) Design — criar o visual no Figma. 3) Desenvolvimento — construir o site com Next.js. 4) Lançamento — deploy, testes e entrega. Estás envolvido em cada etapa!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "id": "a57237bc-bec8-4740-b291-7f184e47d49f",
+    "data": [
+      {
+        "text": "Where are you based",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "9bf6435b-2381-45c9-bf0e-36a0e9160ad0",
+    "data": [
+      {
+        "text": "Where are you from",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5784a6e5-b193-4141-9e14-012dc87fb682",
+    "data": [
+      {
+        "text": "Where do you work",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "420c95a9-886a-4c8c-bba8-3c5b5ae1a131",
+    "data": [
+      {
+        "text": "What is your location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "99df38c7-9934-4059-9bfa-8d12ed0166ff",
+    "data": [
+      {
+        "text": "Are you in Portugal",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "eb00096f-7846-49f7-be24-5a9814e23759",
+    "data": [
+      {
+        "text": "Do you work remotely",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5a175957-eb37-4cd2-8803-c16e3de20076",
+    "data": [
+      {
+        "text": "Can you work with clients outside Portugal",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

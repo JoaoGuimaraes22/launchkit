@@ -1,0 +1,45 @@
+{
+  "id": "8893b8a9-18dd-4270-ac4c-eefad1776348",
+  "name": "tech-stack",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João builds with Next.js, React, TypeScript, and Tailwind CSS — deployed on Vercel. For design, he uses Figma. For marketing, he handles SEO, branding, and analytics."
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João desenvolve com Next.js, React, TypeScript e Tailwind CSS — com deploy na Vercel. Para design usa Figma. Para marketing faz SEO, branding e análise de dados."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

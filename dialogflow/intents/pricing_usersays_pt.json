@@ -1,0 +1,80 @@
+[
+  {
+    "id": "35f82ff2-d84d-4ffd-8c26-fdefc4addea7",
+    "data": [
+      {
+        "text": "Quanto custa",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "2caf73cd-bca9-48d1-b990-21b4e772e21d",
+    "data": [
+      {
+        "text": "Quais são os preços",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "e19aaa8e-885e-408d-9de0-83dc51be9178",
+    "data": [
+      {
+        "text": "Quanto cobras",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "e2c2f7af-3eb8-442c-8ab1-c7ea2d2dbf1c",
+    "data": [
+      {
+        "text": "Qual é o preço de um site",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "5d8e063f-ce6f-4bd3-b386-d2b804166d98",
+    "data": [
+      {
+        "text": "É caro",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "a281a26a-237c-46cd-b7a0-5c47c64954ae",
+    "data": [
+      {
+        "text": "Qual é o teu orçamento",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

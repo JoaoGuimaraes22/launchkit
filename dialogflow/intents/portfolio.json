@@ -1,0 +1,45 @@
+{
+  "id": "ec04112b-7dfa-4341-94d3-4080e1f5fd5e",
+  "name": "portfolio",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João has built 6+ websites including Cascais Volley Cup, Koya's Bistro, SorrisoPlus Dental Clinic, AquaFix Plumbing, Revicar Auto Repair, and Bella Hair Salon. Check out the Work section on this page!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João construiu mais de 6 websites, incluindo Cascais Volley Cup, Koya's Bistro, SorrisoPlus Clínica Dentária, AquaFix Canalizações, Revicar Oficina e Bella Hair Salon. Vê a secção de Trabalhos nesta página!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

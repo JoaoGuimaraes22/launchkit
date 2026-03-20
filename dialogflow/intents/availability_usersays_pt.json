@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ef6555bc-12dd-4de6-9548-8ebcee2d3077",
+    "data": [
+      {
+        "text": "Estás disponível",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "ca7987a4-24e3-4b17-832c-aab92417ff43",
+    "data": [
+      {
+        "text": "Estás a aceitar novos clientes",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "879fc8aa-205b-42b4-bb69-7e2afc035c74",
+    "data": [
+      {
+        "text": "Tens disponibilidade",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "497903af-b659-46d0-89b4-7361c9a9f730",
+    "data": [
+      {
+        "text": "Aceitas novos projetos",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "134b5516-6413-4f91-b086-4a2b24c6b1be",
+    "data": [
+      {
+        "text": "Estás ocupado",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "id": "a6145096-cab0-417a-a2f6-2317d20c82d7",
+  "name": "testimonials",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João has worked with several happy clients! Scroll up to the Reviews section on this page to read what they say. Real feedback from real businesses he's worked with."
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João já trabalhou com vários clientes satisfeitos! Faz scroll para cima até à secção de Reviews nesta página para ler o que dizem. Feedback real de empresas reais."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

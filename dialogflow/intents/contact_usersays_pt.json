@@ -1,0 +1,67 @@
+[
+  {
+    "id": "767372ed-07ba-4a27-8683-21d83c6cb805",
+    "data": [
+      {
+        "text": "Como posso contactar-te",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "f0ee6532-2e27-4242-bbba-0f07b4d18045",
+    "data": [
+      {
+        "text": "Qual é o teu email",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "ae36543a-0e0d-42bf-875d-94e00c1c9ec4",
+    "data": [
+      {
+        "text": "Como entro em contacto",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "a817135b-2279-421e-90fa-95d157a15bb6",
+    "data": [
+      {
+        "text": "Quero contratar-te",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "aac9443f-4a5f-49c1-89c0-803ef51cb757",
+    "data": [
+      {
+        "text": "Como inicio um projeto contigo",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

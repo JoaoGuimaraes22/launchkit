@@ -1,0 +1,45 @@
+{
+  "id": "ad5651fa-fde3-4dcb-80ed-e2810b03106f",
+  "name": "contact",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "You can reach João at jssgmrs22@gmail.com, or use the contact form at the bottom of this page. He's also on LinkedIn and GitHub — links are in the sidebar!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "Podes contactar o João em jssgmrs22@gmail.com, ou usar o formulário de contacto no fundo da página. Também está no LinkedIn e GitHub — os links estão na barra lateral!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

@@ -1,0 +1,45 @@
+{
+  "id": "3b8af911-cefd-4fb8-b81a-ebf41b46ecac",
+  "name": "services",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "João offers three core services: Web Design (modern, conversion-focused websites), Web Development (Next.js, React, custom builds), and Digital Marketing (SEO, branding, strategy). Want to know more about any of these?"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "O João oferece três serviços principais: Web Design (websites modernos e focados em conversão), Desenvolvimento Web (Next.js, React, soluções personalizadas) e Marketing Digital (SEO, branding, estratégia). Queres saber mais?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

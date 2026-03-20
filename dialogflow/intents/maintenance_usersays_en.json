@@ -1,0 +1,106 @@
+[
+  {
+    "id": "b97b8fec-d93e-4533-b6f3-cb545547c6d5",
+    "data": [
+      {
+        "text": "Do you offer support after launch",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "6312386f-66d1-46d5-a88a-9167ca1b9258",
+    "data": [
+      {
+        "text": "What happens after the website is done",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "06387e47-f9e1-4e67-ba3a-daef276adcfe",
+    "data": [
+      {
+        "text": "Do you offer maintenance",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "2515cee2-1636-4b71-9a15-d98eb4ffa1d3",
+    "data": [
+      {
+        "text": "Can you update my website later",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "9c93acfb-5f53-4980-bda0-e0266ca5f6be",
+    "data": [
+      {
+        "text": "Do you do ongoing work",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "13ce7359-e65f-415f-8d4c-45041f9323db",
+    "data": [
+      {
+        "text": "What about after the project ends",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d7773ea8-881b-4569-ada7-1c8686ff3561",
+    "data": [
+      {
+        "text": "Do you offer hosting",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "253d9a8a-b7ff-433b-9a67-c809d6ef1c49",
+    "data": [
+      {
+        "text": "Can you maintain my site",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

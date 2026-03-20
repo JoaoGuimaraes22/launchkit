@@ -1,0 +1,93 @@
+[
+  {
+    "id": "424bc3c1-6633-4502-af10-c18963f4273e",
+    "data": [
+      {
+        "text": "How can I contact you",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "87c449c0-bba6-49ea-a699-98ca59f3a3ac",
+    "data": [
+      {
+        "text": "What is your email",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d27da72a-b757-4736-abdb-76fbf5586b13",
+    "data": [
+      {
+        "text": "How do I reach you",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a41ee1c3-6904-4d1a-bd4e-98bb941e3037",
+    "data": [
+      {
+        "text": "How do I get in touch",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "269e6217-ba60-4476-8e31-aece0d70781f",
+    "data": [
+      {
+        "text": "I want to hire you",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "c6986d2d-b8cc-423b-84b6-7f577c554f8b",
+    "data": [
+      {
+        "text": "How do I start a project with you",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "0a9a496c-31e0-4a6c-a216-749012d80a3a",
+    "data": [
+      {
+        "text": "Send you a message",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

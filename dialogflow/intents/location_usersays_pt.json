@@ -1,0 +1,67 @@
+[
+  {
+    "id": "39111dfb-df80-407c-acf1-f6ebe3fc268a",
+    "data": [
+      {
+        "text": "Onde é que estás",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "2931f772-f05a-4fe7-972c-3bebb8ab0b89",
+    "data": [
+      {
+        "text": "De onde és",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "0cdba550-7a2b-44ed-a5c1-f4f55a08167d",
+    "data": [
+      {
+        "text": "Onde trabalhas",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "5ce6153b-ce71-45eb-b740-0ca31f6de616",
+    "data": [
+      {
+        "text": "Estás em Portugal",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "b867f7dc-c958-4b3a-a90c-9585f4122779",
+    "data": [
+      {
+        "text": "Trabalhas remotamente",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

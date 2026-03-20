@@ -1,0 +1,45 @@
+{
+  "id": "b1da7712-488d-4068-9d19-ed4a23092ccc",
+  "name": "availability",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Yes, João is currently available for new projects! He's open to freelance web design, development, and marketing work. Use the contact form to discuss your project!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "Sim, o João está disponível para novos projetos! Está aberto a trabalho freelance em web design, desenvolvimento e marketing. Usa o formulário de contacto para discutir o teu projeto!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

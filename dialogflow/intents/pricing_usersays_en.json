@@ -1,0 +1,106 @@
+[
+  {
+    "id": "d7519615-21a0-46a4-bb27-ad78f8e47d44",
+    "data": [
+      {
+        "text": "How much does it cost",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "21931ac8-4e0f-4fdd-8666-4583500d5104",
+    "data": [
+      {
+        "text": "What are your rates",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a17fdc91-3051-4693-b71b-194ad1e73899",
+    "data": [
+      {
+        "text": "How much do you charge",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ed3c7417-ce02-49c1-aab2-90c9c72c8af2",
+    "data": [
+      {
+        "text": "What is the price",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5537121f-9fef-495d-953c-7d973387af62",
+    "data": [
+      {
+        "text": "How much for a website",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "c51ef166-dee3-40d7-9ca2-f1ced9228527",
+    "data": [
+      {
+        "text": "What is your pricing",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "8c15a502-cad2-428b-8b8a-a0c03d21f91d",
+    "data": [
+      {
+        "text": "Is it expensive",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "97c9b57d-dd30-43e7-a91b-f214125628eb",
+    "data": [
+      {
+        "text": "What does a website cost",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

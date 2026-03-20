@@ -1,0 +1,220 @@
+{
+  "nav": {
+    "home": "Início",
+    "work": "Projectos",
+    "reviews": "Avaliações",
+    "services": "Serviços",
+    "workflow": "Processo",
+    "about": "Sobre",
+    "contact": "Contacto"
+  },
+  "hero": {
+    "name": "YOUR NAME",
+    "card_bio": "O Seu Papel · A Sua Especialidade · Disponível para Freelance",
+    "title_line1": "YOUR TITLE",
+    "title_line2": "LINE TWO",
+    "tagline": "Um tagline curto que descreve o que faz e o valor que entrega.",
+    "cta": "Iniciar Projeto",
+    "cta_secondary": "Ver Trabalho",
+    "stats": [
+      {
+        "value": "+0",
+        "label": "Projetos Entregues"
+      },
+      {
+        "value": "+0",
+        "label": "Clientes Satisfeitos"
+      },
+      {
+        "value": "+0",
+        "label": "Anos de Experiência"
+      }
+    ]
+  },
+  "work": {
+    "title_line1": "PROJECTOS",
+    "title_line2": "SELECIONADOS",
+    "cta": "Ver todos os projetos",
+    "projects": [
+      {
+        "slug": "example-project",
+        "title": "Projeto de Exemplo",
+        "description": "Uma descrição curta do projeto — o que é, para quem é e que problema resolve.",
+        "long_description": "Uma descrição mais longa do projeto. Explique o contexto, o desafio e como o abordou.\n\nDescreva as funcionalidades principais que criou e as decisões que tomou.\n\nTermine com o resultado ou impacto.",
+        "image": "/projects/example-project/1.png",
+        "images": [
+          "/projects/example-project/1.png",
+          "/projects/example-project/2.png",
+          "/projects/example-project/3.png"
+        ],
+        "tags": ["Web Design", "Desenvolvimento"],
+        "live": "https://example.com",
+        "github": null
+      }
+    ]
+  },
+  "testimonials": {
+    "title_line1": "O QUE OS CLIENTES",
+    "title_line2": "DIZEM",
+    "subtitle": "Feedback real de clientes.",
+    "items": [
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      },
+      {
+        "quote": "Testemunho de exemplo — substitua por uma citação real de um cliente sobre o impacto do seu trabalho.",
+        "name": "Nome do Cliente",
+        "role": "Cargo, Empresa",
+        "avatar": null
+      }
+    ]
+  },
+  "services": {
+    "title_line1": "O QUE",
+    "title_line2": "OFEREÇO",
+    "stack_label": "Tecnologias",
+    "items": [
+      {
+        "icon": "🖥️",
+        "title": "Serviço Um",
+        "description": "Uma descrição curta do que este serviço inclui e o valor que entrega aos clientes.",
+        "details": ["Ponto de detalhe um", "Ponto de detalhe dois", "Ponto de detalhe três", "Ponto de detalhe quatro", "Ponto de detalhe cinco", "Ponto de detalhe seis"]
+      },
+      {
+        "icon": "🎨",
+        "title": "Serviço Dois",
+        "description": "Uma descrição curta do que este serviço inclui e o valor que entrega aos clientes.",
+        "details": ["Ponto de detalhe um", "Ponto de detalhe dois", "Ponto de detalhe três", "Ponto de detalhe quatro", "Ponto de detalhe cinco"]
+      },
+      {
+        "icon": "📈",
+        "title": "Serviço Três",
+        "description": "Uma descrição curta do que este serviço inclui e o valor que entrega aos clientes.",
+        "details": ["Ponto de detalhe um", "Ponto de detalhe dois", "Ponto de detalhe três", "Ponto de detalhe quatro", "Ponto de detalhe cinco"]
+      },
+      {
+        "icon": "📱",
+        "title": "Serviço Quatro",
+        "description": "Uma descrição curta do que este serviço inclui e o valor que entrega aos clientes.",
+        "details": ["Ponto de detalhe um", "Ponto de detalhe dois", "Ponto de detalhe três", "Ponto de detalhe quatro", "Ponto de detalhe cinco"]
+      }
+    ]
+  },
+  "process": {
+    "title_line1": "COMO",
+    "title_line2": "TRABALHO",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Descobrir",
+        "description": "Compreender os objetivos, o público e as restrições antes de tocar em qualquer design ou código."
+      },
+      {
+        "number": "02",
+        "title": "Desenhar",
+        "description": "Wireframes e mockups centrados na clareza — com o seu feedback em cada etapa."
+      },
+      {
+        "number": "03",
+        "title": "Construir",
+        "description": "Código limpo e eficiente usando as ferramentas certas para o trabalho."
+      },
+      {
+        "number": "04",
+        "title": "Lançar",
+        "description": "Deployment, configuração de SEO e uma entrega que realmente compreende."
+      }
+    ]
+  },
+  "about": {
+    "title_line1": "SOBRE",
+    "title_line2": "MIM",
+    "bio": "YOUR_NAME — uma bio curta sobre quem é, o que faz e com quem trabalha.\n\nUm segundo parágrafo com mais detalhes sobre o seu percurso, abordagem ou valores.\n\nParágrafo opcional — algo pessoal ou no que está a trabalhar.",
+    "bio_callout": "Disponível para novos projetos — remoto ou presencial.",
+    "bio_cta": "Entre em contacto →",
+    "fun_facts": [
+      {
+        "emoji": "☕",
+        "title": "Facto curioso um.",
+        "text": "Um detalhe pessoal curto que o torna mais humano."
+      },
+      {
+        "emoji": "📚",
+        "title": "Facto curioso dois.",
+        "text": "Algo que está a aprender ou em que está interessado agora."
+      },
+      {
+        "emoji": "🌍",
+        "title": "Facto curioso três.",
+        "text": "De onde trabalha ou como prefere colaborar."
+      },
+      {
+        "emoji": "⚡",
+        "title": "Facto curioso quatro.",
+        "text": "Um estilo de trabalho ou valor que defende."
+      }
+    ]
+  },
+  "contact": {
+    "title_line1": "VAMOS",
+    "title_line2": "FALAR",
+    "body": "Tem um projeto em mente? Adoraria ouvir sobre ele. Envie-me uma mensagem e responderei em 24 horas.",
+    "form_name": "Nome",
+    "form_email": "Email",
+    "form_message": "Mensagem",
+    "form_name_placeholder": "O Seu Nome",
+    "form_email_placeholder": "o.seu@email.com",
+    "form_message_placeholder": "Fale-me do seu projeto...",
+    "form_submit": "Enviar Mensagem",
+    "form_success": "Mensagem enviada! Responderei em breve.",
+    "email_label": "Enviar email",
+    "email": "YOUR_EMAIL",
+    "github": "https://github.com/YOUR_GITHUB",
+    "linkedin": "https://www.linkedin.com/in/YOUR_LINKEDIN/"
+  }
+}

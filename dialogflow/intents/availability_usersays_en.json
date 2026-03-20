@@ -1,0 +1,93 @@
+[
+  {
+    "id": "7b687e65-c45c-459e-87da-4bc5d60a069d",
+    "data": [
+      {
+        "text": "Are you available",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "46fa4c76-d2ce-42b6-9bd8-be831bf952d1",
+    "data": [
+      {
+        "text": "Are you taking new clients",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "88e2568f-39e3-4217-8494-7f0cbf5679ea",
+    "data": [
+      {
+        "text": "Are you free to take on a project",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "8580fa00-aab4-44ca-a787-9b0aacfbde9e",
+    "data": [
+      {
+        "text": "Are you open for work",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7f5e99f0-e6b9-4482-af62-8b55aeea0c65",
+    "data": [
+      {
+        "text": "Can you take on new projects",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7e1f30be-48f4-4fd8-beb2-6b7ce875ec58",
+    "data": [
+      {
+        "text": "Do you have availability",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "713d4efe-829d-4e99-8929-ce5ca0a441d9",
+    "data": [
+      {
+        "text": "Are you busy",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

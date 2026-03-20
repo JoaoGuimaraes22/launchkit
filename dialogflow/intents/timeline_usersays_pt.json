@@ -1,0 +1,54 @@
+[
+  {
+    "id": "da9a369b-2ba6-4980-b12f-a5e97f426887",
+    "data": [
+      {
+        "text": "Quanto tempo demora",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "193f498b-a23a-4f50-8bff-5b621f6199c5",
+    "data": [
+      {
+        "text": "Qual é o prazo",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "69d2705c-7c28-418c-810e-e484dc295023",
+    "data": [
+      {
+        "text": "Em quanto tempo consegues fazer um site",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "8a3ea559-fa56-4098-92f0-9e41580d8267",
+    "data": [
+      {
+        "text": "Qual é o tempo de entrega",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]

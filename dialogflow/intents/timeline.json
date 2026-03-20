@@ -1,0 +1,45 @@
+{
+  "id": "7fdf1f0a-61e8-43f0-991d-afa988a3b716",
+  "name": "timeline",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "en",
+          "speech": [
+            "Most website projects are completed in 2–4 weeks from kickoff. Larger projects may take 4–8 weeks. João works fast and keeps clients updated throughout the process!"
+          ],
+          "condition": ""
+        },
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "pt",
+          "speech": [
+            "A maioria dos projetos fica pronta em 2 a 4 semanas. Projetos mais complexos podem demorar 4 a 8 semanas. O João trabalha com rapidez e mantém os clientes informados!"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

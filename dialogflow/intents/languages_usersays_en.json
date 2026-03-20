@@ -1,0 +1,80 @@
+[
+  {
+    "id": "5b8595c0-6288-4393-b08c-dbf7e9f38944",
+    "data": [
+      {
+        "text": "Do you speak English",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a1b1128b-d3bb-4556-a0ef-17d688541c3f",
+    "data": [
+      {
+        "text": "What languages do you speak",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "735e6ead-989e-457a-8e83-8269be378075",
+    "data": [
+      {
+        "text": "Can we communicate in English",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5aa4dde6-f58b-4b67-b8e8-dc21555f143d",
+    "data": [
+      {
+        "text": "Do you speak Portuguese",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "28dfda19-3e6f-4894-b064-a96674fbe7c7",
+    "data": [
+      {
+        "text": "Can you work in English",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "879ea4d4-ac53-47d6-a6ca-fc620e05c972",
+    "data": [
+      {
+        "text": "Is language a barrier",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

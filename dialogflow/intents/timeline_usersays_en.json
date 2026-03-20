@@ -1,0 +1,93 @@
+[
+  {
+    "id": "bed0986b-58b1-4adc-abf0-820a83268485",
+    "data": [
+      {
+        "text": "How long does it take",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ebfbbfd5-e9b2-4ca6-9aa1-b6270d7db3c5",
+    "data": [
+      {
+        "text": "What is the timeline",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "6044c94c-2788-4426-a250-9c090e525a72",
+    "data": [
+      {
+        "text": "How long for a website",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5ab3c4e5-3301-40fa-95cb-c2e7d16a5975",
+    "data": [
+      {
+        "text": "When can you deliver",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a92bd979-009d-4b5a-a978-39aeaa6bdb13",
+    "data": [
+      {
+        "text": "What is your turnaround time",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "5f052cfd-d2b1-48ea-a263-5b1bd8b31648",
+    "data": [
+      {
+        "text": "How fast do you work",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "00f75539-8e0d-4381-b5d6-a0a05a6c488f",
+    "data": [
+      {
+        "text": "How quickly can you build a website",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

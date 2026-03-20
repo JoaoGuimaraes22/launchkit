@@ -1,0 +1,80 @@
+[
+  {
+    "id": "a1c32e9b-0f21-4ffa-a3f9-49ce4e1f3c61",
+    "data": [
+      {
+        "text": "Ofereces suporte após o lançamento",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "246a6eb1-c8d4-403e-8cd3-45ce2a6bb7f6",
+    "data": [
+      {
+        "text": "O que acontece depois do site estar pronto",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "a242c01a-4753-4594-85c1-5500cfa1d3be",
+    "data": [
+      {
+        "text": "Fazes manutenção",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "9a48dc1c-9227-44db-91af-b86e12e92ce4",
+    "data": [
+      {
+        "text": "Podes atualizar o meu site mais tarde",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "cc2cee84-8162-4be9-b4ba-1b415ae9a875",
+    "data": [
+      {
+        "text": "Fazes trabalho contínuo",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  },
+  {
+    "id": "bf99b4a2-e3ca-4284-8f5a-487c8b57a61a",
+    "data": [
+      {
+        "text": "Tens serviço de manutenção",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "pt",
+    "updated": 0
+  }
+]
