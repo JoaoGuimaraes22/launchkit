@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Project Template Setup Script
+// launchkit — Setup Script
 // Run: node scripts/setup.js
-// Selects project type (Portfolio or Business Site), then applies feature toggles
+// Selects a template type (Portfolio or Business Site), copies it into app/,
+// then applies optional feature toggles.
 
 const readline = require("readline");
 const fs = require("fs");
@@ -18,15 +19,6 @@ function deleteIfExists(relPath) {
     fs.rmSync(full, { recursive: true, force: true });
     console.log("  [removed]", relPath);
   }
-}
-
-function copyFile(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
-  if (!fs.existsSync(src)) return;
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
-  console.log("  [copied]", srcRel, "→", destRel);
 }
 
 function copyDir(srcRel, destRel) {
@@ -71,21 +63,14 @@ function replaceInFile(relPath, searchStr, replaceStr) {
   }
 }
 
-function removeDependency(depName) {
+function addDependency(depName, version) {
   const pkgPath = path.join(ROOT, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  let changed = false;
-  if (pkg.dependencies && pkg.dependencies[depName]) {
-    delete pkg.dependencies[depName];
-    changed = true;
-  }
-  if (pkg.devDependencies && pkg.devDependencies[depName]) {
-    delete pkg.devDependencies[depName];
-    changed = true;
-  }
-  if (changed) {
+  if (!pkg.dependencies) pkg.dependencies = {};
+  if (!pkg.dependencies[depName]) {
+    pkg.dependencies[depName] = version;
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
-    console.log("  [patched] package.json — removed dependency:", depName);
+    console.log("  [patched] package.json — added dependency:", depName, version);
   }
 }
 
@@ -108,6 +93,22 @@ function askChoice(rl, question, choices) {
   });
 }
 
+// ─── Copy Template → app/ ────────────────────────────────────────────────────
+
+function copyTemplateToProject(type) {
+  console.log(`\n─── Copying ${type} template ────────────────────────────────────\n`);
+  // Copy app/ subtree (merges into root app/, which already has layout.tsx/globals.css/page.tsx)
+  copyDir(`templates/${type}/app`, "app");
+  // Copy dictionaries
+  copyDir(`templates/${type}/dictionaries`, "dictionaries");
+  // Copy public assets (hero.jpg, etc.)
+  copyDir(`templates/${type}/public`, "public");
+  // Portfolio: copy dialogflow agent
+  if (type === "portfolio") {
+    copyDir("templates/portfolio/dialogflow", "dialogflow");
+  }
+}
+
 // ─── Portfolio Setup ──────────────────────────────────────────────────────────
 
 async function setupPortfolio(rl) {
@@ -123,20 +124,26 @@ async function setupPortfolio(rl) {
     sidebar: await ask(rl, "[7/7] Include ProfileSidebar (sticky desktop sidebar)?"),
   };
 
+  copyTemplateToProject("portfolio");
+
   console.log("\n─── Applying portfolio feature selections ───────────────────────\n");
 
-  if (!features.i18n) {
+  if (features.i18n) {
+    console.log("✓  i18n: enabled");
+    copyDir("templates/portfolio/root", ".");
+  } else {
     console.log("⚙  i18n: disabled");
-    deleteIfExists("proxy.ts");
-    deleteIfExists("i18n-config.ts");
-    deleteIfExists("get-dictionary.ts");
-    deleteIfExists("dictionaries");
     deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
     deleteIfExists("app/[locale]/components/LangSetter.tsx");
+    // Write a minimal sitemap that doesn't depend on get-dictionary
+    fs.writeFileSync(
+      path.join(ROOT, "app/sitemap.ts"),
+      `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\n// TODO: TEMPLATE — add slugs after i18n collapse and content setup\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
+      "utf8"
+    );
+    console.log("  [patched] sitemap.ts — simplified (no i18n)");
     console.log("\n  ⚠  The app/[locale]/ routing collapse requires TypeScript refactoring.");
-    console.log("     Paste BOOTSTRAP.md into a Claude Code conversation to complete this.\n");
-  } else {
-    console.log("✓  i18n: enabled");
+    console.log("     Paste templates/portfolio/BOOTSTRAP.md into a Claude Code conversation to complete this.\n");
   }
 
   if (!features.webglHero) {
@@ -164,9 +171,10 @@ async function setupPortfolio(rl) {
       removeLineContaining("app/[locale]/components/ProfileSidebar.tsx", 'import ChatNudge from "./ChatNudge"');
       removeLineContaining("app/[locale]/components/ProfileSidebar.tsx", "<ChatNudge");
     }
-    removeDependency("google-auth-library");
   } else {
     console.log("✓  Chatbot: enabled");
+    addDependency("google-auth-library", "^10.6.2");
+    addDependency("adm-zip", "^0.5.16");
   }
 
   if (!features.contactForm) {
@@ -184,9 +192,9 @@ async function setupPortfolio(rl) {
         console.log("  [patched] Contact.tsx — added TODO comment for Claude");
       }
     }
-    removeDependency("resend");
   } else {
     console.log("✓  Contact Form: enabled");
+    addDependency("resend", "^6.9.4");
   }
 
   if (!features.testimonials) {
@@ -219,14 +227,15 @@ async function setupPortfolio(rl) {
       if (updated !== content) fs.writeFileSync(navbarPath, updated, "utf8");
       console.log("  [patched] Navbar.tsx — removed work entry");
     }
-    const sitemapPath = path.join(ROOT, "app/sitemap.ts");
-    if (fs.existsSync(sitemapPath)) {
+    if (features.i18n) {
+      // Rewrite sitemap without work paths
+      const locales = '["en", "pt"] as const';
       fs.writeFileSync(
-        sitemapPath,
-        `import { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN.vercel.app";\nconst locales = ["en", "pt"];\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return locales.map((locale) => ({\n    url: \`\${SITE_URL}/\${locale}\`,\n    lastModified: new Date(),\n    changeFrequency: "monthly" as const,\n    priority: 1,\n  }));\n}\n`,
+        path.join(ROOT, "app/sitemap.ts"),
+        `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\nconst locales = ${locales};\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return locales.map((locale) => ({\n    url: \`\${SITE_URL}/\${locale}\`,\n    lastModified: new Date(),\n    alternates: {\n      languages: Object.fromEntries(locales.map((l) => [l, \`\${SITE_URL}/\${l}\`])),\n    },\n  }));\n}\n`,
         "utf8"
       );
-      console.log("  [patched] sitemap.ts — simplified");
+      console.log("  [patched] sitemap.ts — simplified (no work paths)");
     }
   } else {
     console.log("✓  Work section: enabled");
@@ -241,7 +250,11 @@ async function setupPortfolio(rl) {
     if (fs.existsSync(pagePath)) {
       const content = fs.readFileSync(pagePath, "utf8");
       if (!content.includes("TODO: TEMPLATE")) {
-        fs.writeFileSync(pagePath, "// TODO: TEMPLATE — ProfileSidebar removed. Replace the md:flex sidebar layout with a single-column <main> wrapper. Remove <aside> block and any ProfileSidebar JSX.\n" + content, "utf8");
+        fs.writeFileSync(
+          pagePath,
+          "// TODO: TEMPLATE — ProfileSidebar removed. Replace the md:flex sidebar layout with a single-column <main> wrapper. Remove <aside> block and any ProfileSidebar JSX.\n" + content,
+          "utf8"
+        );
         console.log("  [patched] page.tsx — added TODO comment for Claude");
       }
     }
@@ -264,55 +277,44 @@ async function setupBusiness(rl) {
     whatsapp: await ask(rl, "[4/4] Include WhatsApp button in contact section?"),
   };
 
-  console.log("\n─── Setting up business site ────────────────────────────────────\n");
+  copyTemplateToProject("business");
 
-  // 1. Delete portfolio-specific components
-  console.log("  Removing portfolio components...");
-  const portfolioComponents = [
-    "app/[locale]/components/HeroFull.tsx",
-    "app/[locale]/components/Hero.tsx",
-    "app/[locale]/components/Testimonials.tsx",
-    "app/[locale]/components/Services.tsx",
-    "app/[locale]/components/Work.tsx",
-    "app/[locale]/components/Process.tsx",
-    "app/[locale]/components/ProfileSidebar.tsx",
-    "app/[locale]/components/ChatNudge.tsx",
-    "app/[locale]/components/ChatWidget.tsx",
-    "app/[locale]/components/ScrollDownCue.tsx",
-    "app/[locale]/components/NavDropdown.tsx",
-  ];
-  portfolioComponents.forEach(deleteIfExists);
+  console.log("\n─── Applying business site feature selections ───────────────────\n");
 
-  // 2. Delete portfolio API routes and dialogflow
-  deleteIfExists("app/api/chat");
-  deleteIfExists("dialogflow");
-  if (!features.contactForm) deleteIfExists("app/api/contact");
+  if (features.i18n) {
+    console.log("✓  i18n: enabled");
+    copyDir("templates/business/root", ".");
+  } else {
+    console.log("⚙  i18n: disabled");
+    deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
+    deleteIfExists("app/[locale]/components/LangSetter.tsx");
+    removeLineContaining("app/[locale]/layout.tsx", 'import LangSetter from "./components/LangSetter"');
+    removeLineContaining("app/[locale]/layout.tsx", "<LangSetter");
+    removeLineContaining("app/[locale]/components/Navbar.tsx", 'import LanguageSwitcher from "./LanguageSwitcher"');
+    removeLineContaining("app/[locale]/components/Navbar.tsx", "<LanguageSwitcher");
+    fs.writeFileSync(
+      path.join(ROOT, "app/sitemap.ts"),
+      `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
+      "utf8"
+    );
+    console.log("  [patched] sitemap.ts — simplified (no i18n)");
+    console.log("\n  ⚠  The app/[locale]/ routing collapse requires TypeScript refactoring.");
+    console.log("     Paste templates/business/BOOTSTRAP.md into a Claude Code conversation to complete this.\n");
+  }
 
-  // 3. Delete portfolio-specific pages
-  deleteIfExists("app/[locale]/work");
-  deleteIfExists("public/projects");
+  if (!features.contactForm) {
+    console.log("⚙  Contact Form: disabled");
+    deleteIfExists("app/api/contact");
+  } else {
+    console.log("✓  Contact Form: enabled");
+    addDependency("resend", "^6.9.4");
+  }
 
-  // 4. Copy business template components → app/[locale]/components/
-  console.log("\n  Copying business site components...");
-  copyDir("templates/business/components", "app/[locale]/components");
-
-  // 5. Copy business page.tsx → app/[locale]/page.tsx
-  copyFile("templates/business/page.tsx", "app/[locale]/page.tsx");
-
-  // 6. Copy business layout.tsx → app/[locale]/layout.tsx
-  copyFile("templates/business/layout.tsx", "app/[locale]/layout.tsx");
-
-  // 7. Copy business dictionaries
-  copyFile("templates/business/dictionaries/en.json", "dictionaries/en.json");
-  copyFile("templates/business/dictionaries/pt.json", "dictionaries/pt.json");
-
-  // 8. Remove FloatingCTA if not wanted
   if (!features.floatingCTA) {
     console.log("⚙  FloatingCTA: disabled");
     deleteIfExists("app/[locale]/components/FloatingCTA.tsx");
     removeLineContaining("app/[locale]/page.tsx", 'import FloatingCTA from "./components/FloatingCTA"');
     removeLineContaining("app/[locale]/page.tsx", "<FloatingCTA");
-    // Remove cta from dicts
     for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
       const dictPath = path.join(ROOT, dictFile);
       if (fs.existsSync(dictPath)) {
@@ -326,59 +328,20 @@ async function setupBusiness(rl) {
     console.log("✓  FloatingCTA: enabled");
   }
 
-  // 9. i18n handling
-  if (!features.i18n) {
-    console.log("⚙  i18n: disabled");
-    deleteIfExists("proxy.ts");
-    deleteIfExists("i18n-config.ts");
-    deleteIfExists("get-dictionary.ts");
-    // Keep only en.json
-    deleteIfExists("dictionaries/pt.json");
-    deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
-    deleteIfExists("app/[locale]/components/LangSetter.tsx");
-    // Remove LangSetter from layout
-    removeLineContaining("app/[locale]/layout.tsx", 'import LangSetter from "./components/LangSetter"');
-    removeLineContaining("app/[locale]/layout.tsx", "<LangSetter");
-    // Remove LanguageSwitcher from Navbar
-    removeLineContaining("app/[locale]/components/Navbar.tsx", 'import LanguageSwitcher from "./LanguageSwitcher"');
-    removeLineContaining("app/[locale]/components/Navbar.tsx", "<LanguageSwitcher");
-    console.log("\n  ⚠  The app/[locale]/ routing collapse requires TypeScript refactoring.");
-    console.log("     Paste templates/business/BOOTSTRAP-BUSINESS.md into Claude Code to complete this.\n");
-  } else {
-    console.log("✓  i18n: enabled");
-  }
-
-  // 10. Remove unneeded dependencies
-  removeDependency("google-auth-library");
-  removeDependency("adm-zip");
-  if (!features.contactForm) removeDependency("resend");
-
-  // 11. Simplify sitemap.ts
-  const sitemapPath = path.join(ROOT, "app/sitemap.ts");
-  if (fs.existsSync(sitemapPath)) {
-    const locales = features.i18n ? '["en", "pt"]' : '["en"]';
-    fs.writeFileSync(
-      sitemapPath,
-      `import { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN.vercel.app";\nconst locales = ${locales};\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return locales.map((locale) => ({\n    url: \`\${SITE_URL}/\${locale}\`,\n    lastModified: new Date(),\n    changeFrequency: "monthly" as const,\n    priority: 1,\n  }));\n}\n`,
-      "utf8"
-    );
-    console.log("  [patched] sitemap.ts — simplified for business site");
-  }
-
   return { type: "business", features };
 }
 
-// ─── Shared: .env.example generation ─────────────────────────────────────────
+// ─── .env.example ─────────────────────────────────────────────────────────────
 
 function generateEnvExample(type, features) {
-  let envContent = `# ── Required ──────────────────────────────────────────────────────────────\nNEXT_PUBLIC_SITE_URL=https://YOUR_DOMAIN.vercel.app\n\n`;
+  let env = `# ── Required ──────────────────────────────────────────────────────────────\nNEXT_PUBLIC_SITE_URL=https://YOUR_DOMAIN\n\n`;
   if (features.contactForm) {
-    envContent += `# ── Contact Form (Resend) ─────────────────────────────────────────────────\n# Sign up at https://resend.com — get your API key from the dashboard\nRESEND_API_KEY=re_...\n\n`;
+    env += `# ── Contact Form (Resend) ─────────────────────────────────────────────────\n# Sign up at https://resend.com — get your API key from the dashboard\nRESEND_API_KEY=re_...\n\n`;
   }
   if (type === "portfolio" && features.chatbot) {
-    envContent += `# ── Chatbot (Dialogflow ES) ───────────────────────────────────────────────\n# Create a Google Cloud service account with "Dialogflow API Client" role\n# Download the JSON key, stringify it, and paste as a single line below\nGOOGLE_CREDENTIALS={"type":"service_account","project_id":"..."}\nDIALOGFLOW_PROJECT_ID=your-dialogflow-project-id\n\n`;
+    env += `# ── Chatbot (Dialogflow ES) ───────────────────────────────────────────────\n# Create a Google Cloud service account with "Dialogflow API Client" role\n# Download the JSON key, stringify it, and paste as a single line below\nGOOGLE_CREDENTIALS={"type":"service_account","project_id":"..."}\nDIALOGFLOW_PROJECT_ID=your-dialogflow-project-id\n\n`;
   }
-  fs.writeFileSync(path.join(ROOT, ".env.example"), envContent, "utf8");
+  fs.writeFileSync(path.join(ROOT, ".env.example"), env, "utf8");
   console.log("  [created] .env.example");
 }
 
@@ -386,7 +349,7 @@ function generateEnvExample(type, features) {
 
 async function main() {
   console.log("\n╔══════════════════════════════════════════╗");
-  console.log("║     Project Template — Setup             ║");
+  console.log("║          launchkit — Setup               ║");
   console.log("╚══════════════════════════════════════════╝\n");
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -405,11 +368,9 @@ async function main() {
 
   rl.close();
 
-  // Generate .env.example
   console.log("\n─── Generating .env.example ────────────────────────────────────\n");
   generateEnvExample(result.type, result.features);
 
-  // npm install
   console.log("\n─── Running npm install ─────────────────────────────────────────\n");
   try {
     execSync("npm install", { stdio: "inherit", cwd: ROOT });
@@ -417,9 +378,7 @@ async function main() {
     console.warn("  npm install encountered warnings — check output above.");
   }
 
-  const bootstrapFile = result.type === "business"
-    ? "templates/business/BOOTSTRAP-BUSINESS.md"
-    : "BOOTSTRAP.md";
+  const bootstrapFile = `templates/${result.type}/BOOTSTRAP.md`;
 
   console.log("\n╔══════════════════════════════════════════════════════════════╗");
   console.log("║  Setup complete!                                             ║");
@@ -432,7 +391,9 @@ async function main() {
   console.log("║  4. npm run dev  →  preview your site                        ║");
   console.log("╚══════════════════════════════════════════════════════════════╝\n");
 
-  const hasTodos = !result.features.i18n || (result.type === "portfolio" && (!result.features.contactForm || !result.features.sidebar));
+  const hasTodos =
+    !result.features.i18n ||
+    (result.type === "portfolio" && (!result.features.contactForm || !result.features.sidebar));
   if (hasTodos) {
     console.log("⚠  Some steps require Claude to finish:");
     if (!result.features.i18n) console.log("   • Collapse app/[locale]/ routing (i18n disabled)");

@@ -6,7 +6,7 @@
 
 ## Your role
 
-You are helping bootstrap a new portfolio project from the `next-portfolio-template`. The full stack, architecture, and conventions are documented in `CLAUDE.md` — **read it fully before making any changes**.
+You are helping bootstrap a new portfolio project from `launchkit`. The full stack, architecture, and conventions are documented in `CLAUDE.md` — **read it fully before making any changes**.
 
 Before starting:
 1. Read `CLAUDE.md` completely

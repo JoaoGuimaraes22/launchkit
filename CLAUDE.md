@@ -1,4 +1,7 @@
-# Portfolio — Web Design · Development · Marketing
+# launchkit — Portfolio · Business Site
+
+**Template repo** — `node scripts/setup.js` copies a template into `app/` and applies feature toggles.
+All sections below describe the **post-setup** state of `app/`.
 
 Next.js 16.1.6 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
 
@@ -10,7 +13,31 @@ Next.js 16.1.6 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer
 - **Fonts**: Geist Sans / Geist Mono · **BG**: `#fafafa` · **Accent**: `indigo-600`
 - **Real contacts**: email `Jssgmrs22@gmail.com`, GitHub `JoaoGuimaraes22`, LinkedIn `joão-sebastião-guimarães-4abaa7197`
 
-## File Structure
+## Template Repo Structure
+
+```text
+templates/
+  portfolio/              Source for Portfolio type (copied to app/ by setup.js)
+    app/[locale]/         locale layout, page, components, work/[slug]/
+    app/api/              chat/, contact/
+    app/components/       LanguageSwitcher, NavDropdown, ScrollProgress
+    app/robots.ts / app/sitemap.ts
+    root/                 proxy.ts, i18n-config.ts, get-dictionary.ts (copied to root if i18n on)
+    dictionaries/         en.json, pt.json
+    dialogflow/           Dialogflow ES agent config
+    public/               hero.jpg, profile.jpg, og-image.png, projects/
+    BOOTSTRAP.md          Claude kickstart for portfolio customization
+  business/               Source for Business Site type (copied to app/ by setup.js)
+    app/[locale]/         locale layout, page, components
+    app/api/contact/      Resend route
+    app/robots.ts / app/sitemap.ts
+    root/                 proxy.ts, i18n-config.ts, get-dictionary.ts
+    dictionaries/         en.json, pt.json
+    public/               hero.jpg
+    BOOTSTRAP.md          Claude kickstart for business customization
+```
+
+## File Structure (post-setup — portfolio)
 
 ```text
 proxy.ts                      middleware (locale redirect)
@@ -197,7 +224,10 @@ Dict: `services.items[].details: string[]` (added) — bullet points shown in mo
 
 ## Template & Bootstrap
 
-This repo is a GitHub template. Run `node scripts/setup.js` after cloning to select features, then paste `BOOTSTRAP.md` into a Claude Code conversation to fill in content.
+This repo is a GitHub template. Run `node scripts/setup.js` after cloning to select a template type and features, then paste the relevant BOOTSTRAP.md into a Claude Code conversation to fill in content.
+
+- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
+- **Business Site** → `templates/business/BOOTSTRAP.md`
 
 ### Placeholder Markers
 
@@ -235,7 +265,7 @@ When helping someone customize a fresh clone:
 2. Check active features using the table above
 3. `grep -r "YOUR_" app dictionaries` — see remaining placeholders
 4. `grep -r "TODO: TEMPLATE" app` — see cleanup tasks from setup script
-5. Follow `BOOTSTRAP.md` to gather project details before touching anything
+5. Follow `templates/portfolio/BOOTSTRAP.md` to gather project details before touching anything
 6. Always update both `en.json` and `pt.json` together if i18n is active
 7. Run `npm run lint && npm run build` after all changes
 
@@ -243,7 +273,7 @@ When helping someone customize a fresh clone:
 
 ## Business Site Template
 
-When `node scripts/setup.js` selects **Business Site**, the portfolio components are replaced with a pre-built set of business components. Use `templates/business/BOOTSTRAP-BUSINESS.md` as the Claude kickstart.
+When `node scripts/setup.js` selects **Business Site**, the business template is copied into `app/` from `templates/business/`. Use `templates/business/BOOTSTRAP.md` as the Claude kickstart.
 
 ### Feature Detection (Business Site)
 
@@ -354,9 +384,9 @@ app/[locale]/components/
 2. Check active features using the business feature detection table above
 3. `grep -r "YOUR_" app dictionaries` — find remaining placeholders
 4. `grep -r "TODO: TEMPLATE" app` — find cleanup tasks
-5. Follow `templates/business/BOOTSTRAP-BUSINESS.md` to gather content
+5. Follow `templates/business/BOOTSTRAP.md` to gather content
 6. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
 7. Update `app/[locale]/layout.tsx`: `SITE_URL`, title, description, `jsonLd`
 8. Replace all `indigo-` accent classes with brand color in business components
-9. If i18n disabled: collapse `app/[locale]/` → `app/` (see BOOTSTRAP-BUSINESS.md Step 4)
+9. If i18n disabled: collapse `app/[locale]/` → `app/` (see `templates/business/BOOTSTRAP.md` Step 4)
 10. Run `npm run lint && npm run build`

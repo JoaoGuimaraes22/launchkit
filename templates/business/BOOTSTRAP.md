@@ -6,7 +6,7 @@
 
 ## Your Role
 
-You are helping bootstrap a new local business website from the `next-portfolio-template`. The architecture is documented in `CLAUDE.md` — **read it fully before making any changes**.
+You are helping bootstrap a new local business website from `launchkit`. The architecture is documented in `CLAUDE.md` — **read it fully before making any changes**.
 
 Before starting:
 1. Read `CLAUDE.md` completely

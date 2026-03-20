@@ -1,13 +1,13 @@
-# Portfolio Template — Setup Guide
+# launchkit — Setup Guide
 
-A Next.js 16 App Router portfolio template with configurable features and Claude-assisted content bootstrapping.
+A Next.js 16 App Router multi-template bootstrapper with configurable features and Claude-assisted content setup.
 
 ## Stack
 
 - **Next.js 16** App Router · **React 19** · **TypeScript** strict
 - **Tailwind CSS v4** · **Framer Motion** · **Geist** fonts
 - **i18n**: `/en` + `/pt` routing (optional)
-- **Chatbot**: Dialogflow ES (optional)
+- **Chatbot**: Dialogflow ES (optional, portfolio only)
 - **Contact form**: Resend (optional)
 
 ---
@@ -19,8 +19,8 @@ A Next.js 16 App Router portfolio template with configurable features and Claude
 On GitHub click **"Use this template"**, or:
 
 ```bash
-git clone https://github.com/YOUR_GITHUB/next-portfolio-template my-portfolio
-cd my-portfolio
+git clone https://github.com/YOUR_GITHUB/launchkit my-project
+cd my-project
 npm install
 ```
 
@@ -30,7 +30,9 @@ npm install
 node scripts/setup.js
 ```
 
-Answer `y/n` for each of the 7 feature layers:
+Select your project type, then answer `y/n` for each feature:
+
+**Portfolio features:**
 
 | Feature | What it does |
 |---------|-------------|
@@ -42,7 +44,16 @@ Answer `y/n` for each of the 7 feature layers:
 | **Work** | Project gallery + individual project detail pages |
 | **ProfileSidebar** | Sticky desktop sidebar with photo, bio, social links |
 
-The script removes files for disabled features, patches imports, and generates a trimmed `.env.example`.
+**Business Site features:**
+
+| Feature | What it does |
+|---------|-------------|
+| **i18n** | Bilingual routing (`/en`, `/pt`), LanguageSwitcher, locale dictionaries |
+| **Contact Form** | Resend email sender + `/api/contact` route |
+| **FloatingCTA** | Fixed mobile bottom bar with Call / WhatsApp / Book buttons |
+| **WhatsApp button** | WhatsApp link in FloatingCTA and contact section |
+
+The script copies the selected template into `app/`, applies feature removals, and generates a trimmed `.env.example`.
 
 ### 3. Set up environment variables
 
@@ -53,14 +64,16 @@ cp .env.example .env.local
 
 ### 4. Bootstrap content with Claude
 
-Paste `BOOTSTRAP.md` into a new **Claude Code** conversation. Claude will:
-- Ask for your name, title, tagline, email, social links, and stats
-- Ask for project/testimonials/services/bio content
-- Fill in all dictionary files and component metadata
-- Handle any TypeScript refactors (e.g., i18n routing collapse)
-- Walk you through Dialogflow and Resend setup if enabled
+Paste the bootstrap file for your template type into a new **Claude Code** conversation:
+
+- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
+- **Business Site** → `templates/business/BOOTSTRAP.md`
+
+Claude will ask for your content, fill in all dictionary files and component metadata, and walk you through any service setup.
 
 ### 5. Replace placeholder images
+
+**Portfolio:**
 
 | File | Description |
 |------|-------------|
@@ -68,6 +81,14 @@ Paste `BOOTSTRAP.md` into a new **Claude Code** conversation. Claude will:
 | `public/profile.jpg` | Your profile photo — square crop |
 | `public/og-image.png` | OG social card (1200×630) |
 | `public/projects/[slug]/1-3.png` | Screenshots per project |
+
+**Business Site:**
+
+| File | Description |
+| ------ | ----------- |
+| `public/hero.jpg` | Hero background — dark photo works best (1920×1080) |
+| `public/about.jpg` | Team or workspace photo (4:3 or square) |
+| `public/og-image.png` | OG social card (1200×630) |
 
 ### 6. Preview and deploy
 
@@ -83,7 +104,7 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 
 ## External Service Setup
 
-### Dialogflow Chatbot (if enabled)
+### Dialogflow Chatbot (Portfolio only)
 
 1. Create an agent at [console.dialogflow.com](https://console.dialogflow.com)
 2. In Google Cloud Console: create a service account with **Dialogflow API Client** role, download JSON key
@@ -96,7 +117,7 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 1. Sign up at [resend.com](https://resend.com)
 2. Set `RESEND_API_KEY` in `.env.local`
 3. Verify your sending domain (or use the sandbox for testing)
-4. Update `TO_EMAIL` in `app/[locale]/api/contact/route.ts`
+4. Update `TO_EMAIL` in `app/api/contact/route.ts`
 
 ---
 

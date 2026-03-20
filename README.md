@@ -1,6 +1,6 @@
-# next-portfolio-template
+# launchkit
 
-A production-ready bootstrapper for two types of sites — personal portfolio and local business website — built with Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, and Framer Motion.
+A production-ready bootstrapper for multiple site types — personal portfolio and local business website — built with Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, and Framer Motion. Designed to grow: each template is a self-contained unit under `templates/[type]/`, making it easy to add new site types.
 
 ## Project Types
 
@@ -41,7 +41,7 @@ Pre-built generic components for any local business (restaurant, clinic, salon, 
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_GITHUB/next-portfolio-template my-project
+git clone https://github.com/YOUR_GITHUB/launchkit my-project
 cd my-project
 npm install
 node scripts/setup.js   # select project type and features
@@ -49,7 +49,7 @@ node scripts/setup.js   # select project type and features
 
 Then paste the relevant bootstrap file into a Claude Code conversation:
 
-- **Portfolio** → `BOOTSTRAP.md`
-- **Business Site** → `templates/business/BOOTSTRAP-BUSINESS.md`
+- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
+- **Business Site** → `templates/business/BOOTSTRAP.md`
 
 See `SETUP.md` for the full setup guide and `CLAUDE.md` for architecture reference.
