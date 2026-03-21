@@ -11,6 +11,7 @@
     "toggle": "node scripts/toggle.js",
     "reset": "node scripts/reset.js",
     "validate": "node scripts/validate.js",
-    "status": "node scripts/status.js"
+    "status": "node scripts/status.js",
+    "sections": "node scripts/sections.js"
   }
 }

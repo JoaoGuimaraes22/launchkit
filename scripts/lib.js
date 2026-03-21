@@ -474,6 +474,91 @@ function parseProjectFlag() {
   return process.cwd();
 }
 
+// ── Section discovery ─────────────────────────────────────────────────────────
+
+// Structural components excluded from page section parsing.
+// These are layout-level elements, not toggleable content sections.
+const STRUCTURAL_COMPONENTS = [
+  "HeroFull", "Hero", "ProfileSidebar", "Footer", "FloatingCTA",
+];
+
+let _sectionCache = null;
+
+// Scans templates/sections/ for section definitions.
+// Returns [{ name, variants: [{ name, dir, meta, hooks? }] }].
+function discoverSections() {
+  if (_sectionCache) return _sectionCache;
+  const sectionsRoot = path.join(TOOL_ROOT, "templates", "sections");
+  if (!fs.existsSync(sectionsRoot)) return (_sectionCache = []);
+  const sections = [];
+  for (const sectionName of fs.readdirSync(sectionsRoot)) {
+    const sectionDir = path.join(sectionsRoot, sectionName);
+    if (!fs.statSync(sectionDir).isDirectory()) continue;
+    const variants = [];
+    for (const variantName of fs.readdirSync(sectionDir)) {
+      const variantDir = path.join(sectionDir, variantName);
+      if (!fs.statSync(variantDir).isDirectory()) continue;
+      const metaPath = path.join(variantDir, "meta.json");
+      if (!fs.existsSync(metaPath)) continue;
+      const meta = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+      const variant = { name: variantName, dir: variantDir, meta };
+      const hooksPath = path.join(variantDir, "hooks.js");
+      if (fs.existsSync(hooksPath)) variant.hooks = require(hooksPath);
+      variants.push(variant);
+    }
+    if (variants.length > 0) {
+      sections.push({ name: sectionName, variants });
+    }
+  }
+  return (_sectionCache = sections);
+}
+
+// Parses page.tsx for <ComponentName lines. Returns [{ name, line, indent }].
+// Excludes structural components (Hero, Footer, etc.).
+function parseSectionsFromPage(pageFile) {
+  const full = path.join(_target, pageFile);
+  if (!fs.existsSync(full)) return [];
+  const lines = fs.readFileSync(full, "utf8").split("\n");
+  const results = [];
+  const re = /^(\s*)<([A-Z][A-Za-z0-9]*)\s/;
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(re);
+    if (!m) continue;
+    const name = m[2];
+    if (STRUCTURAL_COMPONENTS.includes(name)) continue;
+    results.push({ name, line: i + 1, indent: m[1].length });
+  }
+  return results;
+}
+
+// Cross-references discoverSections() with component files in compDir.
+// Returns { [sectionName]: { variant, meta, variantDir } } for installed sections.
+// If launchkitSections is provided, uses its recorded variant name to disambiguate
+// when multiple variants share the same componentName.
+function detectInstalledSections(compDir, launchkitSections) {
+  const sections = discoverSections();
+  const installed = {};
+  for (const section of sections) {
+    // Check if the component file exists (any variant — they share componentName)
+    const anyMeta = section.variants[0].meta;
+    const compFile = path.join(_target, compDir, `${anyMeta.componentName}.tsx`);
+    if (!fs.existsSync(compFile)) continue;
+
+    // Prefer the variant recorded in .launchkit if available
+    const recorded = launchkitSections && launchkitSections[section.name];
+    const variant = recorded
+      ? section.variants.find((v) => v.name === recorded.variant) || section.variants[0]
+      : section.variants[0];
+
+    installed[section.name] = {
+      variant: variant.name,
+      meta: variant.meta,
+      variantDir: variant.dir,
+    };
+  }
+  return installed;
+}
+
 module.exports = {
   TOOL_ROOT,
   LAUNCHKIT_VERSION,
@@ -482,6 +567,7 @@ module.exports = {
   DICT_FILES,
   SECONDARY_DICT_FILES,
   LOCALES_TS_LITERAL,
+  STRUCTURAL_COMPONENTS,
   setTarget,
   target,
   deleteIfExists,
@@ -509,4 +595,7 @@ module.exports = {
   removeNavLink,
   loadTemplates,
   detectStateFromRegistry,
+  discoverSections,
+  parseSectionsFromPage,
+  detectInstalledSections,
 };

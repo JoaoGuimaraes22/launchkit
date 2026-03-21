@@ -1,10 +1,16 @@
 {
   "permissions": {
-    "allow": [],
-    "additionalDirectories": [
-      "c:\\Users\\jssgm\\Dev\\Projects\\next-portfolio-template\\templates\\business\\app\\[locale]\\components",
-      "c:\\Users\\jssgm\\Dev\\Projects\\next-portfolio-template\\templates\\portfolio\\app\\[locale]\\components",
-      "c:\\Users\\jssgm\\Dev\\Projects\\test-builds"
+    "allow": [
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(pnpm *)",
+      "Bash(node *)",
+      "Bash(npx *)",
+      "Bash(ls *)",
+      "Bash(dir *)",
+      "Bash(cat *)",
+      "Bash(type *)",
+      "Bash(find *)"
     ]
   }
 }

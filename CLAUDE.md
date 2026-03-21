@@ -8,9 +8,12 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Mot
 
 ```text
 scripts/
-  lib.js              Shared helpers: FS ops, .launchkit I/O, collapseI18nBase, loadTemplates, detectStateFromRegistry, LOCALES
+  lib.js              Shared helpers: FS ops, .launchkit I/O, collapseI18nBase, loadTemplates,
+                      detectStateFromRegistry, discoverSections, parseSectionsFromPage,
+                      detectInstalledSections, LOCALES
   setup.js            --name + --output → create project, delegate to template module
   toggle.js           --project → enable/disable features
+  sections.js         --project → add/remove/status for library sections
   reset.js            --project → strip to base scaffold
   validate.js         --project → check YOUR_* placeholders, TODOs, images, .env.local
   status.js           --project → read-only feature state
@@ -22,11 +25,16 @@ templates/
   base/               Clean Next.js scaffold (copied first to every project)
   portfolio/          Portfolio source: app/[locale]/, api/, dialogflow/, dictionaries/, public/
   business/           Business source: app/[locale]/, api/contact/, dictionaries/, public/
+  sections/           Section library — each section has variants with component + dict + meta.json
+    skills/grid/      Categorized grid cards with animated progress bars
+    skills/bars/      Flat horizontal progress bars list
 ```
 
 All scripts support `--help`. If `--project` is omitted, scripts fall back to cwd.
 
 **Adding a template:** create `scripts/templates/foo.js` exporting `{ type, featureList, detectState, setup, enable, disable }` and `templates/foo/`. Templates are auto-discovered at runtime from `scripts/templates/` — no manual registration needed. Each feature in `featureList` should declare `detectFile` (use `{compDir}` placeholder for component paths), `deps` (array of feature keys it depends on), and standard `label`/`key`.
+
+**Adding a library section:** create `templates/sections/[name]/[variant]/` with `component.tsx`, `en.json`, `pt.json`, and `meta.json`. Sections are auto-discovered by `discoverSections()` — no registration needed. See `meta.json` schema below.
 
 ## Generated Project Config
 
@@ -54,11 +62,45 @@ Components live in `app/[locale]/components/` (i18n on) or `app/components/` (i1
   "version": 1,
   "name": "my-project",
   "type": "portfolio",
-  "features": { "i18n": true, "webglHero": true, "chatbot": false, "contactForm": true, "testimonials": true, "work": true, "sidebar": true }
+  "features": { "i18n": true, "webglHero": true, "chatbot": false, "contactForm": true, "testimonials": true, "work": true, "sidebar": true },
+  "sections": { "skills": { "variant": "grid", "addedAt": "2026-03-21T..." } }
 }
 ```
 
-Business features: `i18n`, `contactForm`, `floatingCTA`, `whatsapp`, `accentColor`. Do not delete this file.
+`features` holds project-wide config and template-native toggles. `sections` tracks library sections added via `sections.js`. Business features: `i18n`, `contactForm`, `floatingCTA`, `whatsapp`, `accentColor`. Do not delete this file.
+
+## Section Library
+
+`node scripts/sections.js --project <path>` — interactive add/remove for library sections.
+`--status` lists installed + available sections. `--remove` to remove.
+
+Sections live in `templates/sections/[name]/[variant]/`. Each variant contains:
+
+- `component.tsx` — the React component (copied to `compDir/ComponentName.tsx`)
+- `en.json` / `pt.json` — dict fragments merged under `meta.dictKey`
+- `meta.json` — section metadata driving the add/remove flow
+- `hooks.js` (optional) — `afterEnable(ctx)`, `beforeDisable(ctx)`, `afterDisable(ctx)`, `detect(ctx)`
+
+### meta.json Schema
+
+```jsonc
+{
+  "componentName": "Skills",           // PascalCase, matches default export
+  "dictKey": "skills",                 // top-level key in en.json/pt.json
+  "navLink": { "id": "skills", "label": { "en": "Skills", "pt": "Competências" } },
+  "templates": ["portfolio", "business"], // compatible template types
+  "defaultAfter": "services",          // preselected insertion position
+  "props": { "i18n": "skills={dict.skills}", "collapsed": "skills={dict.skills}" },
+  "collapsePatches": [],               // patches applied when i18n is off
+  "accentColorToken": "indigo",        // color token swapped to project accent
+  "dependencies": [],                  // [["package", "^version"]] for npm deps
+  "extraFiles": []                     // [{ src, dest, destCollapsed? }]
+}
+```
+
+### Section Detection
+
+`detectInstalledSections(compDir, launchkitSections)` cross-references `discoverSections()` with component files in the project. Uses `.launchkit` recorded variant to disambiguate when variants share a `componentName`. `parseSectionsFromPage(pageFile)` extracts `<ComponentName` lines from page.tsx, excluding structural components (`Hero`, `HeroFull`, `ProfileSidebar`, `Footer`, `FloatingCTA`).
 
 ## Placeholder Markers
 

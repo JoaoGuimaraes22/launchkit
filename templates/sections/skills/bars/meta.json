@@ -1,0 +1,18 @@
+{
+  "componentName": "Skills",
+  "dictKey": "skills",
+  "navLink": {
+    "id": "skills",
+    "label": { "en": "Skills", "pt": "Competências" }
+  },
+  "templates": ["portfolio", "business"],
+  "defaultAfter": "services",
+  "props": {
+    "i18n": "skills={dict.skills}",
+    "collapsed": "skills={dict.skills}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}
