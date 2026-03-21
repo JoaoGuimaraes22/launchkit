@@ -1,8 +1,8 @@
 # launchkit — Setup Guide
 
-A Next.js 16 App Router multi-template bootstrapper with configurable features and Claude-assisted content setup.
+A Next.js 16 App Router project generator with configurable templates, feature toggles, and Claude-assisted content setup.
 
-## Stack
+## Stack (generated projects)
 
 - **Next.js 16** App Router · **React 19** · **TypeScript** strict
 - **Tailwind CSS v4** · **Framer Motion** · **Geist** fonts
@@ -14,28 +14,36 @@ A Next.js 16 App Router multi-template bootstrapper with configurable features a
 
 ## Quick Start
 
-### 1. Clone the template
-
-On GitHub click **"Use this template"**, or:
+### 1. Clone the tool
 
 ```bash
-git clone https://github.com/YOUR_GITHUB/launchkit my-project
-cd my-project
-npm install
+git clone https://github.com/YOUR_GITHUB/launchkit
+cd launchkit
 ```
 
-### 2. Run the setup script
+No `npm install` needed — launchkit is a generator tool with no dependencies of its own.
+
+### 2. Generate a project
 
 ```bash
-npm run setup
+node scripts/setup.js --output ../my-project
 ```
 
-Skip the type-selection prompt with a shorthand:
+Skip the type-selection prompt with a flag:
 
 ```bash
-npm run setup:portfolio   # go straight to portfolio feature selection
-npm run setup:business    # go straight to business site feature selection
-npm run setup:blank       # go straight to blank template setup
+node scripts/setup.js --output ../my-project --portfolio
+node scripts/setup.js --output ../my-project --business
+node scripts/setup.js --output ../my-project --blank
+```
+
+Or use the npm shorthand (will prompt for output path interactively):
+
+```bash
+npm run setup              # interactive type + output selection
+npm run setup:portfolio    # skip type selection
+npm run setup:business     # skip type selection
+npm run setup:blank        # skip type selection
 ```
 
 Select your project type, then answer `y/n` for each feature:
@@ -62,7 +70,7 @@ Select your project type, then answer `y/n` for each feature:
 | **WhatsApp button**    | WhatsApp link in FloatingCTA and contact section                           |
 | **Brand accent color** | Replaces all `indigo-` Tailwind classes with your chosen color (8 presets) |
 
-The script copies the selected template into `app/`, applies feature removals, replaces accent colors, collapses i18n routing if disabled, generates a trimmed `.env.example`, and writes a `.launchkit` file that records your choices:
+The script creates a standalone Next.js project at the output path: copies the base scaffold, layers the selected template on top, applies feature removals, replaces accent colors, collapses i18n routing if disabled, generates a trimmed `.env.example`, runs `npm install`, and writes a `.launchkit` file that records your choices:
 
 ```json
 {
@@ -79,21 +87,22 @@ The script copies the selected template into `app/`, applies feature removals, r
 }
 ```
 
-`.launchkit` is the authoritative record of template type and active features. It is read by `npm run toggle` and `npm run status` — do not delete it.
+`.launchkit` lives in the generated project and is the authoritative record of template type and active features — do not delete it.
 
 ### 3. Set up environment variables
 
 ```bash
+cd ../my-project
 cp .env.example .env.local
 # Fill in the values — see comments in .env.example
 ```
 
 ### 4. Bootstrap content with Claude
 
-Paste the bootstrap file for your template type into a new **Claude Code** conversation:
+Open a **Claude Code** conversation in the generated project directory and paste the bootstrap file for your template type:
 
-- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
-- **Business Site** → `templates/business/BOOTSTRAP.md`
+- **Portfolio** → `templates/portfolio/BOOTSTRAP.md` (in the tool repo)
+- **Business Site** → `templates/business/BOOTSTRAP.md` (in the tool repo)
 
 Claude will ask for your content, fill in all dictionary files and component metadata, and walk you through any service setup.
 
@@ -118,13 +127,31 @@ Claude will ask for your content, fill in all dictionary files and component met
 
 ### 6. Preview and deploy
 
+From the generated project directory:
+
 ```bash
 npm run dev      # http://localhost:3000
 npm run build    # verify clean build
 npm run lint     # check for lint errors
 ```
 
-Deploy to [Vercel](https://vercel.com) — connect your repo and add the env vars from `.env.local`.
+Deploy to [Vercel](https://vercel.com) — connect the project repo and add the env vars from `.env.local`.
+
+---
+
+## Managing Projects After Setup
+
+All management scripts are run from the **launchkit tool directory** using `--project` to point at the generated project:
+
+```bash
+# From launchkit/
+node scripts/toggle.js --project ../my-project     # enable/disable features
+node scripts/status.js --project ../my-project      # view template type + feature state
+node scripts/validate.js --project ../my-project    # check for placeholders + TODOs
+node scripts/reset.js --project ../my-project       # strip back to base scaffold
+```
+
+If `--project` is omitted, scripts fall back to the current working directory — so running from inside a generated project also works.
 
 ---
 
@@ -135,7 +162,7 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 1. Create an agent at [console.dialogflow.com](https://console.dialogflow.com)
 2. In Google Cloud Console: create a service account with **Dialogflow API Client** role, download JSON key
 3. Set `GOOGLE_CREDENTIALS` (single-line JSON) and `DIALOGFLOW_PROJECT_ID` in `.env.local`
-4. Edit `dialogflow/generate.js` — look for `// EDIT:` comments and update name, services, pricing, email, projects, location
+4. Edit `dialogflow/generate.js` (in the generated project) — look for `// EDIT:` comments and update name, services, pricing, email, projects, location
 5. Run `node dialogflow/generate.js` → then `node dialogflow/zip.js` → import `dialogflow/portfolio-agent.zip` into Dialogflow
    **Do not edit `dialogflow/intents/` directly** — they are overwritten by `generate.js`
 
@@ -150,10 +177,16 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 
 ## Validate Before Deploying
 
-After bootstrapping, run:
+After bootstrapping, run from the tool repo:
 
 ```bash
-npm run validate
+node scripts/validate.js --project ../my-project
+```
+
+Or from inside the generated project:
+
+```bash
+npx launchkit validate   # if available, or run the tool script directly
 ```
 
 This checks for unreplaced `YOUR_*` placeholders, `// TODO: TEMPLATE` comments, and a missing `.env.local`. Exits with code `1` if anything is found.
@@ -162,20 +195,27 @@ This checks for unreplaced `YOUR_*` placeholders, `// TODO: TEMPLATE` comments, 
 
 ## Scripts Reference
 
-| Script                    | What it does                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------- |
-| `npm run setup`           | Run the interactive setup wizard (select template type + features)           |
-| `npm run setup:portfolio` | Skip type selection — go straight to portfolio feature prompts               |
-| `npm run setup:business`  | Skip type selection — go straight to business site feature prompts           |
-| `npm run setup:blank`     | Skip type selection — go straight to blank template setup                    |
-| `npm run toggle`          | Enable or disable individual features without a full reset; loops if desired |
-| `npm run status`          | Print current template type and feature state (read-only, no prompts)        |
-| `npm run reset`           | Remove everything setup added; restore base state for a fresh setup          |
-| `npm run validate`        | Check for unreplaced `YOUR_*` placeholders and `TODO: TEMPLATE` comments     |
-| `npm run check`           | Pre-deploy gate: runs `validate` → `lint` → `build`, exits on first failure  |
-| `npm run dev`             | Start the Next.js dev server at `http://localhost:3000`                      |
-| `npm run build`           | Production build (verify before deploying)                                   |
-| `npm run lint`            | Run ESLint across the project                                                |
+### Tool scripts (run from launchkit/)
+
+| Script                                                     | What it does                                                   |
+| ---------------------------------------------------------- | -------------------------------------------------------------- |
+| `node scripts/setup.js --output <path>`                    | Generate a new project at the given path                       |
+| `node scripts/setup.js --output <path> --portfolio`        | Skip type selection, go straight to portfolio feature prompts  |
+| `node scripts/setup.js --output <path> --business`         | Skip type selection, go straight to business site prompts      |
+| `node scripts/setup.js --output <path> --blank`            | Skip type selection, go straight to blank template setup       |
+| `node scripts/toggle.js --project <path>`                  | Enable/disable individual features without a full reset        |
+| `node scripts/status.js --project <path>`                  | Print current template type and feature state (read-only)      |
+| `node scripts/reset.js --project <path>`                   | Remove everything setup added; restore base scaffold           |
+| `node scripts/validate.js --project <path>`                | Check for unreplaced placeholders and TODO comments            |
+
+### Project scripts (run from generated project/)
+
+| Script          | What it does                                  |
+| --------------- | --------------------------------------------- |
+| `npm run dev`   | Start Next.js dev server at localhost:3000    |
+| `npm run build` | Production build (verify before deploying)    |
+| `npm run start` | Start production server                       |
+| `npm run lint`  | Run ESLint across the project                 |
 
 ---
 

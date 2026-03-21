@@ -5,9 +5,11 @@
 const fs = require("fs");
 const path = require("path");
 const {
-  ROOT,
+  target,
   ask,
   copyDir,
+  copyDirInProject,
+  copyFileInProject,
   copyTemplateFiles,
   deleteIfExists,
 } = require("../lib");
@@ -24,7 +26,7 @@ const featureList = [
 
 function detectState() {
   return {
-    i18n: fs.existsSync(path.join(ROOT, "i18n-config.ts")),
+    i18n: fs.existsSync(path.join(target(), "i18n-config.ts")),
   };
 }
 
@@ -37,12 +39,9 @@ function disable() { /* no toggleable features */ }
 
 function collapseI18n() {
   console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
-  copyDir("app/[locale]/components", "app/components");
-  const localeBase = path.join(ROOT, "app/[locale]");
-  fs.copyFileSync(path.join(localeBase, "layout.tsx"), path.join(ROOT, "app/layout.tsx"));
-  console.log("  [moved]  app/[locale]/layout.tsx → app/layout.tsx");
-  fs.copyFileSync(path.join(localeBase, "page.tsx"), path.join(ROOT, "app/page.tsx"));
-  console.log("  [moved]  app/[locale]/page.tsx → app/page.tsx");
+  copyDirInProject("app/[locale]/components", "app/components");
+  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
+  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
   deleteIfExists("app/[locale]");
   deleteIfExists("dictionaries/pt.json");
   console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
@@ -68,7 +67,7 @@ async function setup(rl) {
   } else {
     console.log("⚙  i18n: disabled");
     fs.writeFileSync(
-      path.join(ROOT, "app/sitemap.ts"),
+      path.join(target(), "app/sitemap.ts"),
       `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
       "utf8"
     );

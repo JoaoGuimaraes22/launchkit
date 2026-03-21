@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 // launchkit — Status
 // Read-only: prints .launchkit type + current feature state. No prompts, no changes.
-// Run: npm run status
+// Run: node scripts/status.js --project ../my-project
 
 const fs = require("fs");
 const path = require("path");
-const { ROOT, readLaunchkit } = require("./lib");
+const { target, setTarget, parseProjectFlag, readLaunchkit } = require("./lib");
+
+// ── Resolve target project ───────────────────────────────────────────────────
+setTarget(parseProjectFlag());
 
 const TEMPLATES = {
   portfolio: require("./templates/portfolio"),
@@ -16,7 +19,7 @@ const TEMPLATES = {
 const state       = readLaunchkit();
 const { type }    = state;
 const tmpl        = TEMPLATES[type] ?? TEMPLATES.blank;
-const i18nActive  = fs.existsSync(path.join(ROOT, "i18n-config.ts"));
+const i18nActive  = fs.existsSync(path.join(target(), "i18n-config.ts"));
 const compDir     = i18nActive ? "app/[locale]/components" : "app/components";
 
 console.log("\n╔══════════════════════════════════════════╗");
@@ -24,6 +27,7 @@ console.log("║        launchkit — Status                ║");
 console.log("╚══════════════════════════════════════════╝\n");
 
 console.log(`  Template : ${type.charAt(0).toUpperCase() + type.slice(1)}`);
+console.log(`  Project  : ${target()}`);
 console.log(`  i18n     : ${i18nActive ? "enabled" : "disabled (collapsed)"}\n`);
 
 const current = tmpl.detectState(compDir);
@@ -50,7 +54,7 @@ const hasDrift = tmpl.featureList.some(
 
 if (hasDrift) {
   console.log("\n  ⚠  .launchkit is out of sync with actual file state.");
-  console.log("     Run npm run toggle to reconcile, or npm run reset + setup.\n");
+  console.log("     Run toggle to reconcile, or reset + setup.\n");
 } else {
   console.log();
 }

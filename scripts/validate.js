@@ -2,12 +2,16 @@
 // launchkit — Validate Script
 // Checks for unreplaced YOUR_* placeholders, TODO: TEMPLATE comments,
 // default placeholder images, and a missing .env.local.
-// Run: node scripts/validate.js  (or: npm run validate)
+// Run: node scripts/validate.js --project ../my-project
 
 const fs = require("fs");
 const path = require("path");
+const { TOOL_ROOT, target, setTarget, parseProjectFlag } = require("./lib");
 
-const ROOT = path.resolve(__dirname, "..");
+// ── Resolve target project ───────────────────────────────────────────────────
+setTarget(parseProjectFlag());
+
+const ROOT = target();
 
 // Directories to scan for placeholders and TODO comments
 const SCAN_DIRS = ["app", "dictionaries"];
@@ -94,7 +98,7 @@ for (const scanDir of SCAN_DIRS) {
 // Returns true if the file exists and matches the shipped template size (never replaced).
 function isDefaultImage(relPath, templateRelPath) {
   const full = path.join(ROOT, relPath);
-  const tmpl = path.join(ROOT, templateRelPath);
+  const tmpl = path.join(TOOL_ROOT, templateRelPath);
   if (!fs.existsSync(full) || !fs.existsSync(tmpl)) return false;
   return fs.statSync(full).size === fs.statSync(tmpl).size;
 }
@@ -131,6 +135,7 @@ const div = (label) => console.log(`  ─── ${label} ${"─".repeat(Math.max
 
 console.log();
 console.log(`  launchkit validate — ${templateName}, i18n ${i18nActive ? "on" : "off"}`);
+console.log(`  Project: ${ROOT}`);
 console.log();
 
 let failed = false;

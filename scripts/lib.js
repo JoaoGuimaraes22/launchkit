@@ -1,26 +1,40 @@
 #!/usr/bin/env node
 // launchkit — Shared script helpers
-// Used by setup.js, toggle.js, and reset.js
+// Used by setup.js, toggle.js, reset.js, validate.js, status.js
 
 const fs = require("fs");
 const path = require("path");
 
-// Absolute path to the repo root (one level above scripts/)
-const ROOT = path.resolve(__dirname, "..");
+// Absolute path to the launchkit tool root (one level above scripts/)
+const TOOL_ROOT = path.resolve(__dirname, "..");
+
+// Target project directory — defaults to TOOL_ROOT, set via setTarget()
+let _target = TOOL_ROOT;
+
+function setTarget(absPath) {
+  _target = absPath;
+}
+
+function target() {
+  return _target;
+}
+
+// ── File operations (all resolve against _target for project paths) ──────────
 
 // Deletes a file or directory (recursively) if it exists. No-op otherwise.
 function deleteIfExists(relPath) {
-  const full = path.join(ROOT, relPath);
+  const full = path.join(_target, relPath);
   if (fs.existsSync(full)) {
     fs.rmSync(full, { recursive: true, force: true });
     console.log("  [removed]", relPath);
   }
 }
 
-// Recursively copies srcRel → destRel, logging each file. Skips missing sources.
+// Recursively copies srcRel (from TOOL_ROOT) → destRel (in _target), logging each file.
+// Skips missing sources.
 function copyDir(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
+  const src = path.join(TOOL_ROOT, srcRel);
+  const dest = path.join(_target, destRel);
   if (!fs.existsSync(src)) return;
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src)) {
@@ -35,10 +49,11 @@ function copyDir(srcRel, destRel) {
   }
 }
 
-// Copies a single file, creating parent directories as needed. Warns if source is missing.
+// Copies a single file from TOOL_ROOT/srcRel → _target/destRel.
+// Creates parent directories as needed. Warns if source is missing.
 function copyFile(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
+  const src = path.join(TOOL_ROOT, srcRel);
+  const dest = path.join(_target, destRel);
   if (!fs.existsSync(src)) {
     console.warn("  [warn] source not found:", srcRel);
     return;
@@ -48,9 +63,40 @@ function copyFile(srcRel, destRel) {
   console.log("  [copied]", srcRel, "→", destRel);
 }
 
+// Copies a file within the target project (both paths relative to _target).
+function copyFileInProject(srcRel, destRel) {
+  const src = path.join(_target, srcRel);
+  const dest = path.join(_target, destRel);
+  if (!fs.existsSync(src)) {
+    console.warn("  [warn] source not found:", srcRel);
+    return;
+  }
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+  console.log("  [moved] ", srcRel, "→", destRel);
+}
+
+// Copies a directory within the target project (both paths relative to _target).
+function copyDirInProject(srcRel, destRel) {
+  const src = path.join(_target, srcRel);
+  const dest = path.join(_target, destRel);
+  if (!fs.existsSync(src)) return;
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(src)) {
+    const srcEntry = path.join(src, entry);
+    const destEntry = path.join(dest, entry);
+    if (fs.statSync(srcEntry).isDirectory()) {
+      copyDirInProject(path.join(srcRel, entry), path.join(destRel, entry));
+    } else {
+      fs.copyFileSync(srcEntry, destEntry);
+      console.log("  [moved] ", path.join(srcRel, entry), "→", path.join(destRel, entry));
+    }
+  }
+}
+
 // Removes every line that contains `substring` from a file. No-op if file is missing.
 function removeLineContaining(relPath, substring) {
-  const full = path.join(ROOT, relPath);
+  const full = path.join(_target, relPath);
   if (!fs.existsSync(full)) return;
   const original = fs.readFileSync(full, "utf8");
   const filtered = original
@@ -65,7 +111,7 @@ function removeLineContaining(relPath, substring) {
 
 // Replaces all occurrences of searchStr with replaceStr in a file. No-op if file is missing.
 function replaceInFile(relPath, searchStr, replaceStr) {
-  const full = path.join(ROOT, relPath);
+  const full = path.join(_target, relPath);
   if (!fs.existsSync(full)) return;
   const original = fs.readFileSync(full, "utf8");
   const updated = original.split(searchStr).join(replaceStr);
@@ -77,7 +123,7 @@ function replaceInFile(relPath, searchStr, replaceStr) {
 
 // Adds depName@version to package.json dependencies if not already present.
 function addDependency(depName, version) {
-  const pkgPath = path.join(ROOT, "package.json");
+  const pkgPath = path.join(_target, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   if (!pkg.dependencies) pkg.dependencies = {};
   if (!pkg.dependencies[depName]) {
@@ -89,7 +135,7 @@ function addDependency(depName, version) {
 
 // Removes depName from package.json dependencies if present.
 function removeDependency(depName) {
-  const pkgPath = path.join(ROOT, "package.json");
+  const pkgPath = path.join(_target, "package.json");
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   if (pkg.dependencies && pkg.dependencies[depName]) {
     delete pkg.dependencies[depName];
@@ -124,21 +170,22 @@ function askChoice(rl, question, choices) {
 // ── .launchkit I/O ────────────────────────────────────────────────────────────
 
 function readLaunchkit() {
-  const p = path.join(ROOT, ".launchkit");
+  const p = path.join(_target, ".launchkit");
   if (!fs.existsSync(p)) {
-    console.error("\n  Error: .launchkit not found.\n  Run node scripts/setup.js first.\n");
+    console.error("\n  Error: .launchkit not found at", _target);
+    console.error("  Run node scripts/setup.js first.\n");
     process.exit(1);
   }
   return JSON.parse(fs.readFileSync(p, "utf8"));
 }
 
 function writeLaunchkit(state) {
-  fs.writeFileSync(path.join(ROOT, ".launchkit"), JSON.stringify(state, null, 2) + "\n", "utf8");
+  fs.writeFileSync(path.join(_target, ".launchkit"), JSON.stringify(state, null, 2) + "\n", "utf8");
 }
 
 // ── Template file copy ────────────────────────────────────────────────────────
 
-// Copies app/, dictionaries/, public/ from a template into the project root.
+// Copies app/, dictionaries/, public/ from a template into the target project.
 // Dialogflow (portfolio-only) must be copied separately by the template module.
 function copyTemplateFiles(type) {
   copyDir(`templates/${type}/app`, "app");
@@ -146,11 +193,32 @@ function copyTemplateFiles(type) {
   copyDir(`templates/${type}/public`, "public");
 }
 
+// Copies base scaffold (package.json, tsconfig, configs, base app/) into the target project.
+function copyBaseScaffold() {
+  copyDir("templates/base", ".");
+}
+
+// ── --project flag parser ─────────────────────────────────────────────────────
+
+// Call from scripts that operate on an existing project.
+// Reads --project <path> from argv. Falls back to cwd.
+function parseProjectFlag() {
+  const idx = process.argv.indexOf("--project");
+  if (idx !== -1 && process.argv[idx + 1]) {
+    return path.resolve(process.argv[idx + 1]);
+  }
+  return process.cwd();
+}
+
 module.exports = {
-  ROOT,
+  TOOL_ROOT,
+  setTarget,
+  target,
   deleteIfExists,
   copyDir,
   copyFile,
+  copyFileInProject,
+  copyDirInProject,
   removeLineContaining,
   replaceInFile,
   addDependency,
@@ -160,4 +228,6 @@ module.exports = {
   readLaunchkit,
   writeLaunchkit,
   copyTemplateFiles,
+  copyBaseScaffold,
+  parseProjectFlag,
 };

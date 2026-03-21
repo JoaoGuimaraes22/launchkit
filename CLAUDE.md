@@ -1,11 +1,12 @@
-# launchkit — Portfolio · Business Site
+# launchkit — Portfolio · Business Site Generator
 
-**Template repo** — `node scripts/setup.js` copies a template into `app/` and applies feature toggles.
-All sections below describe the **post-setup** state of `app/`.
+**Generator tool** — `node scripts/setup.js --output ../my-project` creates a standalone Next.js project in an external directory. The tool repo stays clean; generated projects are self-contained apps with a `.launchkit` context file that the tool reads for toggle/reset/validate/status operations via `--project`.
+
+All sections below describe the **post-setup** state of a generated project.
 
 Next.js 16.1.6 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
 
-## Stack & Config
+## Stack & Config (generated project)
 
 - **Middleware**: `proxy.ts` (NOT `middleware.ts`)
 - **i18n**: `i18n-config.ts` + `get-dictionary.ts` + `dictionaries/en.json` + `dictionaries/pt.json`. Locales: `en` (default), `pt`. Export: `i18n.locales`, not `locales`.
@@ -13,44 +14,51 @@ Next.js 16.1.6 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer
 - **Fonts**: Geist Sans / Geist Mono · **BG**: `#fafafa` · **Accent**: `indigo-600`
 - **Real contacts**: email `Jssgmrs22@gmail.com`, GitHub `JoaoGuimaraes22`, LinkedIn `joão-sebastião-guimarães-4abaa7197`
 
-## Template Repo Structure
+## Tool Repo Structure
 
 ```text
-templates/
-  portfolio/              Source for Portfolio type (copied to app/ by setup.js)
-    app/[locale]/         locale layout, page, components, work/[slug]/
-    app/api/              chat/, contact/
-    app/components/       LanguageSwitcher, NavDropdown, ScrollProgress
-    app/robots.ts / app/sitemap.ts
-    root/                 proxy.ts, i18n-config.ts, get-dictionary.ts (copied to root if i18n on)
-    dictionaries/         en.json, pt.json
-    dialogflow/           Dialogflow ES agent config
-    public/               hero.jpg, profile.jpg, og-image.png, projects/
-    BOOTSTRAP.md          Claude kickstart for portfolio customization
-  business/               Source for Business Site type (copied to app/ by setup.js)
-    app/[locale]/         locale layout, page, components
-    app/api/contact/      Resend route
-    app/robots.ts / app/sitemap.ts
-    root/                 proxy.ts, i18n-config.ts, get-dictionary.ts
-    dictionaries/         en.json, pt.json
-    public/               hero.jpg
-    BOOTSTRAP.md          Claude kickstart for business customization
-scripts/
-  lib.js                  Shared FS helpers + readline helpers (ask/askChoice) + .launchkit I/O
-  setup.js                Thin orchestrator — delegates to template module
-  toggle.js               Thin orchestrator — delegates to template module
-  reset.js                Removes everything setup.js copied
-  validate.js             Checks YOUR_* placeholders, TODO: TEMPLATE, images, .env.local
-  status.js               Read-only status display
+launchkit/                    ← this repo (the generator tool)
+  package.json                tool scripts only — NO Next.js deps
+  CLAUDE.md / SETUP.md / README.md
+  scripts/
+    lib.js                    TOOL_ROOT/target() pattern, FS helpers, readline helpers, .launchkit I/O
+    setup.js                  Orchestrator — --output <path> creates project, delegates to template module
+    toggle.js                 --project <path> — enable/disable features in an existing project
+    reset.js                  --project <path> — removes everything setup.js copied
+    validate.js               --project <path> — checks YOUR_* placeholders, TODO: TEMPLATE, images, .env.local
+    status.js                 --project <path> — read-only status display
+    templates/
+      portfolio.js            Portfolio module: setup(), featureList, detectState(), enable(), disable()
+      business.js             Business module: same interface + recolor()
+      blank.js                Blank module: setup() only (no toggleable features)
   templates/
-    portfolio.js          Portfolio module: setup(), featureList, detectState(), enable(), disable()
-    business.js           Business module: same interface + recolor()
-    blank.js              Blank module: setup() only (no toggleable features)
+    base/                     Clean Next.js scaffold (copied to every generated project first)
+      package.json            Next.js deps, scripts: dev/build/start/lint (NO launchkit scripts)
+      tsconfig.json / next.config.ts / postcss.config.mjs / eslint.config.mjs / .gitignore
+      app/layout.tsx / app/page.tsx / app/globals.css / app/favicon.ico
+    portfolio/                Source for Portfolio type (layered on top of base)
+      app/[locale]/           locale layout, page, components, work/[slug]/
+      app/api/                chat/, contact/
+      app/components/         LanguageSwitcher, NavDropdown, ScrollProgress
+      app/robots.ts / app/sitemap.ts
+      root/                   proxy.ts, i18n-config.ts, get-dictionary.ts (copied to root if i18n on)
+      dictionaries/           en.json, pt.json
+      dialogflow/             Dialogflow ES agent config
+      public/                 hero.jpg, profile.jpg, og-image.png, projects/
+      BOOTSTRAP.md            Claude kickstart for portfolio customization
+    business/                 Source for Business Site type (layered on top of base)
+      app/[locale]/           locale layout, page, components
+      app/api/contact/        Resend route
+      app/robots.ts / app/sitemap.ts
+      root/                   proxy.ts, i18n-config.ts, get-dictionary.ts
+      dictionaries/           en.json, pt.json
+      public/                 hero.jpg
+      BOOTSTRAP.md            Claude kickstart for business customization
 ```
 
 **Adding a new template type** — create `scripts/templates/new-type.js` exporting `{ type, featureList, detectState, setup, enable, disable }`, add it to the `TEMPLATES` map in `setup.js` and `toggle.js`, and create `templates/new-type/` with the template files.
 
-## File Structure (post-setup — portfolio)
+## Generated Project Structure (portfolio)
 
 ```text
 proxy.ts                      middleware (locale redirect)
@@ -210,19 +218,31 @@ Dict: `services.items[].details: string[]` (added) — bullet points shown in mo
 - Arbitrary calc: `w-[calc((100%-2rem)/3)]` — no underscores (linter enforces)
 - Linter suggests canonical classes — always apply suggestions
 
-## Scripts
+## Scripts (run from tool repo)
 
-| Script         | Command                                              | What it does                                                                                                          |
-| -------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Setup          | `node scripts/setup.js`                              | Select template, toggle features, collapse i18n if disabled, replace accent color (business), generate `.env.example` |
-| Setup (direct) | `npm run setup:portfolio` / `npm run setup:business` | Skip type-selection prompt and go straight to feature selection                                                       |
-| Reset          | `npm run reset`                                      | Remove everything setup.js added; restore base state                                                                  |
-| Toggle         | `npm run toggle`                                     | Show current feature state and enable/disable individual features without full reset                                  |
-| Validate       | `npm run validate`                                   | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments; exit 1 if found                               |
-| Dialogflow gen | `node dialogflow/generate.js`                        | Regenerate `intents/` from `generate.js` source (portfolio only)                                                      |
-| Dialogflow zip | `node dialogflow/zip.js`                             | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import (portfolio only)                                   |
+All scripts are run from the launchkit tool directory. Setup uses `--output` to specify where to create a project. All other scripts use `--project` to operate on an existing generated project.
 
-> **Dialogflow workflow**: edit `generate.js` (look for `// EDIT:` comments) → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import zip in Dialogflow console. Never edit `intents/` directly.
+| Script         | Command                                                    | What it does                                                             |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Setup          | `node scripts/setup.js --output ../my-project`             | Create project: select template, toggle features, copy scaffold, install |
+| Setup (direct) | `node scripts/setup.js --output ../my-project --portfolio` | Skip type-selection prompt, go straight to feature selection             |
+| Toggle         | `node scripts/toggle.js --project ../my-project`           | Enable/disable individual features without full reset                    |
+| Reset          | `node scripts/reset.js --project ../my-project`            | Remove everything setup.js copied; restore base scaffold state           |
+| Validate       | `node scripts/validate.js --project ../my-project`         | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments   |
+| Status         | `node scripts/status.js --project ../my-project`           | Read-only status display of template type and feature state              |
+| Dialogflow gen | `node dialogflow/generate.js` (from generated project)     | Regenerate `intents/` from `generate.js` source (portfolio only)         |
+| Dialogflow zip | `node dialogflow/zip.js` (from generated project)          | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import       |
+
+> If `--project` is omitted, scripts fall back to the current working directory — so running from inside a generated project also works. **Dialogflow workflow**: edit `generate.js` (look for `// EDIT:` comments) → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import zip in Dialogflow console. Never edit `intents/` directly.
+
+### Generated project scripts (inside the project)
+
+| Script | Command         | What it does                              |
+| ------ | --------------- | ----------------------------------------- |
+| Dev    | `npm run dev`   | Start Next.js dev server (localhost:3000) |
+| Build  | `npm run build` | Production build                          |
+| Start  | `npm run start` | Start production server                   |
+| Lint   | `npm run lint`  | Run ESLint                                |
 
 ## Chatbot (Dialogflow ES)
 
@@ -251,14 +271,14 @@ Dict: `services.items[].details: string[]` (added) — bullet points shown in mo
 
 ## Template & Bootstrap
 
-This repo is a GitHub template. Run `node scripts/setup.js` after cloning to select a template type and features, then paste the relevant BOOTSTRAP.md into a Claude Code conversation to fill in content.
+Run `node scripts/setup.js --output ../my-project` from the tool repo to generate a new project. Then paste the relevant BOOTSTRAP.md into a Claude Code conversation (opened in the generated project) to fill in content.
 
 - **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
 - **Business Site** → `templates/business/BOOTSTRAP.md`
 
 ### Placeholder Markers
 
-Personal content uses these sentinel strings — grep for them to find what needs replacing:
+Personal content uses these sentinel strings — grep for them in the generated project to find what needs replacing:
 
 - `YOUR_NAME` — full name
 - `YOUR_EMAIL` — email address
@@ -270,7 +290,7 @@ Personal content uses these sentinel strings — grep for them to find what need
 
 ### `.launchkit`
 
-`setup.js` writes `.launchkit` (JSON) at the end of every run. It is the authoritative source for template type and initial feature choices — read by `npm run toggle` and `npm run status`.
+`setup.js` writes `.launchkit` (JSON) in the generated project at the end of every run. It is the authoritative source for template type and initial feature choices — read by toggle, status, reset, and validate scripts via `--project`.
 
 ```json
 {
@@ -291,7 +311,7 @@ For a business site the `features` keys are `i18n`, `contactForm`, `floatingCTA`
 
 ### Feature Detection
 
-Check file existence to determine which features are currently active (overrides `.launchkit` if files were changed manually):
+Check file existence in the generated project to determine which features are currently active (overrides `.launchkit` if files were changed manually):
 
 | Feature        | Active if this file exists                   |
 | -------------- | -------------------------------------------- |
@@ -307,20 +327,20 @@ If i18n was disabled during setup, `app/[locale]/` does not exist — `setup.js`
 
 ### Bootstrap Flow
 
-When helping someone customize a fresh clone:
+When helping someone customize a generated project:
 
 1. Read this file (`CLAUDE.md`) completely
-2. Check active features using the table above
-3. `npm run validate` — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
-4. Follow `templates/portfolio/BOOTSTRAP.md` to gather project details before touching anything
+2. Check active features using the table above (in the generated project directory)
+3. `node scripts/validate.js --project <path>` (from tool repo) or `npm run validate` (if run from project) — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
+4. Follow the relevant BOOTSTRAP.md to gather project details before touching anything
 5. Always update both `en.json` and `pt.json` together if i18n is active
-6. `npm run validate` again to confirm clean, then `npm run lint && npm run build`
+6. Validate again to confirm clean, then `npm run lint && npm run build` (from the generated project)
 
 ---
 
 ## Business Site Template
 
-When `node scripts/setup.js` selects **Business Site**, the business template is copied into `app/` from `templates/business/`. Use `templates/business/BOOTSTRAP.md` as the Claude kickstart.
+When setup selects **Business Site**, the business template is layered on top of the base scaffold in the generated project from `templates/business/`. Use `templates/business/BOOTSTRAP.md` as the Claude kickstart.
 
 ### Feature Detection (Business Site)
 
@@ -428,11 +448,11 @@ app/[locale]/components/
 ### Business Site Bootstrap Flow
 
 1. Read `CLAUDE.md` completely
-2. Check active features using the business feature detection table above
-3. `npm run validate` — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
+2. Check active features using the business feature detection table above (in the generated project)
+3. `node scripts/validate.js --project <path>` (from tool repo) or `npm run validate` (from project) — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
 4. Follow `templates/business/BOOTSTRAP.md` to gather content
 5. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
 6. Update `app/[locale]/layout.tsx` (or `app/layout.tsx` if i18n was disabled): `SITE_URL`, title, description, `jsonLd`
 7. Accent color replacement: **automated by `setup.js`** if a preset was chosen; only needed for custom hex values
 8. i18n routing collapse: **automated by `setup.js`** — `app/[locale]/` does not exist if i18n was disabled
-9. `npm run validate` again to confirm clean, then `npm run lint && npm run build`
+9. Validate again to confirm clean, then `npm run lint && npm run build` (from the generated project)

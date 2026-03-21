@@ -5,10 +5,12 @@
 const fs = require("fs");
 const path = require("path");
 const {
-  ROOT,
+  target,
   ask,
   copyDir,
   copyFile,
+  copyFileInProject,
+  copyDirInProject,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
@@ -34,7 +36,7 @@ const featureList = [
 // ── Feature detection ─────────────────────────────────────────────────────────
 
 function detectState(compDir) {
-  const exists = (rel) => fs.existsSync(path.join(ROOT, rel));
+  const exists = (rel) => fs.existsSync(path.join(target(), rel));
   return {
     i18n:         exists("i18n-config.ts"),
     webglHero:    exists(`${compDir}/HeroFull.tsx`),
@@ -167,7 +169,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 `;
   }
-  fs.writeFileSync(path.join(ROOT, "app/sitemap.ts"), content, "utf8");
+  fs.writeFileSync(path.join(target(), "app/sitemap.ts"), content, "utf8");
   console.log("  [patched] app/sitemap.ts");
 }
 
@@ -177,13 +179,10 @@ function collapseI18n(features) {
   console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
 
   // ── 1. Move files ────────────────────────────────────────────────────────────
-  copyDir("app/[locale]/components", "app/components");
-  if (features.work) copyDir("app/[locale]/work", "app/work");
-  const localeBase = path.join(ROOT, "app/[locale]");
-  fs.copyFileSync(path.join(localeBase, "layout.tsx"), path.join(ROOT, "app/layout.tsx"));
-  console.log("  [moved]  app/[locale]/layout.tsx → app/layout.tsx");
-  fs.copyFileSync(path.join(localeBase, "page.tsx"), path.join(ROOT, "app/page.tsx"));
-  console.log("  [moved]  app/[locale]/page.tsx → app/page.tsx");
+  copyDirInProject("app/[locale]/components", "app/components");
+  if (features.work) copyDirInProject("app/[locale]/work", "app/work");
+  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
+  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
   deleteIfExists("app/[locale]");
 
   // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
@@ -273,7 +272,7 @@ function collapseI18n(features) {
     replaceInFile("app/work/[slug]/page.tsx", "href={`/${locale}#work`}", 'href="/#work"');
     // Upgrade sitemap to include work paths
     fs.writeFileSync(
-      path.join(ROOT, "app/sitemap.ts"),
+      path.join(target(), "app/sitemap.ts"),
       `import type { MetadataRoute } from "next";\nimport dict from "../dictionaries/en.json";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  const slugs = dict.work.projects.map((p) => p.slug);\n  return [\n    { url: SITE_URL, lastModified: new Date() },\n    ...slugs.map((slug) => ({ url: \`\${SITE_URL}/work/\${slug}\`, lastModified: new Date() })),\n  ];\n}\n`,
       "utf8"
     );
@@ -305,7 +304,7 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
         copyFile("templates/portfolio/app/[locale]/components/ChatNudge.tsx", `${compDir}/ChatNudge.tsx`);
         if (!i18nActive) collapseChatNudgeTsx(compDir);
         const sidebarPath = `${compDir}/ProfileSidebar.tsx`;
-        const sidebarContent = fs.readFileSync(path.join(ROOT, sidebarPath), "utf8");
+        const sidebarContent = fs.readFileSync(path.join(target(), sidebarPath), "utf8");
         if (!sidebarContent.includes("ChatNudge")) {
           replaceInFile(sidebarPath, "import { useRef }", 'import ChatNudge from "./ChatNudge";\nimport { useRef }');
           const ctaRef = i18nActive ? "<CtaButton locale={locale} />" : "<CtaButton />";
@@ -320,7 +319,7 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
             `${ctaRef}</motion.div>\n      <motion.div className="flex gap-5"`,
             `${ctaRef}</motion.div>\n      <motion.div {...fadeUp(inView, 0.44)}>${nudgeJSX}</motion.div>\n\n      <motion.div className="flex gap-5"`
           );
-          const afterInject = fs.readFileSync(path.join(ROOT, sidebarPath), "utf8");
+          const afterInject = fs.readFileSync(path.join(target(), sidebarPath), "utf8");
           if (!afterInject.includes("<ChatNudge")) {
             console.warn("  [warn] ChatNudge could not be auto-injected into ProfileSidebar.tsx.");
             console.warn("         The expected JSX anchor was not found — the file may have been customized.");
@@ -360,7 +359,7 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       copyFile("templates/portfolio/app/[locale]/components/Work.tsx", `${compDir}/Work.tsx`);
       copyDir("templates/portfolio/app/[locale]/work", i18nActive ? "app/[locale]/work" : "app/work");
       if (!i18nActive) collapseWorkTsx(compDir);
-      const pageContent = fs.readFileSync(path.join(ROOT, pageFile), "utf8");
+      const pageContent = fs.readFileSync(path.join(target(), pageFile), "utf8");
       const heroAnchor = pageContent.includes("HeroFull")
         ? 'import HeroFull from "./components/HeroFull";'
         : 'import Hero from "./components/Hero";';
@@ -368,7 +367,7 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       const workJSX = i18nActive
         ? "            <Work work={dict.work} locale={locale} />"
         : "            <Work work={dict.work} />";
-      if (fs.readFileSync(path.join(ROOT, pageFile), "utf8").includes("<Testimonials testimonials")) {
+      if (fs.readFileSync(path.join(target(), pageFile), "utf8").includes("<Testimonials testimonials")) {
         replaceInFile(pageFile,
           "            <Testimonials testimonials={dict.testimonials} />",
           workJSX + "\n            <Testimonials testimonials={dict.testimonials} />"
@@ -396,7 +395,7 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
         copyFile("templates/portfolio/app/[locale]/components/ChatNudge.tsx", `${compDir}/ChatNudge.tsx`);
         if (!i18nActive) collapseChatNudgeTsx(compDir);
       }
-      const pageContent2 = fs.readFileSync(path.join(ROOT, pageFile), "utf8");
+      const pageContent2 = fs.readFileSync(path.join(target(), pageFile), "utf8");
       const heroAnchor2 = pageContent2.includes("HeroFull")
         ? 'import HeroFull from "./components/HeroFull";'
         : 'import Hero from "./components/Hero";';
@@ -442,7 +441,7 @@ function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       deleteIfExists(`${compDir}/Testimonials.tsx`);
       removeLineContaining(pageFile, 'import Testimonials from "./components/Testimonials"');
       removeLineContaining(pageFile, "<Testimonials");
-      const navbarPath = path.join(ROOT, `${compDir}/Navbar.tsx`);
+      const navbarPath = path.join(target(), `${compDir}/Navbar.tsx`);
       if (fs.existsSync(navbarPath)) {
         const content = fs.readFileSync(navbarPath, "utf8");
         const updated = content.split("\n").filter((l) => !l.includes('"testimonials"') && !l.includes("nav.reviews")).join("\n");
@@ -459,7 +458,7 @@ function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       deleteIfExists("public/projects");
       removeLineContaining(pageFile, 'import Work from "./components/Work"');
       removeLineContaining(pageFile, "<Work");
-      const navbarPath2 = path.join(ROOT, `${compDir}/Navbar.tsx`);
+      const navbarPath2 = path.join(target(), `${compDir}/Navbar.tsx`);
       if (fs.existsSync(navbarPath2)) {
         const content2 = fs.readFileSync(navbarPath2, "utf8");
         const updated2 = content2.split("\n").filter((l) => !(l.includes('"work"') && l.includes("nav.work"))).join("\n");
@@ -475,7 +474,7 @@ function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       deleteIfExists(`${compDir}/ProfileSidebar.tsx`);
       deleteIfExists(`${compDir}/ChatNudge.tsx`);
       removeLineContaining(pageFile, 'import ProfileSidebar from "./components/ProfileSidebar"');
-      const pagePath = path.join(ROOT, pageFile);
+      const pagePath = path.join(target(), pageFile);
       if (fs.existsSync(pagePath)) {
         const content = fs.readFileSync(pagePath, "utf8");
         if (!content.includes("TODO: TEMPLATE")) {
@@ -521,7 +520,7 @@ async function setup(rl) {
     deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
     deleteIfExists("app/[locale]/components/LangSetter.tsx");
     fs.writeFileSync(
-      path.join(ROOT, "app/sitemap.ts"),
+      path.join(target(), "app/sitemap.ts"),
       `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
       "utf8"
     );
@@ -558,7 +557,7 @@ async function setup(rl) {
   if (!features.contactForm) {
     console.log("⚙  Contact Form: disabled");
     deleteIfExists("app/api/contact");
-    const contactPath = path.join(ROOT, "app/[locale]/components/Contact.tsx");
+    const contactPath = path.join(target(), "app/[locale]/components/Contact.tsx");
     if (fs.existsSync(contactPath)) {
       const content = fs.readFileSync(contactPath, "utf8");
       if (!content.includes("TODO: TEMPLATE")) {
@@ -580,7 +579,7 @@ async function setup(rl) {
     deleteIfExists("app/[locale]/components/Testimonials.tsx");
     removeLineContaining("app/[locale]/page.tsx", 'import Testimonials from "./components/Testimonials"');
     removeLineContaining("app/[locale]/page.tsx", "<Testimonials");
-    const navbarPath = path.join(ROOT, "app/[locale]/components/Navbar.tsx");
+    const navbarPath = path.join(target(), "app/[locale]/components/Navbar.tsx");
     if (fs.existsSync(navbarPath)) {
       const content = fs.readFileSync(navbarPath, "utf8");
       const updated = content.split("\n").filter((l) => !l.includes('"testimonials"') && !l.includes("nav.reviews")).join("\n");
@@ -598,7 +597,7 @@ async function setup(rl) {
     deleteIfExists("public/projects");
     removeLineContaining("app/[locale]/page.tsx", 'import Work from "./components/Work"');
     removeLineContaining("app/[locale]/page.tsx", "<Work");
-    const navbarPath2 = path.join(ROOT, "app/[locale]/components/Navbar.tsx");
+    const navbarPath2 = path.join(target(), "app/[locale]/components/Navbar.tsx");
     if (fs.existsSync(navbarPath2)) {
       const content2 = fs.readFileSync(navbarPath2, "utf8");
       const updated2 = content2.split("\n").filter((l) => !(l.includes('"work"') && l.includes("nav.work"))).join("\n");
@@ -608,7 +607,7 @@ async function setup(rl) {
     if (features.i18n) {
       const locales = '["en", "pt"] as const';
       fs.writeFileSync(
-        path.join(ROOT, "app/sitemap.ts"),
+        path.join(target(), "app/sitemap.ts"),
         `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\nconst locales = ${locales};\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return locales.map((locale) => ({\n    url: \`\${SITE_URL}/\${locale}\`,\n    lastModified: new Date(),\n    alternates: {\n      languages: Object.fromEntries(locales.map((l) => [l, \`\${SITE_URL}/\${l}\`])),\n    },\n  }));\n}\n`,
         "utf8"
       );
@@ -623,7 +622,7 @@ async function setup(rl) {
     deleteIfExists("app/[locale]/components/ProfileSidebar.tsx");
     deleteIfExists("app/[locale]/components/ChatNudge.tsx");
     removeLineContaining("app/[locale]/page.tsx", 'import ProfileSidebar from "./components/ProfileSidebar"');
-    const pagePath = path.join(ROOT, "app/[locale]/page.tsx");
+    const pagePath = path.join(target(), "app/[locale]/page.tsx");
     if (fs.existsSync(pagePath)) {
       const content = fs.readFileSync(pagePath, "utf8");
       if (!content.includes("TODO: TEMPLATE")) {

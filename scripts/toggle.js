@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // launchkit — Feature Toggle
-// Run: node scripts/toggle.js  (or: npm run toggle)
+// Run: node scripts/toggle.js --project ../my-project
 // Shows current feature state and lets you enable/disable individual features
 // without a full reset + re-setup.
 
@@ -8,7 +8,10 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-const { ROOT, ask, askChoice, readLaunchkit, writeLaunchkit } = require("./lib");
+const { target, setTarget, parseProjectFlag, ask, askChoice, readLaunchkit, writeLaunchkit } = require("./lib");
+
+// ── Resolve target project ───────────────────────────────────────────────────
+setTarget(parseProjectFlag());
 
 const TEMPLATES = {
   portfolio: require("./templates/portfolio"),
@@ -23,7 +26,7 @@ async function runToggle(rl) {
   const { type } = state;
   const tmpl = TEMPLATES[type] ?? TEMPLATES.blank;
 
-  const i18nActive  = fs.existsSync(path.join(ROOT, "i18n-config.ts"));
+  const i18nActive  = fs.existsSync(path.join(target(), "i18n-config.ts"));
   const compDir     = i18nActive ? "app/[locale]/components" : "app/components";
   const pageFile    = i18nActive ? "app/[locale]/page.tsx"   : "app/page.tsx";
   const layoutFile  = i18nActive ? "app/[locale]/layout.tsx" : "app/layout.tsx";
@@ -48,6 +51,7 @@ async function runToggle(rl) {
   }
 
   console.log(`\n  Template : ${type.charAt(0).toUpperCase() + type.slice(1)}`);
+  console.log(`  Project  : ${target()}`);
   console.log(`  i18n     : ${i18nActive ? "enabled" : "disabled (collapsed)"}\n`);
 
   features.forEach((f, i) => {
@@ -73,7 +77,7 @@ async function runToggle(rl) {
   const selected = features[choice - 1];
 
   if (selected.unsupported) {
-    console.log(`\n  ⚠  i18n routing cannot be toggled in-place.\n  Run npm run reset + node scripts/setup.js to change this setting.\n`);
+    console.log(`\n  ⚠  i18n routing cannot be toggled in-place.\n  Run reset + setup to change this setting.\n`);
     return false;
   }
 
@@ -127,7 +131,7 @@ async function runToggle(rl) {
   if (["chatbot", "contactForm"].includes(selected.key)) {
     console.log("\n─── Running npm install ─────────────────────────────────────────\n");
     try {
-      execSync("npm install", { stdio: "inherit", cwd: ROOT });
+      execSync("npm install", { stdio: "inherit", cwd: target() });
     } catch {
       console.warn("  npm install encountered warnings — check output above.");
     }

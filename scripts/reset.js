@@ -1,22 +1,25 @@
 #!/usr/bin/env node
 // launchkit — Reset Script
-// Removes everything added by scripts/setup.js, restoring the base template state.
-// Run: node scripts/reset.js  (or: npm run reset)
+// Removes everything added by scripts/setup.js, restoring the base scaffold state.
+// Run: node scripts/reset.js --project ../my-project
 
 const fs = require("fs");
 const path = require("path");
+const { target, setTarget, parseProjectFlag } = require("./lib");
 
-const ROOT = path.resolve(__dirname, "..");
+// ── Resolve target project ───────────────────────────────────────────────────
+setTarget(parseProjectFlag());
 
-// Everything setup.js copies into the project root
+// Everything setup.js copies into the project (on top of base scaffold)
 const TO_REMOVE = [
   // app/ subdirectories (setup.js copies from templates/[type]/app/)
-  // Shared root files (layout.tsx, globals.css, page.tsx, favicon.ico) are NOT touched
+  // Base scaffold files (layout.tsx, globals.css, page.tsx, favicon.ico) are NOT touched
   "app/[locale]",
   "app/api",
   "app/components",
   "app/robots.ts",
   "app/sitemap.ts",
+  "app/work",
 
   // Dictionaries (copied from templates/[type]/dictionaries/)
   "dictionaries",
@@ -45,7 +48,8 @@ const TO_REMOVE = [
 const OPTIONAL_DEPS = ["resend", "google-auth-library", "adm-zip"];
 
 function removeOptionalDeps() {
-  const pkgPath = path.join(ROOT, "package.json");
+  const pkgPath = path.join(target(), "package.json");
+  if (!fs.existsSync(pkgPath)) return;
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   let changed = false;
   for (const dep of OPTIONAL_DEPS) {
@@ -60,7 +64,7 @@ function removeOptionalDeps() {
 
 let removed = 0;
 for (const rel of TO_REMOVE) {
-  const full = path.join(ROOT, rel);
+  const full = path.join(target(), rel);
   if (fs.existsSync(full)) {
     fs.rmSync(full, { recursive: true, force: true });
     console.log("  [removed]", rel);
@@ -75,4 +79,4 @@ if (removed === 0) {
 } else {
   console.log(`\n✓ Reset complete. ${removed} item(s) removed.`);
 }
-console.log("  Run node scripts/setup.js to set up again.\n");
+console.log("  Run setup.js --output to set up again.\n");

@@ -5,11 +5,14 @@
 const fs = require("fs");
 const path = require("path");
 const {
-  ROOT,
+  TOOL_ROOT,
+  target,
   ask,
   askChoice,
   copyDir,
   copyFile,
+  copyFileInProject,
+  copyDirInProject,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
@@ -36,8 +39,8 @@ const featureList = [
 // ── Feature detection ─────────────────────────────────────────────────────────
 
 function detectState(compDir) {
-  const exists = (rel) => fs.existsSync(path.join(ROOT, rel));
-  const contactFile = path.join(ROOT, `${compDir}/Contact.tsx`);
+  const exists = (rel) => fs.existsSync(path.join(target(), rel));
+  const contactFile = path.join(target(), `${compDir}/Contact.tsx`);
   const hasWhatsApp = fs.existsSync(contactFile) && fs.readFileSync(contactFile, "utf8").includes("wa.me/");
   return {
     i18n:         exists("i18n-config.ts"),
@@ -74,12 +77,9 @@ function collapseI18n(features) {
   console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
 
   // ── 1. Move files ────────────────────────────────────────────────────────────
-  copyDir("app/[locale]/components", "app/components");
-  const localeBase = path.join(ROOT, "app/[locale]");
-  fs.copyFileSync(path.join(localeBase, "layout.tsx"), path.join(ROOT, "app/layout.tsx"));
-  console.log("  [moved]  app/[locale]/layout.tsx → app/layout.tsx");
-  fs.copyFileSync(path.join(localeBase, "page.tsx"), path.join(ROOT, "app/page.tsx"));
-  console.log("  [moved]  app/[locale]/page.tsx → app/page.tsx");
+  copyDirInProject("app/[locale]/components", "app/components");
+  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
+  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
   deleteIfExists("app/[locale]");
 
   // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
@@ -161,8 +161,8 @@ function enable(key, { compDir, pageFile }) {
         "      <Footer footer={dict.footer} logo={dict.navbar.logo} />\n      <FloatingCTA cta={dict.cta} />"
       );
       for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
-        const dictPath = path.join(ROOT, dictFile);
-        const templateDictPath = path.join(ROOT, `templates/business/${dictFile}`);
+        const dictPath = path.join(target(), dictFile);
+        const templateDictPath = path.join(TOOL_ROOT, `templates/business/${dictFile}`);
         if (fs.existsSync(dictPath) && fs.existsSync(templateDictPath)) {
           const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
           const templateDict = JSON.parse(fs.readFileSync(templateDictPath, "utf8"));
@@ -178,8 +178,8 @@ function enable(key, { compDir, pageFile }) {
     case "whatsapp": {
       // Contact.tsx: re-insert WhatsApp block from template
       const contactFile = `${compDir}/Contact.tsx`;
-      const contactFull = path.join(ROOT, contactFile);
-      const templateContact = path.join(ROOT, "templates/business/app/[locale]/components/Contact.tsx");
+      const contactFull = path.join(target(), contactFile);
+      const templateContact = path.join(TOOL_ROOT, "templates/business/app/[locale]/components/Contact.tsx");
       if (fs.existsSync(contactFull) && fs.existsSync(templateContact)) {
         let live = fs.readFileSync(contactFull, "utf8");
         if (!live.includes("wa.me/")) {
@@ -195,8 +195,8 @@ function enable(key, { compDir, pageFile }) {
       }
       // FloatingCTA.tsx: re-insert WhatsApp button from template
       const ctaFile = `${compDir}/FloatingCTA.tsx`;
-      const ctaFull = path.join(ROOT, ctaFile);
-      const templateCta = path.join(ROOT, "templates/business/app/[locale]/components/FloatingCTA.tsx");
+      const ctaFull = path.join(target(), ctaFile);
+      const templateCta = path.join(TOOL_ROOT, "templates/business/app/[locale]/components/FloatingCTA.tsx");
       if (fs.existsSync(ctaFull) && fs.existsSync(templateCta)) {
         let live = fs.readFileSync(ctaFull, "utf8");
         if (!live.includes("wa.me/")) {
@@ -218,8 +218,8 @@ function enable(key, { compDir, pageFile }) {
       // Dictionaries: restore whatsapp fields
       for (const lang of ["en", "pt"]) {
         const dictFile = `dictionaries/${lang}.json`;
-        const dictFull = path.join(ROOT, dictFile);
-        const tmplDictFull = path.join(ROOT, `templates/business/dictionaries/${lang}.json`);
+        const dictFull = path.join(target(), dictFile);
+        const tmplDictFull = path.join(TOOL_ROOT, `templates/business/dictionaries/${lang}.json`);
         if (fs.existsSync(dictFull) && fs.existsSync(tmplDictFull)) {
           const dict = JSON.parse(fs.readFileSync(dictFull, "utf8"));
           const tmpl = JSON.parse(fs.readFileSync(tmplDictFull, "utf8"));
@@ -257,7 +257,7 @@ function disable(key, { compDir, pageFile }) {
       removeLineContaining(pageFile, 'import FloatingCTA from "./components/FloatingCTA"');
       removeLineContaining(pageFile, "<FloatingCTA");
       for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
-        const dictPath = path.join(ROOT, dictFile);
+        const dictPath = path.join(target(), dictFile);
         if (fs.existsSync(dictPath)) {
           const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
           delete dict.cta;
@@ -270,7 +270,7 @@ function disable(key, { compDir, pageFile }) {
     case "whatsapp": {
       // Contact.tsx: remove WhatsApp block
       const contactFile = `${compDir}/Contact.tsx`;
-      const contactFull = path.join(ROOT, contactFile);
+      const contactFull = path.join(target(), contactFile);
       if (fs.existsSync(contactFull)) {
         let content = fs.readFileSync(contactFull, "utf8");
         const s = content.indexOf("{/* WhatsApp */}");
@@ -284,7 +284,7 @@ function disable(key, { compDir, pageFile }) {
       }
       // FloatingCTA.tsx: remove separator + WhatsApp button
       const ctaFile = `${compDir}/FloatingCTA.tsx`;
-      const ctaFull = path.join(ROOT, ctaFile);
+      const ctaFull = path.join(target(), ctaFile);
       if (fs.existsSync(ctaFull)) {
         let content = fs.readFileSync(ctaFull, "utf8");
         if (content.includes("wa.me/")) {
@@ -301,7 +301,7 @@ function disable(key, { compDir, pageFile }) {
       // Dictionaries: remove whatsapp fields
       for (const lang of ["en", "pt"]) {
         const dictFile = `dictionaries/${lang}.json`;
-        const dictFull = path.join(ROOT, dictFile);
+        const dictFull = path.join(target(), dictFile);
         if (fs.existsSync(dictFull)) {
           const dict = JSON.parse(fs.readFileSync(dictFull, "utf8"));
           let changed = false;
@@ -351,7 +351,7 @@ async function setup(rl) {
     removeLineContaining("app/[locale]/components/Navbar.tsx", 'import LanguageSwitcher from "./LanguageSwitcher"');
     removeLineContaining("app/[locale]/components/Navbar.tsx", "<LanguageSwitcher");
     fs.writeFileSync(
-      path.join(ROOT, "app/sitemap.ts"),
+      path.join(target(), "app/sitemap.ts"),
       `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
       "utf8"
     );
@@ -372,7 +372,7 @@ async function setup(rl) {
     removeLineContaining("app/[locale]/page.tsx", 'import FloatingCTA from "./components/FloatingCTA"');
     removeLineContaining("app/[locale]/page.tsx", "<FloatingCTA");
     for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
-      const dictPath = path.join(ROOT, dictFile);
+      const dictPath = path.join(target(), dictFile);
       if (fs.existsSync(dictPath)) {
         const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
         delete dict.cta;
