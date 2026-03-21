@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // launchkit — Blank template module
-// Minimal scaffold: only i18n is selectable (and unsupported for toggle).
+// Minimal scaffold: only i18n is selectable.
 
 const fs = require("fs");
 const path = require("path");
@@ -13,27 +13,9 @@ const {
   copyTemplateFiles,
   deleteIfExists,
   SECONDARY_DICT_FILES,
-  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "blank";
-
-// ── Feature list (used by toggle UI) ─────────────────────────────────────────
-
-const featureList = [
-  { key: "i18n", label: "i18n routing", unsupported: true, deps: [], detectFile: "i18n-config.ts" },
-];
-
-// ── Feature detection ─────────────────────────────────────────────────────────
-
-function detectState(compDir) {
-  return detectStateFromRegistry(featureList, compDir);
-}
-
-// ── Enable / disable (no toggleable features) ─────────────────────────────────
-
-function enable()  { /* no toggleable features */ }
-function disable() { /* no toggleable features */ }
 
 // ── i18n collapse (app/[locale]/ → app/) ─────────────────────────────────────
 
@@ -75,7 +57,7 @@ async function setup(rl) {
     collapseI18n();
   }
 
-  return { type: TYPE, features };
+  return { type: TYPE, features: { i18n: features.i18n }, sections: {} };
 }
 
-module.exports = { type: TYPE, featureList, detectState, setup, enable, disable };
+module.exports = { type: TYPE, setup };

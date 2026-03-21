@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // launchkit — Shared script helpers
-// Used by setup.js, toggle.js, reset.js, validate.js, status.js
+// Used by setup.js, config.js, sections.js, reset.js, validate.js, status.js
 
 const fs = require("fs");
 const path = require("path");
@@ -267,11 +267,14 @@ function readLaunchkit() {
   }
   const state = safeJsonParse(fs.readFileSync(p, "utf8"), ".launchkit");
   // Validate required fields
-  if (!state.type || !state.features) {
-    console.error("\n  Error: .launchkit is missing required fields (type, features).");
+  if (!state.type) {
+    console.error("\n  Error: .launchkit is missing required field (type).");
     console.error("  The file may be corrupted. Run reset + setup to regenerate.\n");
     process.exit(1);
   }
+  // Ensure features and sections exist (backward compat with pre-Phase 4 projects)
+  if (!state.features) state.features = {};
+  if (!state.sections) state.sections = {};
   // Version migration: stamp version if missing (pre-v1 files), warn if newer
   if (state.version === undefined) {
     state.version = LAUNCHKIT_VERSION;
@@ -415,30 +418,10 @@ function checkHelp(usage) {
   }
 }
 
-// ── Feature registry helpers ──────────────────────────────────────────────────
-
-// Builds a feature state object from the registry's detectFile declarations.
-// featureList entries with a `detectFile` string are checked via fs.existsSync.
-// `{compDir}` in detectFile is replaced with the actual compDir path.
-// Entries with `detect: "custom"` or no detectFile are skipped (must be handled
-// by the template's own detectState override).
-function detectStateFromRegistry(featureList, compDir) {
-  const state = {};
-  for (const f of featureList) {
-    if (f.recolor) continue;
-    if (f.detectFile) {
-      const filePath = f.detectFile.replace("{compDir}", compDir);
-      state[f.key] = fs.existsSync(path.join(_target, filePath));
-    }
-    // detect: "custom" entries are not handled here — template fills them in
-  }
-  return state;
-}
-
 // ── Template autodiscovery ────────────────────────────────────────────────────
 
 // Scans scripts/templates/ at runtime and returns { key: module } for each .js
-// file that exports the required interface (type, featureList, detectState, setup).
+// file that exports the required interface (type, setup).
 // Caches after first call. Replaces the hardcoded TEMPLATES maps in setup/toggle/status.
 let _templateCache = null;
 
@@ -451,7 +434,7 @@ function loadTemplates() {
     const mod = require(path.join(templatesDir, file));
     const key = path.basename(file, ".js");
     // Validate required interface
-    const missing = ["type", "featureList", "detectState", "setup", "enable", "disable"]
+    const missing = ["type", "setup"]
       .filter((fn) => mod[fn] === undefined);
     if (missing.length > 0) {
       console.warn(`  [warn] templates/${file} missing exports: ${missing.join(", ")} — skipped`);
@@ -559,6 +542,15 @@ function detectInstalledSections(compDir, launchkitSections, templateType) {
     } else if (anyMeta.componentName) {
       detected = fs.existsSync(path.join(_target, compDir, `${anyMeta.componentName}.tsx`));
     }
+    // Fallback: check hooks.detect on compatible variants
+    if (!detected) {
+      for (const v of section.variants) {
+        if (v.hooks && v.hooks.detect) {
+          detected = v.hooks.detect({ compDir, projectDir: _target });
+          if (detected) break;
+        }
+      }
+    }
     if (!detected) continue;
 
     // Prefer the variant recorded in .launchkit if available
@@ -616,7 +608,6 @@ module.exports = {
   addNavLink,
   removeNavLink,
   loadTemplates,
-  detectStateFromRegistry,
   discoverSections,
   parseSectionsFromPage,
   detectInstalledSections,

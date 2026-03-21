@@ -44,12 +44,12 @@ function parseFlag(flag) {
 
 // ── .env.example generation ───────────────────────────────────────────────────
 
-function generateEnvExample(type, features) {
+function generateEnvExample(type, sections) {
   let env = `# ── Required ──────────────────────────────────────────────────────────────\nNEXT_PUBLIC_SITE_URL=https://YOUR_DOMAIN\n\n`;
-  if (features.contactForm) {
+  if (sections["contact-form"]) {
     env += `# ── Contact Form (Resend) ─────────────────────────────────────────────────\n# Sign up at https://resend.com — get your API key from the dashboard\nRESEND_API_KEY=re_...\n\n`;
   }
-  if (type === "portfolio" && features.chatbot) {
+  if (type === "portfolio" && sections["chatbot"]) {
     env += `# ── Chatbot (Dialogflow ES) ───────────────────────────────────────────────\n# Create a Google Cloud service account with "Dialogflow API Client" role\n# Download the JSON key, stringify it, and paste as a single line below\nGOOGLE_CREDENTIALS={"type":"service_account","project_id":"..."}\nDIALOGFLOW_PROJECT_ID=your-dialogflow-project-id\n\n`;
   }
   fs.writeFileSync(path.join(target(), ".env.example"), env, "utf8");
@@ -177,7 +177,7 @@ async function main() {
   rl.close();
 
   console.log("\n─── Generating .env.example ────────────────────────────────────\n");
-  generateEnvExample(result.type, result.features);
+  generateEnvExample(result.type, result.sections || {});
 
   console.log("\n─── Running npm install ─────────────────────────────────────────\n");
   try {
@@ -188,7 +188,7 @@ async function main() {
     process.exit(1);
   }
 
-  writeLaunchkit({ name: projectName, type: result.type, features: result.features });
+  writeLaunchkit({ name: projectName, type: result.type, features: result.features, sections: result.sections || {} });
   console.log("  [created] .launchkit");
 
   const relOutput = path.relative(process.cwd(), absOutput);
@@ -206,19 +206,21 @@ async function main() {
   console.log("║  4. Replace placeholder images in public/                    ║");
   console.log("║  5. npm run dev  →  preview your site                        ║");
   console.log("╚══════════════════════════════════════════════════════════════╝\n");
-  console.log(`  To toggle features later:`);
-  console.log(`    node scripts/toggle.js --project ${relOutput}\n`);
+  console.log(`  To manage sections later:`);
+  console.log(`    node scripts/sections.js --project ${relOutput}`);
+  console.log(`  To change project config (i18n, accent color):`);
+  console.log(`    node scripts/config.js --project ${relOutput}\n`);
 
   // Warn about steps that still require Claude to finish
-  const f = result.features;
+  const s = result.sections || {};
   const hasTodos =
-    !f.i18n ||
-    (result.type === "portfolio" && (!f.contactForm || !f.sidebar));
+    !result.features.i18n ||
+    (result.type === "portfolio" && (!s["contact-form"] || !s["sidebar"]));
   if (hasTodos) {
     console.log("⚠  Some steps require Claude to finish:");
-    if (!f.i18n) console.log("   • Collapse app/[locale]/ routing (i18n disabled)");
-    if (result.type === "portfolio" && !f.contactForm) console.log("   • Remove form JSX from Contact.tsx");
-    if (result.type === "portfolio" && !f.sidebar) console.log("   • Simplify page.tsx sidebar layout");
+    if (!result.features.i18n) console.log("   • Collapse app/[locale]/ routing (i18n disabled)");
+    if (result.type === "portfolio" && !s["contact-form"]) console.log("   • Remove form JSX from Contact.tsx");
+    if (result.type === "portfolio" && !s["sidebar"]) console.log("   • Simplify page.tsx sidebar layout");
     console.log(`   → Paste ${relBootstrap} into Claude Code to handle these.\n`);
   }
 }

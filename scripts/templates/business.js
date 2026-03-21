@@ -1,53 +1,28 @@
 #!/usr/bin/env node
 // launchkit — Business Site template module
-// Owns: setup flow, feature detection, enable/disable handlers, i18n collapse, accent recolor.
+// Owns: setup flow, i18n collapse, accent recolor.
 
 const fs = require("fs");
 const path = require("path");
 const {
-  TOOL_ROOT,
   target,
   ask,
   askChoice,
   copyDir,
-  copyFile,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
   replaceInFile,
   addDependency,
-  removeDependency,
   safeJsonParse,
   collapseI18nBase,
-  LOCALES,
   DICT_FILES,
-  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "business";
 
 const COLOR_MAP    = ["indigo", "blue", "violet", "rose", "amber", "emerald", "cyan", "orange"];
 const COLOR_LABELS = ["Indigo (default)", "Blue", "Violet", "Rose", "Amber", "Emerald", "Cyan", "Orange"];
-
-// ── Feature list (used by toggle UI) ─────────────────────────────────────────
-
-const featureList = [
-  { key: "contactForm", label: "Contact Form (Resend API)",                deps: [], detectFile: "app/api/contact/route.ts" },
-  { key: "floatingCTA", label: "FloatingCTA bar (mobile)",                 deps: [], detectFile: "{compDir}/FloatingCTA.tsx" },
-  { key: "whatsapp",    label: "WhatsApp button (contact + FloatingCTA)",  deps: ["contactForm", "floatingCTA"], detect: "custom" },
-  { key: "accentColor", label: "Brand accent color", recolor: true,        deps: [] },
-  { key: "i18n",        label: "i18n routing", unsupported: true,          deps: [], detectFile: "i18n-config.ts" },
-];
-
-// ── Feature detection ─────────────────────────────────────────────────────────
-
-function detectState(compDir) {
-  const state = detectStateFromRegistry(featureList, compDir);
-  // WhatsApp is content-based detection (not just file existence)
-  const contactFile = path.join(target(), `${compDir}/Contact.tsx`);
-  state.whatsapp = fs.existsSync(contactFile) && fs.readFileSync(contactFile, "utf8").includes("wa.me/");
-  return state;
-}
 
 // ── Accent color replacement ──────────────────────────────────────────────────
 
@@ -84,184 +59,6 @@ function collapseI18n() {
       );
     },
   });
-}
-
-// ── Enable feature ────────────────────────────────────────────────────────────
-
-function enable(key, { compDir, pageFile }) {
-  switch (key) {
-    case "contactForm": {
-      copyDir("templates/business/app/api/contact", "app/api/contact");
-      addDependency("resend", "^6.9.4");
-      break;
-    }
-    case "floatingCTA": {
-      copyFile("templates/business/app/[locale]/components/FloatingCTA.tsx", `${compDir}/FloatingCTA.tsx`);
-      replaceInFile(pageFile,
-        'import Footer from "./components/Footer";',
-        'import FloatingCTA from "./components/FloatingCTA";\nimport Footer from "./components/Footer";'
-      );
-      replaceInFile(pageFile,
-        "      <Footer footer={dict.footer} logo={dict.navbar.logo} />",
-        "      <Footer footer={dict.footer} logo={dict.navbar.logo} />\n      <FloatingCTA cta={dict.cta} />"
-      );
-      for (const dictFile of DICT_FILES) {
-        const dictPath = path.join(target(), dictFile);
-        const templateDictPath = path.join(TOOL_ROOT, `templates/business/${dictFile}`);
-        if (fs.existsSync(dictPath) && fs.existsSync(templateDictPath)) {
-          const dict = safeJsonParse(fs.readFileSync(dictPath, "utf8"), dictFile);
-          const templateDict = safeJsonParse(fs.readFileSync(templateDictPath, "utf8"), `templates/business/${dictFile}`);
-          if (!dict.cta && templateDict.cta) {
-            dict.cta = templateDict.cta;
-            fs.writeFileSync(dictPath, JSON.stringify(dict, null, 2) + "\n", "utf8");
-            console.log("  [patched]", dictFile, "— restored cta section");
-          }
-        }
-      }
-      break;
-    }
-    case "whatsapp": {
-      // Contact.tsx: re-insert WhatsApp block from template
-      const contactFile = `${compDir}/Contact.tsx`;
-      const contactFull = path.join(target(), contactFile);
-      const templateContact = path.join(TOOL_ROOT, "templates/business/app/[locale]/components/Contact.tsx");
-      if (fs.existsSync(contactFull) && fs.existsSync(templateContact)) {
-        let live = fs.readFileSync(contactFull, "utf8");
-        if (!live.includes("wa.me/")) {
-          const tmpl = fs.readFileSync(templateContact, "utf8");
-          const s = tmpl.indexOf("{/* WhatsApp */}");
-          const e = tmpl.indexOf("{/* Email */}");
-          if (s !== -1 && e !== -1) {
-            live = live.replace("{/* Email */}", tmpl.slice(s, e) + "{/* Email */}");
-            fs.writeFileSync(contactFull, live, "utf8");
-            console.log("  [patched]", contactFile, "— added WhatsApp block");
-          }
-        }
-      }
-      // FloatingCTA.tsx: re-insert WhatsApp button from template
-      const ctaFile = `${compDir}/FloatingCTA.tsx`;
-      const ctaFull = path.join(target(), ctaFile);
-      const templateCta = path.join(TOOL_ROOT, "templates/business/app/[locale]/components/FloatingCTA.tsx");
-      if (fs.existsSync(ctaFull) && fs.existsSync(templateCta)) {
-        let live = fs.readFileSync(ctaFull, "utf8");
-        if (!live.includes("wa.me/")) {
-          replaceInFile(ctaFile, "  book_label: string;", "  whatsapp_label: string;\n  whatsapp: string;\n  book_label: string;");
-          const tmpl = fs.readFileSync(templateCta, "utf8");
-          const waIdx = tmpl.indexOf("wa.me/");
-          const sepIdx = tmpl.lastIndexOf("<div", waIdx);
-          const endIdx = tmpl.indexOf("</a>", waIdx) + "</a>".length;
-          const waBlock = tmpl.slice(sepIdx, endIdx);
-          live = fs.readFileSync(ctaFull, "utf8");
-          const lastSep = live.lastIndexOf('<div className="w-px bg-zinc-200" />');
-          if (lastSep !== -1) {
-            live = live.slice(0, lastSep) + waBlock + "\n\n      " + live.slice(lastSep);
-            fs.writeFileSync(ctaFull, live, "utf8");
-            console.log("  [patched]", ctaFile, "— added WhatsApp button");
-          }
-        }
-      }
-      // Dictionaries: restore whatsapp fields
-      for (const lang of LOCALES) {
-        const dictFile = `dictionaries/${lang}.json`;
-        const dictFull = path.join(target(), dictFile);
-        const tmplDictFull = path.join(TOOL_ROOT, `templates/business/dictionaries/${lang}.json`);
-        if (fs.existsSync(dictFull) && fs.existsSync(tmplDictFull)) {
-          const dict = safeJsonParse(fs.readFileSync(dictFull, "utf8"), dictFile);
-          const tmpl = safeJsonParse(fs.readFileSync(tmplDictFull, "utf8"), `templates/business/dictionaries/${lang}.json`);
-          let changed = false;
-          if (dict.contact && !dict.contact.whatsapp && tmpl.contact?.whatsapp) {
-            dict.contact.whatsapp = tmpl.contact.whatsapp; changed = true;
-          }
-          if (dict.cta && !dict.cta.whatsapp && tmpl.cta?.whatsapp) {
-            dict.cta.whatsapp = tmpl.cta.whatsapp;
-            dict.cta.whatsapp_label = tmpl.cta.whatsapp_label;
-            changed = true;
-          }
-          if (changed) {
-            fs.writeFileSync(dictFull, JSON.stringify(dict, null, 2) + "\n", "utf8");
-            console.log("  [patched]", dictFile, "— restored whatsapp fields");
-          }
-        }
-      }
-      break;
-    }
-  }
-}
-
-// ── Disable feature ───────────────────────────────────────────────────────────
-
-function disable(key, { compDir, pageFile }) {
-  switch (key) {
-    case "contactForm": {
-      deleteIfExists("app/api/contact");
-      removeDependency("resend");
-      break;
-    }
-    case "floatingCTA": {
-      deleteIfExists(`${compDir}/FloatingCTA.tsx`);
-      removeLineContaining(pageFile, 'import FloatingCTA from "./components/FloatingCTA"');
-      removeLineContaining(pageFile, "<FloatingCTA");
-      for (const dictFile of DICT_FILES) {
-        const dictPath = path.join(target(), dictFile);
-        if (fs.existsSync(dictPath)) {
-          const dict = safeJsonParse(fs.readFileSync(dictPath, "utf8"), dictFile);
-          delete dict.cta;
-          fs.writeFileSync(dictPath, JSON.stringify(dict, null, 2) + "\n", "utf8");
-          console.log("  [patched]", dictFile, "— removed cta section");
-        }
-      }
-      break;
-    }
-    case "whatsapp": {
-      // Contact.tsx: remove WhatsApp block
-      const contactFile = `${compDir}/Contact.tsx`;
-      const contactFull = path.join(target(), contactFile);
-      if (fs.existsSync(contactFull)) {
-        let content = fs.readFileSync(contactFull, "utf8");
-        const s = content.indexOf("{/* WhatsApp */}");
-        const e = content.indexOf("{/* Email */}");
-        if (s !== -1 && e !== -1 && s < e) {
-          const trimFrom = content[s - 2] === "\n" ? s - 1 : s;
-          content = content.slice(0, trimFrom) + content.slice(e);
-          fs.writeFileSync(contactFull, content, "utf8");
-          console.log("  [patched]", contactFile, "— removed WhatsApp block");
-        }
-      }
-      // FloatingCTA.tsx: remove separator + WhatsApp button
-      const ctaFile = `${compDir}/FloatingCTA.tsx`;
-      const ctaFull = path.join(target(), ctaFile);
-      if (fs.existsSync(ctaFull)) {
-        let content = fs.readFileSync(ctaFull, "utf8");
-        if (content.includes("wa.me/")) {
-          const waIdx = content.indexOf("wa.me/");
-          const sepIdx = content.lastIndexOf("<div", waIdx);
-          const endIdx = content.indexOf("</a>", waIdx) + "</a>".length;
-          content = content.slice(0, sepIdx) + content.slice(endIdx);
-          fs.writeFileSync(ctaFull, content, "utf8");
-          console.log("  [patched]", ctaFile, "— removed WhatsApp button");
-          removeLineContaining(ctaFile, "whatsapp_label: string;");
-          removeLineContaining(ctaFile, "  whatsapp: string;");
-        }
-      }
-      // Dictionaries: remove whatsapp fields
-      for (const lang of LOCALES) {
-        const dictFile = `dictionaries/${lang}.json`;
-        const dictFull = path.join(target(), dictFile);
-        if (fs.existsSync(dictFull)) {
-          const dict = safeJsonParse(fs.readFileSync(dictFull, "utf8"), dictFile);
-          let changed = false;
-          if (dict.contact?.whatsapp !== undefined) { delete dict.contact.whatsapp; changed = true; }
-          if (dict.cta?.whatsapp !== undefined)      { delete dict.cta.whatsapp; changed = true; }
-          if (dict.cta?.whatsapp_label !== undefined){ delete dict.cta.whatsapp_label; changed = true; }
-          if (changed) {
-            fs.writeFileSync(dictFull, JSON.stringify(dict, null, 2) + "\n", "utf8");
-            console.log("  [patched]", dictFile, "— removed whatsapp fields");
-          }
-        }
-      }
-      break;
-    }
-  }
 }
 
 // ── Interactive setup ─────────────────────────────────────────────────────────
@@ -350,7 +147,14 @@ async function setup(rl) {
 
   if (!features.i18n) collapseI18n();
 
-  return { type: TYPE, features: { ...features, accentColor } };
+  // Build sections map for .launchkit (only enabled sections)
+  const sections = {};
+  const now = new Date().toISOString();
+  if (features.contactForm) sections["contact-form"] = { variant: "business", addedAt: now };
+  if (features.floatingCTA) sections["floating-cta"] = { variant: "default", addedAt: now };
+  if (features.whatsapp)    sections["whatsapp"]     = { variant: "default", addedAt: now };
+
+  return { type: TYPE, features: { i18n: features.i18n, accentColor }, sections };
 }
 
-module.exports = { type: TYPE, featureList, detectState, setup, enable, disable, recolor, COLOR_MAP, COLOR_LABELS };
+module.exports = { type: TYPE, setup, recolor, COLOR_MAP, COLOR_LABELS };

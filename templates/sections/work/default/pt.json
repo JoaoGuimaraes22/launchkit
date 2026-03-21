@@ -1,0 +1,22 @@
+{
+  "title_line1": "PROJECTOS",
+  "title_line2": "SELECIONADOS",
+  "cta": "Ver todos os projetos",
+  "projects": [
+    {
+      "slug": "example-project",
+      "title": "Projeto de Exemplo",
+      "description": "Uma descrição curta do projeto — o que é, para quem é e que problema resolve.",
+      "long_description": "Uma descrição mais longa do projeto. Explique o contexto, o desafio e como o abordou.\n\nDescreva as funcionalidades principais que criou e as decisões que tomou.\n\nTermine com o resultado ou impacto.",
+      "image": "/projects/example-project/1.png",
+      "images": [
+        "/projects/example-project/1.png",
+        "/projects/example-project/2.png",
+        "/projects/example-project/3.png"
+      ],
+      "tags": ["Web Design", "Desenvolvimento"],
+      "live": "https://example.com",
+      "github": null
+    }
+  ]
+}

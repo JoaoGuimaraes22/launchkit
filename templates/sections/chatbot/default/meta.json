@@ -1,0 +1,17 @@
+{
+  "componentName": "ChatWidget",
+  "dictKey": null,
+  "navLink": null,
+  "pageSection": false,
+  "detectFile": "app/api/chat/route.ts",
+  "templates": ["portfolio"],
+  "defaultAfter": null,
+  "props": {},
+  "collapsePatches": [],
+  "accentColorToken": null,
+  "dependencies": [
+    ["google-auth-library", "^10.6.2"],
+    ["adm-zip", "^0.5.16"]
+  ],
+  "extraFiles": []
+}

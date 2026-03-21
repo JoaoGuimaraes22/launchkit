@@ -1,0 +1,24 @@
+{
+  "componentName": "Work",
+  "dictKey": "work",
+  "navLink": {
+    "id": "work",
+    "label": { "en": "Projects", "pt": "Projectos" }
+  },
+  "templates": ["portfolio"],
+  "defaultAfter": null,
+  "pageSection": true,
+  "props": {
+    "i18n": "work={dict.work} locale={locale}",
+    "collapsed": "work={dict.work}"
+  },
+  "collapsePatches": [
+    { "search": "import { type Locale }", "action": "removeLine" },
+    { "search": "locale: Locale;", "action": "removeLine" },
+    { "search": "{ work, locale }", "action": "replace", "replace": "{ work }" },
+    { "search": "`/${locale}/work/${project.slug}`", "action": "replace", "replace": "`/work/${project.slug}`" }
+  ],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

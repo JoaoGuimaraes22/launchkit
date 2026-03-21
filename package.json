@@ -8,7 +8,7 @@
     "setup:portfolio": "node scripts/setup.js --portfolio",
     "setup:business": "node scripts/setup.js --business",
     "setup:blank": "node scripts/setup.js --blank",
-    "toggle": "node scripts/toggle.js",
+    "config": "node scripts/config.js",
     "reset": "node scripts/reset.js",
     "validate": "node scripts/validate.js",
     "status": "node scripts/status.js",

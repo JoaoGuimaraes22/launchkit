@@ -1,0 +1,21 @@
+{
+  "componentName": "ProfileSidebar",
+  "dictKey": null,
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["portfolio"],
+  "defaultAfter": null,
+  "props": {},
+  "collapsePatches": [
+    { "search": "import { type Locale }", "action": "removeLine" },
+    { "search": "locale: Locale;", "action": "removeLine" },
+    { "search": "{ hero, locale, mobile }", "action": "replace", "replace": "{ hero, mobile }" },
+    { "search": "<CtaButton locale={locale} />", "action": "replace", "replace": "<CtaButton />" },
+    { "search": "<ChatNudge locale={locale} />", "action": "replace", "replace": "<ChatNudge />" },
+    { "search": "function CtaButton({ locale }: { locale: Locale })", "action": "replace", "replace": "function CtaButton()" },
+    { "search": "href={`/${locale}#contact`}", "action": "replace", "replace": "href=\"/#contact\"" }
+  ],
+  "accentColorToken": null,
+  "dependencies": [],
+  "extraFiles": []
+}

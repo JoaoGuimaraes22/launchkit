@@ -1,0 +1,13 @@
+{
+  "componentName": "HeroFull",
+  "dictKey": null,
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["portfolio"],
+  "defaultAfter": null,
+  "props": {},
+  "collapsePatches": [],
+  "accentColorToken": null,
+  "dependencies": [],
+  "extraFiles": []
+}

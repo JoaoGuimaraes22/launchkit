@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // launchkit — Portfolio template module
-// Owns: setup flow, feature detection, enable/disable handlers, i18n collapse.
+// Owns: setup flow, i18n collapse.
 
 const fs = require("fs");
 const path = require("path");
@@ -8,44 +8,21 @@ const {
   target,
   ask,
   copyDir,
-  copyFile,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
   replaceInFile,
   addDependency,
-  removeDependency,
-  addNavLink,
   removeNavLink,
   collapseI18nBase,
   DICT_FILES,
   LOCALES_TS_LITERAL,
-  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "portfolio";
 
-// ── Feature list (used by toggle UI) ─────────────────────────────────────────
-
-const featureList = [
-  { key: "webglHero",    label: "WebGL Hero (shader + parallax)", deps: [], detectFile: "{compDir}/HeroFull.tsx" },
-  { key: "chatbot",      label: "Chatbot (Dialogflow ES)",        deps: [], detectFile: "app/api/chat/route.ts" },
-  { key: "contactForm",  label: "Contact Form (Resend API)",      deps: [], detectFile: "app/api/contact/route.ts" },
-  { key: "testimonials", label: "Testimonials section",           deps: [], detectFile: "{compDir}/Reviews.tsx" },
-  { key: "work",         label: "Work section (project gallery)", deps: [], detectFile: "{compDir}/Work.tsx" },
-  { key: "sidebar",      label: "ProfileSidebar (sticky desktop)", deps: [], detectFile: "{compDir}/ProfileSidebar.tsx" },
-  { key: "i18n",         label: "i18n routing", unsupported: true, deps: [], detectFile: "i18n-config.ts" },
-];
-
-// ── Feature detection ─────────────────────────────────────────────────────────
-
-function detectState(compDir) {
-  return detectStateFromRegistry(featureList, compDir);
-}
-
 // ── i18n-collapse helpers (patch locale refs out of individual components) ────
-// Used both by collapseI18n (full setup collapse) and by enable() when copying
-// fresh template files into an already-collapsed (non-i18n) project.
+// Used by collapseI18n (full setup collapse) when i18n is disabled.
 
 function collapseWorkTsx(compDir) {
   removeLineContaining(`${compDir}/Work.tsx`, "import { type Locale }");
@@ -95,83 +72,6 @@ function collapseChatWidgetTsx(compDir) {
     'locale === "pt" ? "Erro de ligação. Tenta novamente." : "Connection error. Please try again."',
     '"Connection error. Please try again."'
   );
-}
-
-// ── Sitemap regeneration (portfolio: i18n × work matrix) ─────────────────────
-
-function regenerateSitemap(i18nActive, workEnabled) {
-  let content;
-  if (i18nActive && workEnabled) {
-    content = `import type { MetadataRoute } from "next";
-import { getDictionary } from "../get-dictionary";
-
-const SITE_URL = "https://your-domain.vercel.app";
-const locales = ${LOCALES_TS_LITERAL};
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const dict = await getDictionary("en");
-  const slugs = dict.work.projects.map((p) => p.slug);
-
-  const homePaths = locales.map((locale) => ({
-    url: \`\${SITE_URL}/\${locale}\`,
-    lastModified: new Date(),
-    alternates: {
-      languages: Object.fromEntries(locales.map((l) => [l, \`\${SITE_URL}/\${l}\`])),
-    },
-  }));
-
-  const workPaths = slugs.flatMap((slug) =>
-    locales.map((locale) => ({
-      url: \`\${SITE_URL}/\${locale}/work/\${slug}\`,
-      lastModified: new Date(),
-    })),
-  );
-
-  return [...homePaths, ...workPaths];
-}
-`;
-  } else if (i18nActive && !workEnabled) {
-    content = `import type { MetadataRoute } from "next";
-
-const SITE_URL = "https://YOUR_DOMAIN";
-const locales = ${LOCALES_TS_LITERAL};
-
-export default function sitemap(): MetadataRoute.Sitemap {
-  return locales.map((locale) => ({
-    url: \`\${SITE_URL}/\${locale}\`,
-    lastModified: new Date(),
-    alternates: {
-      languages: Object.fromEntries(locales.map((l) => [l, \`\${SITE_URL}/\${l}\`])),
-    },
-  }));
-}
-`;
-  } else if (!i18nActive && workEnabled) {
-    content = `import type { MetadataRoute } from "next";
-import dict from "../dictionaries/en.json";
-
-const SITE_URL = "https://YOUR_DOMAIN";
-
-export default function sitemap(): MetadataRoute.Sitemap {
-  const slugs = dict.work.projects.map((p) => p.slug);
-  return [
-    { url: SITE_URL, lastModified: new Date() },
-    ...slugs.map((slug) => ({ url: \`\${SITE_URL}/work/\${slug}\`, lastModified: new Date() })),
-  ];
-}
-`;
-  } else {
-    content = `import type { MetadataRoute } from "next";
-
-const SITE_URL = "https://YOUR_DOMAIN";
-
-export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: SITE_URL, lastModified: new Date() }];
-}
-`;
-  }
-  fs.writeFileSync(path.join(target(), "app/sitemap.ts"), content, "utf8");
-  console.log("  [patched] app/sitemap.ts");
 }
 
 // ── Full i18n collapse (app/[locale]/ → app/) ─────────────────────────────────
@@ -243,198 +143,6 @@ function collapseI18n(features) {
       }
     },
   });
-}
-
-// ── Enable feature ────────────────────────────────────────────────────────────
-
-function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
-  switch (key) {
-    case "webglHero": {
-      copyFile("templates/portfolio/app/[locale]/components/HeroFull.tsx", `${compDir}/HeroFull.tsx`);
-      replaceInFile(pageFile, 'import Hero from "./components/Hero";', 'import HeroFull from "./components/HeroFull";');
-      replaceInFile(pageFile, "<Hero hero={dict.hero} />", "<HeroFull hero={dict.hero} />");
-      break;
-    }
-    case "chatbot": {
-      copyFile("templates/portfolio/app/[locale]/components/ChatWidget.tsx", `${compDir}/ChatWidget.tsx`);
-      copyDir("templates/portfolio/app/api/chat", "app/api/chat");
-      copyDir("templates/portfolio/dialogflow", "dialogflow");
-      if (!i18nActive) collapseChatWidgetTsx(compDir);
-      if (current.sidebar) {
-        copyFile("templates/portfolio/app/[locale]/components/ChatNudge.tsx", `${compDir}/ChatNudge.tsx`);
-        if (!i18nActive) collapseChatNudgeTsx(compDir);
-        const sidebarPath = `${compDir}/ProfileSidebar.tsx`;
-        const sidebarContent = fs.readFileSync(path.join(target(), sidebarPath), "utf8");
-        if (!sidebarContent.includes("ChatNudge")) {
-          replaceInFile(sidebarPath, "import { useRef }", 'import ChatNudge from "./ChatNudge";\nimport { useRef }');
-          const ctaRef = i18nActive ? "<CtaButton locale={locale} />" : "<CtaButton />";
-          const nudgeJSX = i18nActive ? "<ChatNudge locale={locale} />" : "<ChatNudge />";
-          replaceInFile(
-            sidebarPath,
-            `${ctaRef}\n        </motion.div>\n        <motion.div {...fadeUp(inView, 0.45)}`,
-            `${ctaRef}\n        </motion.div>\n        <motion.div {...fadeUp(inView, 0.4)}>${nudgeJSX}</motion.div>\n        <motion.div {...fadeUp(inView, 0.45)}`
-          );
-          replaceInFile(
-            sidebarPath,
-            `${ctaRef}</motion.div>\n      <motion.div className="flex gap-5"`,
-            `${ctaRef}</motion.div>\n      <motion.div {...fadeUp(inView, 0.44)}>${nudgeJSX}</motion.div>\n\n      <motion.div className="flex gap-5"`
-          );
-          const afterInject = fs.readFileSync(path.join(target(), sidebarPath), "utf8");
-          if (!afterInject.includes("<ChatNudge")) {
-            console.warn("  [warn] ChatNudge could not be auto-injected into ProfileSidebar.tsx.");
-            console.warn("         The expected JSX anchor was not found — the file may have been customized.");
-            console.warn("         Add <ChatNudge /> manually below <CtaButton /> in both render blocks.");
-          }
-        }
-      }
-      const chatWidgetJSX = i18nActive ? "      <ChatWidget locale={locale} />" : "      <ChatWidget />";
-      replaceInFile(layoutFile, 'import Navbar from "./components/Navbar";', 'import ChatWidget from "./components/ChatWidget";\nimport Navbar from "./components/Navbar";');
-      replaceInFile(layoutFile, "      {children}", `      {children}\n${chatWidgetJSX}`);
-      addDependency("google-auth-library", "^10.6.2");
-      addDependency("adm-zip", "^0.5.16");
-      break;
-    }
-    case "contactForm": {
-      copyDir("templates/portfolio/app/api/contact", "app/api/contact");
-      addDependency("resend", "^6.9.4");
-      break;
-    }
-    case "testimonials": {
-      copyFile("templates/portfolio/app/[locale]/components/Reviews.tsx", `${compDir}/Reviews.tsx`);
-      replaceInFile(pageFile,
-        'import Services from "./components/Services";',
-        'import Reviews from "./components/Reviews";\nimport Services from "./components/Services";'
-      );
-      replaceInFile(pageFile,
-        "            <Services services={dict.services} />",
-        "            <Reviews reviews={dict.reviews} />\n            <Services services={dict.services} />"
-      );
-      for (const dictFile of DICT_FILES) {
-        addNavLink(dictFile, { id: "testimonials", label: dictFile.includes("pt") ? "Avaliações" : "Reviews" }, "work");
-      }
-      break;
-    }
-    case "work": {
-      copyFile("templates/portfolio/app/[locale]/components/Work.tsx", `${compDir}/Work.tsx`);
-      copyDir("templates/portfolio/app/[locale]/work", i18nActive ? "app/[locale]/work" : "app/work");
-      if (!i18nActive) collapseWorkTsx(compDir);
-      const pageContent = fs.readFileSync(path.join(target(), pageFile), "utf8");
-      const heroAnchor = pageContent.includes("HeroFull")
-        ? 'import HeroFull from "./components/HeroFull";'
-        : 'import Hero from "./components/Hero";';
-      replaceInFile(pageFile, heroAnchor, heroAnchor + '\nimport Work from "./components/Work";');
-      const workJSX = i18nActive
-        ? "            <Work work={dict.work} locale={locale} />"
-        : "            <Work work={dict.work} />";
-      if (fs.readFileSync(path.join(target(), pageFile), "utf8").includes("<Reviews reviews")) {
-        replaceInFile(pageFile,
-          "            <Reviews reviews={dict.reviews} />",
-          workJSX + "\n            <Reviews reviews={dict.reviews} />"
-        );
-      } else {
-        replaceInFile(pageFile,
-          "            <Services services={dict.services} />",
-          workJSX + "\n            <Services services={dict.services} />"
-        );
-      }
-      for (const dictFile of DICT_FILES) {
-        addNavLink(dictFile, { id: "work", label: dictFile.includes("pt") ? "Projectos" : "Projects" }, "home");
-      }
-      regenerateSitemap(i18nActive, true);
-      break;
-    }
-    case "sidebar": {
-      copyFile("templates/portfolio/app/[locale]/components/ProfileSidebar.tsx", `${compDir}/ProfileSidebar.tsx`);
-      if (!i18nActive) collapseSidebarTsx(compDir);
-      if (!current.chatbot) {
-        removeLineContaining(`${compDir}/ProfileSidebar.tsx`, 'import ChatNudge from "./ChatNudge"');
-        removeLineContaining(`${compDir}/ProfileSidebar.tsx`, "<ChatNudge");
-      } else {
-        copyFile("templates/portfolio/app/[locale]/components/ChatNudge.tsx", `${compDir}/ChatNudge.tsx`);
-        if (!i18nActive) collapseChatNudgeTsx(compDir);
-      }
-      const pageContent2 = fs.readFileSync(path.join(target(), pageFile), "utf8");
-      const heroAnchor2 = pageContent2.includes("HeroFull")
-        ? 'import HeroFull from "./components/HeroFull";'
-        : 'import Hero from "./components/Hero";';
-      replaceInFile(pageFile, heroAnchor2, `import ProfileSidebar from "./components/ProfileSidebar";\n${heroAnchor2}`);
-      removeLineContaining(pageFile, "TODO: TEMPLATE — ProfileSidebar removed");
-      break;
-    }
-  }
-}
-
-// ── Disable feature ───────────────────────────────────────────────────────────
-
-function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
-  switch (key) {
-    case "webglHero": {
-      copyFile("templates/portfolio/app/[locale]/components/Hero.tsx", `${compDir}/Hero.tsx`);
-      deleteIfExists(`${compDir}/HeroFull.tsx`);
-      replaceInFile(pageFile, 'import HeroFull from "./components/HeroFull";', 'import Hero from "./components/Hero";');
-      replaceInFile(pageFile, "<HeroFull hero={dict.hero} />", "<Hero hero={dict.hero} />");
-      break;
-    }
-    case "chatbot": {
-      deleteIfExists(`${compDir}/ChatWidget.tsx`);
-      deleteIfExists("app/api/chat");
-      deleteIfExists("dialogflow");
-      removeLineContaining(layoutFile, 'import ChatWidget from "./components/ChatWidget"');
-      removeLineContaining(layoutFile, "<ChatWidget");
-      if (current.sidebar) {
-        deleteIfExists(`${compDir}/ChatNudge.tsx`);
-        removeLineContaining(`${compDir}/ProfileSidebar.tsx`, 'import ChatNudge from "./ChatNudge"');
-        removeLineContaining(`${compDir}/ProfileSidebar.tsx`, "<ChatNudge");
-      }
-      removeDependency("google-auth-library");
-      removeDependency("adm-zip");
-      break;
-    }
-    case "contactForm": {
-      deleteIfExists("app/api/contact");
-      removeDependency("resend");
-      break;
-    }
-    case "testimonials": {
-      deleteIfExists(`${compDir}/Reviews.tsx`);
-      removeLineContaining(pageFile, 'import Reviews from "./components/Reviews"');
-      removeLineContaining(pageFile, "<Reviews");
-      for (const dictFile of DICT_FILES) {
-        removeNavLink(dictFile, "testimonials");
-      }
-      break;
-    }
-    case "work": {
-      deleteIfExists(`${compDir}/Work.tsx`);
-      deleteIfExists(i18nActive ? "app/[locale]/work" : "app/work");
-      deleteIfExists("public/projects");
-      removeLineContaining(pageFile, 'import Work from "./components/Work"');
-      removeLineContaining(pageFile, "<Work");
-      for (const dictFile of DICT_FILES) {
-        removeNavLink(dictFile, "work");
-      }
-      regenerateSitemap(i18nActive, false);
-      break;
-    }
-    case "sidebar": {
-      deleteIfExists(`${compDir}/ProfileSidebar.tsx`);
-      deleteIfExists(`${compDir}/ChatNudge.tsx`);
-      removeLineContaining(pageFile, 'import ProfileSidebar from "./components/ProfileSidebar"');
-      const pagePath = path.join(target(), pageFile);
-      if (fs.existsSync(pagePath)) {
-        const content = fs.readFileSync(pagePath, "utf8");
-        if (!content.includes("TODO: TEMPLATE")) {
-          fs.writeFileSync(
-            pagePath,
-            "// TODO: TEMPLATE — ProfileSidebar removed. Replace the md:flex sidebar layout with a single-column <main> wrapper. Remove <aside> block and any ProfileSidebar JSX.\n" + content,
-            "utf8"
-          );
-          console.log("  [patched]", pageFile, "— added TODO comment for Claude");
-        }
-      }
-      break;
-    }
-  }
 }
 
 // ── Interactive setup ─────────────────────────────────────────────────────────
@@ -578,7 +286,17 @@ async function setup(rl) {
 
   if (!features.i18n) collapseI18n(features);
 
-  return { type: TYPE, features };
+  // Build sections map for .launchkit (only enabled sections)
+  const sections = {};
+  const now = new Date().toISOString();
+  if (features.webglHero)    sections["webgl-hero"]    = { variant: "default", addedAt: now };
+  if (features.chatbot)      sections["chatbot"]       = { variant: "default", addedAt: now };
+  if (features.contactForm)  sections["contact-form"]  = { variant: "portfolio", addedAt: now };
+  if (features.testimonials) sections["testimonials"]  = { variant: "scrolling", addedAt: now };
+  if (features.work)         sections["work"]          = { variant: "default", addedAt: now };
+  if (features.sidebar)      sections["sidebar"]       = { variant: "default", addedAt: now };
+
+  return { type: TYPE, features: { i18n: features.i18n }, sections };
 }
 
-module.exports = { type: TYPE, featureList, detectState, setup, enable, disable };
+module.exports = { type: TYPE, setup };

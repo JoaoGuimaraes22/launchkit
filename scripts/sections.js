@@ -12,6 +12,7 @@ const readline = require("readline");
 const {
   TOOL_ROOT,
   LOCALES,
+  LOCALES_TS_LITERAL,
   DICT_FILES,
   setTarget,
   target,
@@ -23,6 +24,9 @@ const {
   removeDependency,
   addNavLink,
   removeNavLink,
+  copyDir,
+  copyFile,
+  deleteIfExists,
   safeJsonParse,
   parseProjectFlag,
   checkHelp,
@@ -498,6 +502,9 @@ function findNavIdForComponent(componentName) {
     Contact: "contact",
     FAQ: "faq",
     Skills: "skills",
+    HeroFull: "home",
+    Hero: "home",
+    ProfileSidebar: "home",
   };
   return map[componentName] || componentName.toLowerCase();
 }
@@ -505,6 +512,7 @@ function findNavIdForComponent(componentName) {
 // Builds the ctx object passed to hooks.
 function buildCtx(sectionName, variant) {
   return {
+    projectDir,
     compDir,
     pageFile,
     layoutFile,
@@ -515,6 +523,6 @@ function buildCtx(sectionName, variant) {
     features: state.features,
     meta: variant.meta,
     variantDir: variant.dir,
-    lib: { replaceInFile, removeLineContaining, addDependency, removeDependency, safeJsonParse, TOOL_ROOT, LOCALES, DICT_FILES },
+    lib: { replaceInFile, removeLineContaining, addDependency, removeDependency, addNavLink, removeNavLink, copyDir, copyFile, deleteIfExists, safeJsonParse, TOOL_ROOT, LOCALES, LOCALES_TS_LITERAL, DICT_FILES },
   };
 }

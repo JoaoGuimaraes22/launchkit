@@ -1,6 +1,6 @@
 # launchkit — Generator Tool
 
-`node scripts/setup.js --name my-project --output ../` creates a standalone Next.js project. The tool repo stays clean; generated projects are self-contained with a `.launchkit` file for toggle/reset/validate/status via `--project`.
+`node scripts/setup.js --name my-project --output ../` creates a standalone Next.js project. The tool repo stays clean; generated projects are self-contained with a `.launchkit` file for sections/config/reset/validate/status via `--project`.
 
 Next.js 16 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
 
@@ -9,18 +9,17 @@ Next.js 16 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Mot
 ```text
 scripts/
   lib.js              Shared helpers: FS ops, .launchkit I/O, collapseI18nBase, loadTemplates,
-                      detectStateFromRegistry, discoverSections, parseSectionsFromPage,
-                      detectInstalledSections, LOCALES
+                      discoverSections, parseSectionsFromPage, detectInstalledSections, LOCALES
   setup.js            --name + --output → create project, delegate to template module
-  toggle.js           --project → enable/disable features
-  sections.js         --project → add/remove/status for library sections
+  config.js           --project → project-wide settings (i18n display, accent color recolor)
+  sections.js         --project → add/remove/status for all sections (library + template-native)
   reset.js            --project → strip to base scaffold
   validate.js         --project → check YOUR_* placeholders, TODOs, images, .env.local
-  status.js           --project → read-only feature state
+  status.js           --project → read-only project state + installed sections
   templates/
-    portfolio.js      setup(), featureList (with detectFile + deps), enable(), disable()
-    business.js       same interface + recolor(), whatsapp has custom detect
-    blank.js          setup(), minimal featureList (i18n only)
+    portfolio.js      setup() → returns { type, features, sections }
+    business.js       setup() + recolor(), COLOR_MAP, COLOR_LABELS
+    blank.js          setup() → minimal (i18n only)
 templates/
   base/               Clean Next.js scaffold (copied first to every project)
   portfolio/          Portfolio source: app/[locale]/, api/, dialogflow/, dictionaries/, public/
@@ -32,13 +31,18 @@ templates/
     contact-form/portfolio/  Resend contact API route (portfolio)
     contact-form/business/   Resend contact API route with phone (business)
     floating-cta/default/    Fixed mobile CTA bar with call/WhatsApp/book (business)
+    work/default/            Project gallery + detail pages with hooks (portfolio)
+    chatbot/default/         Dialogflow ChatWidget + API route + ChatNudge coupling (portfolio)
+    sidebar/default/         ProfileSidebar sticky desktop layout with hooks (portfolio)
+    webgl-hero/default/      HeroFull shader/parallax hero, swaps Hero ↔ HeroFull (portfolio)
+    whatsapp/default/        WhatsApp button in Contact + FloatingCTA via markers (business)
 ```
 
 All scripts support `--help`. If `--project` is omitted, scripts fall back to cwd.
 
-**Adding a template:** create `scripts/templates/foo.js` exporting `{ type, featureList, detectState, setup, enable, disable }` and `templates/foo/`. Templates are auto-discovered at runtime from `scripts/templates/` — no manual registration needed. Each feature in `featureList` should declare `detectFile` (use `{compDir}` placeholder for component paths), `deps` (array of feature keys it depends on), and standard `label`/`key`.
+**Adding a template:** create `scripts/templates/foo.js` exporting `{ type, setup }` and `templates/foo/`. Templates are auto-discovered at runtime from `scripts/templates/` — no manual registration needed. `setup(rl)` must return `{ type, features, sections }` where `features` holds project-wide config (i18n, accentColor) and `sections` maps section names to `{ variant, addedAt }`.
 
-**Adding a library section:** create `templates/sections/[name]/[variant]/` with `component.tsx`, `en.json`, `pt.json`, and `meta.json`. Sections are auto-discovered by `discoverSections()` — no registration needed. See `meta.json` schema below.
+**Adding a library section:** create `templates/sections/[name]/[variant]/` with `meta.json` and any combination of `component.tsx`, `en.json`, `pt.json`, `hooks.js`. Only `meta.json` is required — `component.tsx` is optional for non-page sections (e.g. contact-form manages only an API route). Sections are auto-discovered by `discoverSections()` — no registration needed. See `meta.json` schema below.
 
 ## Generated Project Config
 
@@ -47,15 +51,13 @@ All scripts support `--help`. If `--project` is omitted, scripts fall back to cw
 - **params**: `params: Promise<{ locale: string }>` with `(await params) as { locale: Locale }` cast
 - **Fonts**: Geist Sans/Mono · **BG**: `#fafafa` · **Accent**: `indigo-600`
 
-## Feature Detection
+## Section Detection
 
-Features are detected by file existence via `detectFile` in each feature's registry entry (overrides `.launchkit` if files changed manually). Detection is driven by `detectStateFromRegistry()` in `lib.js` — templates only need custom `detectState` logic for content-based checks (e.g. business `whatsapp` checks for `wa.me/` in Contact.tsx).
+All sections (template-native and library) are detected by `detectInstalledSections()` which uses `meta.detectFile`, falls back to `{compDir}/{componentName}.tsx`, then to `hooks.detect(ctx)` for content-based detection (e.g. whatsapp checks for `wa.me/` in Contact.tsx). All sections are managed via `sections.js`. Project-wide config (i18n, accent color) is managed via `config.js`.
 
-**Portfolio:** `webglHero` → `{compDir}/HeroFull.tsx`, `chatbot` → `app/api/chat/route.ts`, `contactForm` → `app/api/contact/route.ts`, `testimonials` → `{compDir}/Reviews.tsx`, `work` → `{compDir}/Work.tsx`, `sidebar` → `{compDir}/ProfileSidebar.tsx`, `i18n` → `i18n-config.ts`
+**Portfolio sections:** `webgl-hero` → `{compDir}/HeroFull.tsx`, `chatbot` → `app/api/chat/route.ts`, `contact-form` → `app/api/contact/route.ts`, `testimonials` → `{compDir}/Reviews.tsx`, `work` → `{compDir}/Work.tsx`, `sidebar` → `{compDir}/ProfileSidebar.tsx`
 
-**Business:** `contactForm` → `app/api/contact/route.ts`, `floatingCTA` → `{compDir}/FloatingCTA.tsx`, `whatsapp` → custom (content-based), `i18n` → `i18n-config.ts`
-
-**Feature dependencies:** declared via `deps` array in `featureList`. Toggle warns before enabling a feature with missing deps or disabling a feature that others depend on. Example: business `whatsapp` depends on `["contactForm", "floatingCTA"]`.
+**Business sections:** `contact-form` → `app/api/contact/route.ts`, `floating-cta` → `{compDir}/FloatingCTA.tsx`, `whatsapp` → custom (content-based)
 
 Components live in `app/[locale]/components/` (i18n on) or `app/components/` (i18n off).
 
@@ -66,17 +68,27 @@ Components live in `app/[locale]/components/` (i18n on) or `app/components/` (i1
   "version": 1,
   "name": "my-project",
   "type": "portfolio",
-  "features": { "i18n": true, "webglHero": true, "chatbot": false, "contactForm": true, "testimonials": true, "work": true, "sidebar": true },
-  "sections": { "skills": { "variant": "grid", "addedAt": "2026-03-21T..." } }
+  "features": { "i18n": true },
+  "sections": {
+    "webgl-hero": { "variant": "default", "addedAt": "2026-03-21T..." },
+    "chatbot": { "variant": "default", "addedAt": "2026-03-21T..." },
+    "contact-form": { "variant": "portfolio", "addedAt": "2026-03-21T..." },
+    "testimonials": { "variant": "scrolling", "addedAt": "2026-03-21T..." },
+    "work": { "variant": "default", "addedAt": "2026-03-21T..." },
+    "sidebar": { "variant": "default", "addedAt": "2026-03-21T..." },
+    "skills": { "variant": "grid", "addedAt": "2026-03-21T..." }
+  }
 }
 ```
 
-`features` holds project-wide config and template-native toggles. `sections` tracks library sections added via `sections.js`. Business features: `i18n`, `contactForm`, `floatingCTA`, `whatsapp`, `accentColor`. Do not delete this file.
+`features` holds project-wide config only: `i18n` (boolean) and `accentColor` (business only). `sections` tracks all sections managed via `sections.js` — both template-native and library sections. File-based detection is authoritative. Do not delete this file.
 
 ## Section Library
 
-`node scripts/sections.js --project <path>` — interactive add/remove for library sections.
+`node scripts/sections.js --project <path>` — interactive add/remove for all sections (library + template-native).
 `--status` lists installed + available sections. `--remove` to remove.
+
+Complex sections use `hooks.js` for logic beyond meta.json (directory copies, layout injection, component swaps, marker-based JSX, sitemap regeneration). Hook execution order: `afterEnable` runs after `standardEnable`; `beforeDisable` runs before `standardDisable`; `afterDisable` runs after.
 
 Sections live in `templates/sections/[name]/[variant]/`. Each variant contains:
 
@@ -104,9 +116,30 @@ Sections live in `templates/sections/[name]/[variant]/`. Each variant contains:
 }
 ```
 
-### Section Detection
+### hooks.js Context
 
-`detectInstalledSections(compDir, launchkitSections)` cross-references `discoverSections()` with component files in the project. Uses `meta.detectFile` if set, otherwise checks `{compDir}/{componentName}.tsx`. Uses `.launchkit` recorded variant to disambiguate when variants share a `componentName`. `parseSectionsFromPage(pageFile)` extracts `<ComponentName` lines from page.tsx, excluding structural components (`Hero`, `HeroFull`, `ProfileSidebar`, `Footer`, `FloatingCTA`).
+The `ctx` object passed to hook functions contains:
+
+```js
+{
+  projectDir,     // absolute path to the generated project
+  compDir,        // "app/[locale]/components" or "app/components"
+  pageFile,       // "app/[locale]/page.tsx" or "app/page.tsx"
+  layoutFile,     // "app/[locale]/layout.tsx" or "app/layout.tsx"
+  i18nActive,     // boolean
+  accentColor,    // current accent color string
+  state,          // full .launchkit state
+  sections,       // state.sections object
+  features,       // state.features object
+  meta,           // this section's meta.json
+  variantDir,     // absolute path to the variant directory
+  lib,            // { replaceInFile, removeLineContaining, addDependency, removeDependency, addNavLink, removeNavLink, copyDir, copyFile, deleteIfExists, safeJsonParse, TOOL_ROOT, LOCALES, LOCALES_TS_LITERAL, DICT_FILES }
+}
+```
+
+### detectInstalledSections
+
+`detectInstalledSections(compDir, launchkitSections, templateType)` cross-references `discoverSections()` with component files in the project. Filters by template type compatibility to avoid false positives (e.g. business Reviews.tsx ≠ portfolio testimonials). Uses `meta.detectFile` if set, otherwise checks `{compDir}/{componentName}.tsx`. Falls back to `hooks.detect(ctx)` for content-based detection (e.g. whatsapp checks for `wa.me/` in Contact.tsx). Uses `.launchkit` recorded variant to disambiguate when variants share a `componentName`. `parseSectionsFromPage(pageFile)` extracts `<ComponentName` lines from page.tsx, excluding structural components (`Hero`, `HeroFull`, `ProfileSidebar`, `Footer`, `FloatingCTA`).
 
 ## Placeholder Markers
 
