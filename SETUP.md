@@ -27,7 +27,14 @@ npm install
 ### 2. Run the setup script
 
 ```bash
-node scripts/setup.js
+npm run setup
+```
+
+Skip the type-selection prompt with a shorthand:
+
+```bash
+npm run setup:portfolio   # go straight to portfolio feature selection
+npm run setup:business    # go straight to business site feature selection
 ```
 
 Select your project type, then answer `y/n` for each feature:
@@ -149,6 +156,24 @@ npm run validate
 ```
 
 This checks for unreplaced `YOUR_*` placeholders, `// TODO: TEMPLATE` comments, and a missing `.env.local`. Exits with code `1` if anything is found.
+
+---
+
+## Scripts Reference
+
+| Script                    | What it does                                                                 |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `npm run setup`           | Run the interactive setup wizard (select template type + features)           |
+| `npm run setup:portfolio` | Skip type selection — go straight to portfolio feature prompts               |
+| `npm run setup:business`  | Skip type selection — go straight to business site feature prompts           |
+| `npm run toggle`          | Enable or disable individual features without a full reset; loops if desired |
+| `npm run status`          | Print current template type and feature state (read-only, no prompts)        |
+| `npm run reset`           | Remove everything setup added; restore base state for a fresh setup          |
+| `npm run validate`        | Check for unreplaced `YOUR_*` placeholders and `TODO: TEMPLATE` comments     |
+| `npm run check`           | Pre-deploy gate: runs `validate` → `lint` → `build`, exits on first failure  |
+| `npm run dev`             | Start the Next.js dev server at `http://localhost:3000`                      |
+| `npm run build`           | Production build (verify before deploying)                                   |
+| `npm run lint`            | Run ESLint across the project                                                |
 
 ---
 

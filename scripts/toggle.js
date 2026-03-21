@@ -8,94 +8,18 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const {
+  ROOT,
+  deleteIfExists,
+  copyDir,
+  copyFile,
+  removeLineContaining,
+  replaceInFile,
+  addDependency,
+  removeDependency,
+} = require("./lib");
 
-const ROOT = path.resolve(__dirname, "..");
 const LAUNCHKIT_PATH = path.join(ROOT, ".launchkit");
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function deleteIfExists(relPath) {
-  const full = path.join(ROOT, relPath);
-  if (fs.existsSync(full)) {
-    fs.rmSync(full, { recursive: true, force: true });
-    console.log("  [removed]", relPath);
-  }
-}
-
-function copyDir(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
-  if (!fs.existsSync(src)) return;
-  fs.mkdirSync(dest, { recursive: true });
-  for (const entry of fs.readdirSync(src)) {
-    const srcEntry = path.join(src, entry);
-    const destEntry = path.join(dest, entry);
-    if (fs.statSync(srcEntry).isDirectory()) {
-      copyDir(path.join(srcRel, entry), path.join(destRel, entry));
-    } else {
-      fs.copyFileSync(srcEntry, destEntry);
-      console.log("  [copied]", path.join(srcRel, entry), "→", path.join(destRel, entry));
-    }
-  }
-}
-
-function copyFile(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
-  if (!fs.existsSync(src)) {
-    console.warn("  [warn] source not found:", srcRel);
-    return;
-  }
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
-  console.log("  [copied]", srcRel, "→", destRel);
-}
-
-function removeLineContaining(relPath, substring) {
-  const full = path.join(ROOT, relPath);
-  if (!fs.existsSync(full)) return;
-  const original = fs.readFileSync(full, "utf8");
-  const filtered = original
-    .split("\n")
-    .filter((line) => !line.includes(substring))
-    .join("\n");
-  if (filtered !== original) {
-    fs.writeFileSync(full, filtered, "utf8");
-    console.log("  [patched]", relPath, "— removed line containing:", substring.trim());
-  }
-}
-
-function replaceInFile(relPath, searchStr, replaceStr) {
-  const full = path.join(ROOT, relPath);
-  if (!fs.existsSync(full)) return;
-  const original = fs.readFileSync(full, "utf8");
-  const updated = original.split(searchStr).join(replaceStr);
-  if (updated !== original) {
-    fs.writeFileSync(full, updated, "utf8");
-    console.log("  [patched]", relPath);
-  }
-}
-
-function addDependency(depName, version) {
-  const pkgPath = path.join(ROOT, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  if (!pkg.dependencies) pkg.dependencies = {};
-  if (!pkg.dependencies[depName]) {
-    pkg.dependencies[depName] = version;
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
-    console.log("  [patched] package.json — added dependency:", depName, version);
-  }
-}
-
-function removeDependency(depName) {
-  const pkgPath = path.join(ROOT, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  if (pkg.dependencies && pkg.dependencies[depName]) {
-    delete pkg.dependencies[depName];
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
-    console.log("  [patched] package.json — removed dependency:", depName);
-  }
-}
 
 function ask(rl, question) {
   return new Promise((resolve) => {
@@ -581,11 +505,8 @@ function getFeatureList(type) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-async function main() {
-  console.log("\n╔══════════════════════════════════════════╗");
-  console.log("║      launchkit — Toggle Features         ║");
-  console.log("╚══════════════════════════════════════════╝\n");
-
+// Runs one toggle interaction. Returns true if a toggle was performed, false otherwise.
+async function runToggle(rl) {
   const state = readLaunchkit();
   const { type } = state;
   const i18nActive = fs.existsSync(path.join(ROOT, "i18n-config.ts"));
@@ -596,7 +517,7 @@ async function main() {
   const current = detectCurrentState(type, compDir);
   const features = getFeatureList(type);
 
-  console.log(`  Template : ${type.charAt(0).toUpperCase() + type.slice(1)}`);
+  console.log(`\n  Template : ${type.charAt(0).toUpperCase() + type.slice(1)}`);
   console.log(`  i18n     : ${i18nActive ? "enabled" : "disabled (collapsed)"}\n`);
 
   features.forEach((f, i) => {
@@ -605,37 +526,30 @@ async function main() {
     console.log(`  [${i + 1}] ${icon} ${f.label}${suffix}`);
   });
 
-  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-
-  const choice = await askChoice(rl, "\nSelect feature to toggle", features.map((f, i) => `${f.label}`));
+  const choice = await askChoice(rl, "\nSelect feature to toggle", features.map((f) => `${f.label}`));
 
   if (choice === null) {
     console.log("\n  Invalid choice. Exiting.\n");
-    rl.close();
-    return;
+    return false;
   }
 
   const selected = features[choice - 1];
 
   if (selected.unsupported) {
     console.log(`\n  ⚠  i18n routing cannot be toggled in-place.\n  Run npm run reset + node scripts/setup.js to change this setting.\n`);
-    rl.close();
-    return;
+    return false;
   }
 
   const isCurrentlyEnabled = current[selected.key];
   const action = isCurrentlyEnabled ? "disable" : "enable";
   const confirmed = await ask(rl, `\n  ${action.charAt(0).toUpperCase() + action.slice(1)} "${selected.label}"?`);
-  rl.close();
 
   if (!confirmed) {
     console.log("\n  Cancelled.\n");
-    return;
+    return false;
   }
 
   console.log(`\n─── ${action.charAt(0).toUpperCase() + action.slice(1)}ing: ${selected.label} ────────────────────────────────────\n`);
-
-  const ctx = { type, compDir, pageFile, layoutFile, i18nActive, current };
 
   try {
     if (action === "enable") {
@@ -688,6 +602,28 @@ async function main() {
     console.log("  ⚠  page.tsx still has the sidebar layout JSX — Bootstrap or");
     console.log("     Claude Code will clean it up (look for the TODO comment).");
   }
+
+  return true;
+}
+
+async function main() {
+  console.log("\n╔══════════════════════════════════════════╗");
+  console.log("║      launchkit — Toggle Features         ║");
+  console.log("╚══════════════════════════════════════════╝");
+
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
+  try {
+    while (true) {
+      const toggled = await runToggle(rl);
+      if (!toggled) break;
+      const again = await ask(rl, "  Toggle another feature?");
+      if (!again) break;
+    }
+  } finally {
+    rl.close();
+  }
+
   console.log("  Run npm run dev to preview.\n");
 }
 

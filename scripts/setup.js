@@ -8,71 +8,14 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-
-const ROOT = path.resolve(__dirname, "..");
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function deleteIfExists(relPath) {
-  const full = path.join(ROOT, relPath);
-  if (fs.existsSync(full)) {
-    fs.rmSync(full, { recursive: true, force: true });
-    console.log("  [removed]", relPath);
-  }
-}
-
-function copyDir(srcRel, destRel) {
-  const src = path.join(ROOT, srcRel);
-  const dest = path.join(ROOT, destRel);
-  if (!fs.existsSync(src)) return;
-  fs.mkdirSync(dest, { recursive: true });
-  for (const entry of fs.readdirSync(src)) {
-    const srcEntry = path.join(src, entry);
-    const destEntry = path.join(dest, entry);
-    if (fs.statSync(srcEntry).isDirectory()) {
-      copyDir(path.join(srcRel, entry), path.join(destRel, entry));
-    } else {
-      fs.copyFileSync(srcEntry, destEntry);
-      console.log("  [copied]", path.join(srcRel, entry), "→", path.join(destRel, entry));
-    }
-  }
-}
-
-function removeLineContaining(relPath, substring) {
-  const full = path.join(ROOT, relPath);
-  if (!fs.existsSync(full)) return;
-  const original = fs.readFileSync(full, "utf8");
-  const filtered = original
-    .split("\n")
-    .filter((line) => !line.includes(substring))
-    .join("\n");
-  if (filtered !== original) {
-    fs.writeFileSync(full, filtered, "utf8");
-    console.log("  [patched]", relPath, "— removed line containing:", substring.trim());
-  }
-}
-
-function replaceInFile(relPath, searchStr, replaceStr) {
-  const full = path.join(ROOT, relPath);
-  if (!fs.existsSync(full)) return;
-  const original = fs.readFileSync(full, "utf8");
-  const updated = original.split(searchStr).join(replaceStr);
-  if (updated !== original) {
-    fs.writeFileSync(full, updated, "utf8");
-    console.log("  [patched]", relPath);
-  }
-}
-
-function addDependency(depName, version) {
-  const pkgPath = path.join(ROOT, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-  if (!pkg.dependencies) pkg.dependencies = {};
-  if (!pkg.dependencies[depName]) {
-    pkg.dependencies[depName] = version;
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
-    console.log("  [patched] package.json — added dependency:", depName, version);
-  }
-}
+const {
+  ROOT,
+  deleteIfExists,
+  copyDir,
+  removeLineContaining,
+  replaceInFile,
+  addDependency,
+} = require("./lib");
 
 function ask(rl, question) {
   return new Promise((resolve) => {
@@ -363,7 +306,7 @@ async function setupBusiness(rl) {
 
   if (!features.i18n) collapseI18n("business", features);
 
-  return { type: "business", features };
+  return { type: "business", features: { ...features, accentColor } };
 }
 
 // ─── i18n Routing Collapse ────────────────────────────────────────────────────
