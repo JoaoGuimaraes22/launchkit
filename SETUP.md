@@ -34,27 +34,44 @@ Select your project type, then answer `y/n` for each feature:
 
 **Portfolio features:**
 
-| Feature | What it does |
-|---------|-------------|
-| **i18n** | Bilingual routing (`/en`, `/pt`), LanguageSwitcher, locale dictionaries |
-| **WebGL Hero** | Full-screen WebGL shader hero with animated blobs and mouse tracking |
-| **Chatbot** | Dialogflow ES chat widget + `/api/chat` proxy route |
-| **Contact Form** | Resend email sender + `/api/contact` route |
-| **Testimonials** | Infinite-scroll testimonial columns |
-| **Work** | Project gallery + individual project detail pages |
-| **ProfileSidebar** | Sticky desktop sidebar with photo, bio, social links |
+| Feature            | What it does                                                            |
+| ------------------ | ----------------------------------------------------------------------- |
+| **i18n**           | Bilingual routing (`/en`, `/pt`), LanguageSwitcher, locale dictionaries |
+| **WebGL Hero**     | Full-screen WebGL shader hero with animated blobs and mouse tracking    |
+| **Chatbot**        | Dialogflow ES chat widget + `/api/chat` proxy route                     |
+| **Contact Form**   | Resend email sender + `/api/contact` route                              |
+| **Testimonials**   | Infinite-scroll testimonial columns                                     |
+| **Work**           | Project gallery + individual project detail pages                       |
+| **ProfileSidebar** | Sticky desktop sidebar with photo, bio, social links                    |
 
 **Business Site features:**
 
-| Feature | What it does |
-|---------|-------------|
-| **i18n** | Bilingual routing (`/en`, `/pt`), LanguageSwitcher, locale dictionaries |
-| **Contact Form** | Resend email sender + `/api/contact` route |
-| **FloatingCTA** | Fixed mobile bottom bar with Call / WhatsApp / Book buttons |
-| **WhatsApp button** | WhatsApp link in FloatingCTA and contact section |
+| Feature                | What it does                                                               |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **i18n**               | Bilingual routing (`/en`, `/pt`), LanguageSwitcher, locale dictionaries    |
+| **Contact Form**       | Resend email sender + `/api/contact` route                                 |
+| **FloatingCTA**        | Fixed mobile bottom bar with Call / WhatsApp / Book buttons                |
+| **WhatsApp button**    | WhatsApp link in FloatingCTA and contact section                           |
 | **Brand accent color** | Replaces all `indigo-` Tailwind classes with your chosen color (8 presets) |
 
-The script copies the selected template into `app/`, applies feature removals, replaces accent colors, collapses i18n routing if disabled, and generates a trimmed `.env.example`.
+The script copies the selected template into `app/`, applies feature removals, replaces accent colors, collapses i18n routing if disabled, generates a trimmed `.env.example`, and writes a `.launchkit` file that records your choices:
+
+```json
+{
+  "type": "portfolio",
+  "features": {
+    "i18n": true,
+    "webglHero": true,
+    "chatbot": false,
+    "contactForm": true,
+    "testimonials": true,
+    "work": true,
+    "sidebar": true
+  }
+}
+```
+
+`.launchkit` is the authoritative record of template type and active features. It is read by `npm run toggle` and `npm run status` — do not delete it.
 
 ### 3. Set up environment variables
 
@@ -76,20 +93,20 @@ Claude will ask for your content, fill in all dictionary files and component met
 
 **Portfolio:**
 
-| File | Description |
-|------|-------------|
-| `public/hero.jpg` | Hero background — dark photo works best (1920×1080) |
-| `public/profile.jpg` | Your profile photo — square crop |
-| `public/og-image.png` | OG social card (1200×630) |
-| `public/projects/[slug]/1-3.png` | Screenshots per project |
+| File                             | Description                                         |
+| -------------------------------- | --------------------------------------------------- |
+| `public/hero.jpg`                | Hero background — dark photo works best (1920×1080) |
+| `public/profile.jpg`             | Your profile photo — square crop                    |
+| `public/og-image.png`            | OG social card (1200×630)                           |
+| `public/projects/[slug]/1-3.png` | Screenshots per project                             |
 
 **Business Site:**
 
-| File | Description |
-| ------ | ----------- |
-| `public/hero.jpg` | Hero background — dark photo works best (1920×1080) |
-| `public/about.jpg` | Team or workspace photo (4:3 or square) |
-| `public/og-image.png` | OG social card (1200×630) |
+| File                  | Description                                         |
+| --------------------- | --------------------------------------------------- |
+| `public/hero.jpg`     | Hero background — dark photo works best (1920×1080) |
+| `public/about.jpg`    | Team or workspace photo (4:3 or square)             |
+| `public/og-image.png` | OG social card (1200×630)                           |
 
 ### 6. Preview and deploy
 

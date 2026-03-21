@@ -74,7 +74,7 @@ public/
 
 ```tsx
 <>
-  <HeroFull hero={dict.hero} />                          {/* full-width, outside sidebar */}
+  <HeroFull hero={dict.hero} /> {/* full-width, outside sidebar */}
   <div className="md:flex xl:mx-auto xl:max-w-350">
     <aside className="hidden md:flex md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:w-88 ...">
       <ProfileSidebar />
@@ -92,15 +92,15 @@ No `pt-14` on outer wrapper — navbar floats over HeroFull. Sidebar `md:top-14`
 
 ## Sections
 
-| Section      | id             | Nav label | Dict key   |
-| ------------ | -------------- | --------- | ---------- |
-| Hero         | `home`         | Home      | `hero`     |
-| Work         | `work`         | Work      | `work`     |
+| Section      | id             | Nav label | Dict key       |
+| ------------ | -------------- | --------- | -------------- |
+| Hero         | `home`         | Home      | `hero`         |
+| Work         | `work`         | Work      | `work`         |
 | Testimonials | `testimonials` | Reviews   | `testimonials` |
-| Services     | `services`     | Services  | `services` |
-| Process      | `process`      | Workflow  | `process`  |
-| About        | `about`        | About     | `about`    |
-| Contact      | `contact`      | Contact   | `contact`  |
+| Services     | `services`     | Services  | `services`     |
+| Process      | `process`      | Workflow  | `process`      |
+| About        | `about`        | About     | `about`        |
+| Contact      | `contact`      | Contact   | `contact`      |
 
 ## HeroFull
 
@@ -130,12 +130,12 @@ Client component. 2×2 grid (`grid-cols-1 sm:grid-cols-2 gap-4`), `min-h-55` car
 
 **Card styles** (by index):
 
-| # | Background              | Text color   | Hover              |
-| - | ----------------------- | ------------ | ------------------ |
-| 0 | `bg-indigo-600`         | white        | `brightness-110`   |
-| 1 | `bg-white border`       | zinc-900     | `shadow-md`        |
-| 2 | `bg-zinc-100`           | zinc-900     | `shadow-md`        |
-| 3 | `bg-indigo-50`          | indigo-900   | `shadow-md`        |
+| #   | Background        | Text color | Hover            |
+| --- | ----------------- | ---------- | ---------------- |
+| 0   | `bg-indigo-600`   | white      | `brightness-110` |
+| 1   | `bg-white border` | zinc-900   | `shadow-md`      |
+| 2   | `bg-zinc-100`     | zinc-900   | `shadow-md`      |
+| 3   | `bg-indigo-50`    | indigo-900 | `shadow-md`      |
 
 Card anatomy: title + description (top), `Learn more →` button + large emoji (bottom). Clicking "Learn more" opens an `AnimatePresence` modal with `scale 0.92→1` entrance, checklist of `details[]` items, Escape/backdrop-click to close, body scroll locked.
 
@@ -199,13 +199,15 @@ Dict: `services.items[].details: string[]` (added) — bullet points shown in mo
 
 ## Scripts
 
-| Script | Command | What it does |
-| ------ | ------- | ----------- |
-| Setup | `node scripts/setup.js` | Select template, toggle features, collapse i18n if disabled, replace accent color (business), generate `.env.example` |
-| Reset | `npm run reset` | Remove everything setup.js added; restore base state |
-| Validate | `npm run validate` | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments; exit 1 if found |
-| Dialogflow gen | `node dialogflow/generate.js` | Regenerate `intents/` from `generate.js` source (portfolio only) |
-| Dialogflow zip | `node dialogflow/zip.js` | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import (portfolio only) |
+| Script         | Command                                              | What it does                                                                                                          |
+| -------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Setup          | `node scripts/setup.js`                              | Select template, toggle features, collapse i18n if disabled, replace accent color (business), generate `.env.example` |
+| Setup (direct) | `npm run setup:portfolio` / `npm run setup:business` | Skip type-selection prompt and go straight to feature selection                                                       |
+| Reset          | `npm run reset`                                      | Remove everything setup.js added; restore base state                                                                  |
+| Toggle         | `npm run toggle`                                     | Show current feature state and enable/disable individual features without full reset                                  |
+| Validate       | `npm run validate`                                   | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments; exit 1 if found                               |
+| Dialogflow gen | `node dialogflow/generate.js`                        | Regenerate `intents/` from `generate.js` source (portfolio only)                                                      |
+| Dialogflow zip | `node dialogflow/zip.js`                             | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import (portfolio only)                                   |
 
 > **Dialogflow workflow**: edit `generate.js` (look for `// EDIT:` comments) → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import zip in Dialogflow console. Never edit `intents/` directly.
 
@@ -253,18 +255,39 @@ Personal content uses these sentinel strings — grep for them to find what need
 - `YOUR_CITY` / `YOUR_TIMEZONE` — location in ProfileSidebar
 - `// TODO: TEMPLATE` — comment left by setup script marking manual Claude cleanup
 
+### `.launchkit`
+
+`setup.js` writes `.launchkit` (JSON) at the end of every run. It is the authoritative source for template type and initial feature choices — read by `npm run toggle` and `npm run status`.
+
+```json
+{
+  "type": "portfolio",
+  "features": {
+    "i18n": true,
+    "webglHero": true,
+    "chatbot": false,
+    "contactForm": true,
+    "testimonials": true,
+    "work": true,
+    "sidebar": true
+  }
+}
+```
+
+For a business site the `features` keys are `i18n`, `contactForm`, `floatingCTA`, `whatsapp`. `toggle.js` updates this file after each toggle. Do not delete it.
+
 ### Feature Detection
 
-Check file existence to determine which features are active in a cloned instance:
+Check file existence to determine which features are currently active (overrides `.launchkit` if files were changed manually):
 
-| Feature | Active if this file exists |
-|---------|---------------------------|
-| i18n | `i18n-config.ts` |
-| WebGL Hero | `app/[locale]/components/HeroFull.tsx` |
-| Chatbot | `app/api/chat/route.ts` |
-| Contact Form | `app/api/contact/route.ts` |
-| Testimonials | `app/[locale]/components/Testimonials.tsx` |
-| Work | `app/[locale]/components/Work.tsx` |
+| Feature        | Active if this file exists                   |
+| -------------- | -------------------------------------------- |
+| i18n           | `i18n-config.ts`                             |
+| WebGL Hero     | `app/[locale]/components/HeroFull.tsx`       |
+| Chatbot        | `app/api/chat/route.ts`                      |
+| Contact Form   | `app/api/contact/route.ts`                   |
+| Testimonials   | `app/[locale]/components/Testimonials.tsx`   |
+| Work           | `app/[locale]/components/Work.tsx`           |
 | ProfileSidebar | `app/[locale]/components/ProfileSidebar.tsx` |
 
 If i18n was disabled during setup, `app/[locale]/` does not exist — `setup.js` collapses it to `app/` automatically. Substitute `app/` for `app/[locale]/` in the paths above.
@@ -288,11 +311,11 @@ When `node scripts/setup.js` selects **Business Site**, the business template is
 
 ### Feature Detection (Business Site)
 
-| Feature | Active if this file exists |
-|---------|---------------------------|
-| Business site | `app/[locale]/components/Footer.tsx` (or `app/components/Footer.tsx` if i18n disabled) |
-| i18n | `i18n-config.ts` |
-| Contact form | `app/api/contact/route.ts` |
+| Feature         | Active if this file exists                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------------ |
+| Business site   | `app/[locale]/components/Footer.tsx` (or `app/components/Footer.tsx` if i18n disabled)           |
+| i18n            | `i18n-config.ts`                                                                                 |
+| Contact form    | `app/api/contact/route.ts`                                                                       |
 | FloatingCTA bar | `app/[locale]/components/FloatingCTA.tsx` (or `app/components/FloatingCTA.tsx` if i18n disabled) |
 
 ### Key Differences from Portfolio

@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "reset": "node scripts/reset.js",
+    "setup:portfolio": "node scripts/setup.js --portfolio",
+    "setup:business": "node scripts/setup.js --business",
+    "toggle": "node scripts/toggle.js",
     "validate": "node scripts/validate.js"
   },
   "dependencies": {

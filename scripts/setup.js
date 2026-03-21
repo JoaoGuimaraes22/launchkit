@@ -579,10 +579,20 @@ async function main() {
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
-  const typeChoice = await askChoice(rl, "[0] Project type?", [
-    "Portfolio    — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
-    "Business Site — local business (services, reviews, FAQ, contact, footer)",
-  ]);
+  const typeArg = process.argv[2];
+  let typeChoice;
+  if (typeArg === "--portfolio") {
+    console.log("▸  Type: Portfolio (from argument)\n");
+    typeChoice = 1;
+  } else if (typeArg === "--business") {
+    console.log("▸  Type: Business Site (from argument)\n");
+    typeChoice = 2;
+  } else {
+    typeChoice = await askChoice(rl, "[0] Project type?", [
+      "Portfolio    — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
+      "Business Site — local business (services, reviews, FAQ, contact, footer)",
+    ]);
+  }
 
   let result;
   if (typeChoice === 1) {
@@ -602,6 +612,14 @@ async function main() {
   } catch {
     console.warn("  npm install encountered warnings — check output above.");
   }
+
+  // ─── Write .launchkit ──────────────────────────────────────────────────────
+  fs.writeFileSync(
+    path.join(ROOT, ".launchkit"),
+    JSON.stringify({ type: result.type, features: result.features }, null, 2) + "\n",
+    "utf8"
+  );
+  console.log("  [created] .launchkit");
 
   const bootstrapFile = `templates/${result.type}/BOOTSTRAP.md`;
 
