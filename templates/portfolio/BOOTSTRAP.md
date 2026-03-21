@@ -49,7 +49,7 @@ For each project, ask:
 - Live URL and GitHub URL (or "none")
 - Screenshot folder name under `public/projects/`
 
-### Testimonials section (`app/[locale]/components/Testimonials.tsx` exists)
+### Reviews section (`app/[locale]/components/Reviews.tsx` exists)
 
 Ask for 9 testimonials (to fill 3 desktop columns). For each:
 

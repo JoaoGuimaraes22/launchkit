@@ -12,6 +12,8 @@ const {
   copyFileInProject,
   copyTemplateFiles,
   deleteIfExists,
+  SECONDARY_DICT_FILES,
+  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "blank";
@@ -19,15 +21,13 @@ const TYPE = "blank";
 // ── Feature list (used by toggle UI) ─────────────────────────────────────────
 
 const featureList = [
-  { key: "i18n", label: "i18n routing", unsupported: true },
+  { key: "i18n", label: "i18n routing", unsupported: true, deps: [], detectFile: "i18n-config.ts" },
 ];
 
 // ── Feature detection ─────────────────────────────────────────────────────────
 
-function detectState() {
-  return {
-    i18n: fs.existsSync(path.join(target(), "i18n-config.ts")),
-  };
+function detectState(compDir) {
+  return detectStateFromRegistry(featureList, compDir);
 }
 
 // ── Enable / disable (no toggleable features) ─────────────────────────────────
@@ -43,7 +43,7 @@ function collapseI18n() {
   copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
   copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
   deleteIfExists("app/[locale]");
-  deleteIfExists("dictionaries/pt.json");
+  for (const f of SECONDARY_DICT_FILES) deleteIfExists(f);
   console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
 }
 

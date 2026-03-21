@@ -1,12 +1,16 @@
 {
-  "nav": {
-    "home": "Home",
-    "work": "Projects",
-    "reviews": "Reviews",
-    "services": "Services",
-    "workflow": "Workflow",
-    "about": "About",
-    "contact": "Contact"
+  "navbar": {
+    "logo": "YOUR NAME",
+    "cta": "Start a Project",
+    "links": [
+      { "id": "home", "label": "Home" },
+      { "id": "work", "label": "Projects" },
+      { "id": "testimonials", "label": "Reviews" },
+      { "id": "services", "label": "Services" },
+      { "id": "process", "label": "Workflow" },
+      { "id": "about", "label": "About" },
+      { "id": "contact", "label": "Contact" }
+    ]
   },
   "hero": {
     "name": "YOUR NAME",
@@ -53,7 +57,7 @@
       }
     ]
   },
-  "testimonials": {
+  "reviews": {
     "title_line1": "WHAT CLIENTS",
     "title_line2": "SAY",
     "subtitle": "Real feedback from clients.",

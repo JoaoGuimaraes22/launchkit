@@ -39,7 +39,7 @@ export async function generateMetadata({
       title,
       description,
       url: `${SITE_URL}/${locale}`,
-      siteName: dict.hero.name,
+      siteName: dict.navbar.logo,
       images: [{ url: `${SITE_URL}/og-image.png`, width: 1200, height: 630 }],
       locale: locale === "pt" ? "pt_PT" : "en_US",
       type: "website",
@@ -91,7 +91,7 @@ export default async function LocaleLayout({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <ScrollProgress />
-      <Navbar locale={locale} nav={dict.nav} />
+      <Navbar locale={locale} nav={dict.navbar} />
       {children}
       <ChatWidget locale={locale} />
     </MotionConfig>

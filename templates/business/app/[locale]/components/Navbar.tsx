@@ -77,7 +77,7 @@ export default function Navbar({ locale, nav }: NavbarProps) {
             {link.label}
           </button>
         ))}
-        <LanguageSwitcher locale={locale} scrolled={scrolled} />
+        <LanguageSwitcher currentLocale={locale} scrolled={scrolled} />
         <button
           onClick={() => handleNavClick("contact")}
           className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700"
@@ -88,7 +88,7 @@ export default function Navbar({ locale, nav }: NavbarProps) {
 
       {/* Mobile: hamburger */}
       <div className="flex items-center gap-3 md:hidden">
-        <LanguageSwitcher locale={locale} scrolled={scrolled} />
+        <LanguageSwitcher currentLocale={locale} scrolled={scrolled} />
         <button
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"

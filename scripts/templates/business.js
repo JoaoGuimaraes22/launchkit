@@ -11,14 +11,17 @@ const {
   askChoice,
   copyDir,
   copyFile,
-  copyFileInProject,
-  copyDirInProject,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
   replaceInFile,
   addDependency,
   removeDependency,
+  safeJsonParse,
+  collapseI18nBase,
+  LOCALES,
+  DICT_FILES,
+  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "business";
@@ -29,25 +32,21 @@ const COLOR_LABELS = ["Indigo (default)", "Blue", "Violet", "Rose", "Amber", "Em
 // ── Feature list (used by toggle UI) ─────────────────────────────────────────
 
 const featureList = [
-  { key: "contactForm", label: "Contact Form (Resend API)" },
-  { key: "floatingCTA", label: "FloatingCTA bar (mobile)" },
-  { key: "whatsapp",    label: "WhatsApp button (contact + FloatingCTA)" },
-  { key: "accentColor", label: "Brand accent color", recolor: true },
-  { key: "i18n",        label: "i18n routing", unsupported: true },
+  { key: "contactForm", label: "Contact Form (Resend API)",                deps: [], detectFile: "app/api/contact/route.ts" },
+  { key: "floatingCTA", label: "FloatingCTA bar (mobile)",                 deps: [], detectFile: "{compDir}/FloatingCTA.tsx" },
+  { key: "whatsapp",    label: "WhatsApp button (contact + FloatingCTA)",  deps: ["contactForm", "floatingCTA"], detect: "custom" },
+  { key: "accentColor", label: "Brand accent color", recolor: true,        deps: [] },
+  { key: "i18n",        label: "i18n routing", unsupported: true,          deps: [], detectFile: "i18n-config.ts" },
 ];
 
 // ── Feature detection ─────────────────────────────────────────────────────────
 
 function detectState(compDir) {
-  const exists = (rel) => fs.existsSync(path.join(target(), rel));
+  const state = detectStateFromRegistry(featureList, compDir);
+  // WhatsApp is content-based detection (not just file existence)
   const contactFile = path.join(target(), `${compDir}/Contact.tsx`);
-  const hasWhatsApp = fs.existsSync(contactFile) && fs.readFileSync(contactFile, "utf8").includes("wa.me/");
-  return {
-    i18n:         exists("i18n-config.ts"),
-    contactForm:  exists("app/api/contact/route.ts"),
-    floatingCTA:  exists(`${compDir}/FloatingCTA.tsx`),
-    whatsapp:     hasWhatsApp,
-  };
+  state.whatsapp = fs.existsSync(contactFile) && fs.readFileSync(contactFile, "utf8").includes("wa.me/");
+  return state;
 }
 
 // ── Accent color replacement ──────────────────────────────────────────────────
@@ -59,7 +58,7 @@ function recolor(fromColor, toColor, compDir, layoutFile) {
     `${compDir}/Contact.tsx`,
     `${compDir}/FAQ.tsx`,
     `${compDir}/FloatingCTA.tsx`,
-    `${compDir}/HeroContent.tsx`,
+    `${compDir}/Hero.tsx`,
     `${compDir}/LanguageSwitcher.tsx`,
     `${compDir}/Navbar.tsx`,
     `${compDir}/Reviews.tsx`,
@@ -73,72 +72,18 @@ function recolor(fromColor, toColor, compDir, layoutFile) {
 
 // ── Full i18n collapse (app/[locale]/ → app/) ─────────────────────────────────
 
-function collapseI18n(features) {
-  console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
-
-  // ── 1. Move files ────────────────────────────────────────────────────────────
-  copyDirInProject("app/[locale]/components", "app/components");
-  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
-  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
-  deleteIfExists("app/[locale]");
-
-  // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
-  replaceInFile(
-    "app/layout.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/layout.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/layout.tsx",
-    'export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}): Promise<Metadata> {',
-    "export async function generateMetadata(): Promise<Metadata> {"
-  );
-  removeLineContaining("app/layout.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/layout.tsx", "const dict = await getDictionary");
-  replaceInFile(
-    "app/layout.tsx",
-    '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu negócio em português."\n      : "Short description of your business in English.";',
-    '  const description = "Short description of your business in English.";'
-  );
-  replaceInFile(
-    "app/layout.tsx",
-    "    alternates: {\n      canonical: `${SITE_URL}/${locale}`,\n      languages: {\n        en: `${SITE_URL}/en`,\n        pt: `${SITE_URL}/pt`,\n      },\n    },",
-    "    alternates: { canonical: SITE_URL },"
-  );
-  replaceInFile("app/layout.tsx", "`${SITE_URL}/${locale}`", "SITE_URL");
-  removeLineContaining("app/layout.tsx", 'locale: locale === "pt"');
-  replaceInFile(
-    "app/layout.tsx",
-    "export default async function LocaleLayout({\n  children,\n  params,\n}: {\n  children: React.ReactNode;\n  params: Promise<{ locale: string }>;\n}) {",
-    "export default async function LocaleLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {"
-  );
-  replaceInFile("app/layout.tsx", "<Navbar locale={locale} nav={", "<Navbar nav={");
-
-  // ── 3. Patch app/page.tsx ────────────────────────────────────────────────────
-  replaceInFile(
-    "app/page.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/page.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/page.tsx",
-    "export default async function BusinessPage({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {",
-    "export default async function BusinessPage() {"
-  );
-  removeLineContaining("app/page.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/page.tsx", "const dict = await getDictionary");
-
-  // ── 4. Patch app/components/Navbar.tsx ──────────────────────────────────────
-  removeLineContaining("app/components/Navbar.tsx", "import { type Locale }");
-  removeLineContaining("app/components/Navbar.tsx", "locale: Locale;");
-  replaceInFile("app/components/Navbar.tsx", "{ locale, nav }", "{ nav }");
-
-  // ── 5. Remove pt.json ────────────────────────────────────────────────────────
-  deleteIfExists("dictionaries/pt.json");
-
-  console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
+function collapseI18n() {
+  collapseI18nBase(null, {
+    pageFnName: "BusinessPage",
+    beforePatchLayout() {
+      // Business-specific: description collapse
+      replaceInFile(
+        "app/layout.tsx",
+        '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu negócio em português."\n      : "Short description of your business in English.";',
+        '  const description = "Short description of your business in English.";'
+      );
+    },
+  });
 }
 
 // ── Enable feature ────────────────────────────────────────────────────────────
@@ -160,12 +105,12 @@ function enable(key, { compDir, pageFile }) {
         "      <Footer footer={dict.footer} logo={dict.navbar.logo} />",
         "      <Footer footer={dict.footer} logo={dict.navbar.logo} />\n      <FloatingCTA cta={dict.cta} />"
       );
-      for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
+      for (const dictFile of DICT_FILES) {
         const dictPath = path.join(target(), dictFile);
         const templateDictPath = path.join(TOOL_ROOT, `templates/business/${dictFile}`);
         if (fs.existsSync(dictPath) && fs.existsSync(templateDictPath)) {
-          const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
-          const templateDict = JSON.parse(fs.readFileSync(templateDictPath, "utf8"));
+          const dict = safeJsonParse(fs.readFileSync(dictPath, "utf8"), dictFile);
+          const templateDict = safeJsonParse(fs.readFileSync(templateDictPath, "utf8"), `templates/business/${dictFile}`);
           if (!dict.cta && templateDict.cta) {
             dict.cta = templateDict.cta;
             fs.writeFileSync(dictPath, JSON.stringify(dict, null, 2) + "\n", "utf8");
@@ -216,13 +161,13 @@ function enable(key, { compDir, pageFile }) {
         }
       }
       // Dictionaries: restore whatsapp fields
-      for (const lang of ["en", "pt"]) {
+      for (const lang of LOCALES) {
         const dictFile = `dictionaries/${lang}.json`;
         const dictFull = path.join(target(), dictFile);
         const tmplDictFull = path.join(TOOL_ROOT, `templates/business/dictionaries/${lang}.json`);
         if (fs.existsSync(dictFull) && fs.existsSync(tmplDictFull)) {
-          const dict = JSON.parse(fs.readFileSync(dictFull, "utf8"));
-          const tmpl = JSON.parse(fs.readFileSync(tmplDictFull, "utf8"));
+          const dict = safeJsonParse(fs.readFileSync(dictFull, "utf8"), dictFile);
+          const tmpl = safeJsonParse(fs.readFileSync(tmplDictFull, "utf8"), `templates/business/dictionaries/${lang}.json`);
           let changed = false;
           if (dict.contact && !dict.contact.whatsapp && tmpl.contact?.whatsapp) {
             dict.contact.whatsapp = tmpl.contact.whatsapp; changed = true;
@@ -256,10 +201,10 @@ function disable(key, { compDir, pageFile }) {
       deleteIfExists(`${compDir}/FloatingCTA.tsx`);
       removeLineContaining(pageFile, 'import FloatingCTA from "./components/FloatingCTA"');
       removeLineContaining(pageFile, "<FloatingCTA");
-      for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
+      for (const dictFile of DICT_FILES) {
         const dictPath = path.join(target(), dictFile);
         if (fs.existsSync(dictPath)) {
-          const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
+          const dict = safeJsonParse(fs.readFileSync(dictPath, "utf8"), dictFile);
           delete dict.cta;
           fs.writeFileSync(dictPath, JSON.stringify(dict, null, 2) + "\n", "utf8");
           console.log("  [patched]", dictFile, "— removed cta section");
@@ -299,11 +244,11 @@ function disable(key, { compDir, pageFile }) {
         }
       }
       // Dictionaries: remove whatsapp fields
-      for (const lang of ["en", "pt"]) {
+      for (const lang of LOCALES) {
         const dictFile = `dictionaries/${lang}.json`;
         const dictFull = path.join(target(), dictFile);
         if (fs.existsSync(dictFull)) {
-          const dict = JSON.parse(fs.readFileSync(dictFull, "utf8"));
+          const dict = safeJsonParse(fs.readFileSync(dictFull, "utf8"), dictFile);
           let changed = false;
           if (dict.contact?.whatsapp !== undefined) { delete dict.contact.whatsapp; changed = true; }
           if (dict.cta?.whatsapp !== undefined)      { delete dict.cta.whatsapp; changed = true; }
@@ -371,10 +316,10 @@ async function setup(rl) {
     deleteIfExists("app/[locale]/components/FloatingCTA.tsx");
     removeLineContaining("app/[locale]/page.tsx", 'import FloatingCTA from "./components/FloatingCTA"');
     removeLineContaining("app/[locale]/page.tsx", "<FloatingCTA");
-    for (const dictFile of ["dictionaries/en.json", "dictionaries/pt.json"]) {
+    for (const dictFile of DICT_FILES) {
       const dictPath = path.join(target(), dictFile);
       if (fs.existsSync(dictPath)) {
-        const dict = JSON.parse(fs.readFileSync(dictPath, "utf8"));
+        const dict = safeJsonParse(fs.readFileSync(dictPath, "utf8"), dictFile);
         delete dict.cta;
         fs.writeFileSync(dictPath, JSON.stringify(dict, null, 2) + "\n", "utf8");
         console.log("  [patched]", dictFile, "— removed cta section");
@@ -392,7 +337,7 @@ async function setup(rl) {
       "app/[locale]/components/Contact.tsx",
       "app/[locale]/components/FAQ.tsx",
       "app/[locale]/components/FloatingCTA.tsx",
-      "app/[locale]/components/HeroContent.tsx",
+      "app/[locale]/components/Hero.tsx",
       "app/[locale]/components/LanguageSwitcher.tsx",
       "app/[locale]/components/Navbar.tsx",
       "app/[locale]/components/Reviews.tsx",
@@ -403,7 +348,7 @@ async function setup(rl) {
   }
   console.log(`✓  Accent color: ${accentColor}`);
 
-  if (!features.i18n) collapseI18n(features);
+  if (!features.i18n) collapseI18n();
 
   return { type: TYPE, features: { ...features, accentColor } };
 }

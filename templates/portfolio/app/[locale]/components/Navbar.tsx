@@ -5,19 +5,15 @@ import { type Locale } from "../../../i18n-config";
 import NavDropdown from "./NavDropdown";
 import LanguageSwitcher from "./LanguageSwitcher";
 
-interface NavDict {
-  home: string;
-  work: string;
-  reviews: string;
-  services: string;
-  workflow: string;
-  about: string;
-  contact: string;
+interface NavbarDict {
+  logo: string;
+  cta: string;
+  links: { id: string; label: string }[];
 }
 
 interface NavbarProps {
   locale: Locale;
-  nav: NavDict;
+  nav: NavbarDict;
 }
 
 export default function Navbar({ locale, nav }: NavbarProps) {
@@ -39,16 +35,6 @@ export default function Navbar({ locale, nav }: NavbarProps) {
     };
   }, []);
 
-  const sections = [
-    { id: "home", label: nav.home },
-    { id: "work", label: nav.work },
-    { id: "testimonials", label: nav.reviews },
-    { id: "services", label: nav.services },
-    { id: "process", label: nav.workflow },
-    { id: "about", label: nav.about },
-    { id: "contact", label: nav.contact },
-  ];
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between px-4 transition-all duration-300 md:px-8 ${
@@ -64,12 +50,12 @@ export default function Navbar({ locale, nav }: NavbarProps) {
           scrolled ? "text-zinc-900 hover:text-indigo-600" : "text-white/90 hover:text-white"
         }`}
       >
-        JG<span className={scrolled ? "text-indigo-600" : "text-indigo-400"}>.</span>
+        {nav.logo}<span className={scrolled ? "text-indigo-600" : "text-indigo-400"}>.</span>
       </a>
 
       {/* Nav + Language */}
       <div className="flex items-center gap-4">
-        <NavDropdown sections={sections} scrolled={scrolled} />
+        <NavDropdown sections={nav.links} scrolled={scrolled} />
         <LanguageSwitcher currentLocale={locale} scrolled={scrolled} />
       </div>
     </header>

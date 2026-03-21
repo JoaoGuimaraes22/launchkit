@@ -8,13 +8,29 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-const { TOOL_ROOT, setTarget, target, askChoice, writeLaunchkit, copyBaseScaffold } = require("./lib");
+const { TOOL_ROOT, setTarget, target, askChoice, writeLaunchkit, copyBaseScaffold, checkHelp, loadTemplates } = require("./lib");
 
-const TEMPLATES = {
-  portfolio: require("./templates/portfolio"),
-  business:  require("./templates/business"),
-  blank:     require("./templates/blank"),
-};
+checkHelp(`
+launchkit — Setup
+
+  Creates a new project from a template with optional features.
+
+Usage:
+  node scripts/setup.js --name <name> --output <dir> [--<template>]
+
+Options:
+  --name <name>       Project folder name (required)
+  --output <dir>      Parent directory for the project (required)
+  --<template>        Use a specific template (skip type prompt)
+                      Templates are auto-discovered from scripts/templates/
+  -h, --help          Show this help message
+
+Examples:
+  node scripts/setup.js --name my-site --output ../
+  node scripts/setup.js --name my-site --output ../ --portfolio
+`);
+
+const TEMPLATES = loadTemplates();
 
 // ── Parse flags from argv ────────────────────────────────────────────────────
 
@@ -65,6 +81,25 @@ async function main() {
     process.exit(1);
   }
 
+  // Validate project name: no reserved Windows names, no special characters
+  const RESERVED = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])$/i;
+  const INVALID_CHARS = /[<>:"/\\|?*\x00-\x1f]/;
+  if (RESERVED.test(projectName)) {
+    console.error(`\n  Error: "${projectName}" is a reserved system name. Choose a different project name.\n`);
+    rl.close();
+    process.exit(1);
+  }
+  if (INVALID_CHARS.test(projectName)) {
+    console.error(`\n  Error: project name contains invalid characters. Avoid: < > : " / \\ | ? *\n`);
+    rl.close();
+    process.exit(1);
+  }
+  if (projectName.startsWith(".") || projectName.startsWith("-")) {
+    console.error(`\n  Error: project name cannot start with "." or "-".\n`);
+    rl.close();
+    process.exit(1);
+  }
+
   // ── Resolve output directory ────────────────────────────────────────────────
   let outputDir = parseFlag("--output");
   if (!outputDir) {
@@ -81,6 +116,14 @@ async function main() {
     process.exit(1);
   }
 
+  // Validate that the parent output directory exists
+  const absParent = path.resolve(outputDir);
+  if (!fs.existsSync(absParent)) {
+    console.error(`\n  Error: output directory does not exist: ${absParent}\n`);
+    rl.close();
+    process.exit(1);
+  }
+
   const absOutput = path.resolve(outputDir, projectName);
   setTarget(absOutput);
 
@@ -91,31 +134,37 @@ async function main() {
     process.exit(1);
   }
 
+  // If the directory already exists, check that it's empty (or contains only .git/)
+  if (fs.existsSync(absOutput)) {
+    const entries = fs.readdirSync(absOutput).filter((e) => e !== ".git");
+    if (entries.length > 0) {
+      console.error(`\n  Error: ${absOutput} is not empty.`);
+      console.error("  Choose a different directory or clean it first.\n");
+      rl.close();
+      process.exit(1);
+    }
+  }
+
   fs.mkdirSync(absOutput, { recursive: true });
   console.log(`▸  Project: ${projectName}`);
   console.log(`▸  Output:  ${absOutput}\n`);
 
   // ── Resolve template type from argv or prompt ──────────────────────────────
-  const typeFlags = ["--portfolio", "--business", "--blank"];
-  const typeArg = process.argv.find((a) => typeFlags.includes(a));
+  const templateKeys = Object.keys(TEMPLATES);
+  const typeArg = templateKeys.find((k) => process.argv.includes(`--${k}`));
   let templateKey;
-  if (typeArg === "--portfolio") {
-    console.log("▸  Type: Portfolio (from argument)\n");
-    templateKey = "portfolio";
-  } else if (typeArg === "--business") {
-    console.log("▸  Type: Business Site (from argument)\n");
-    templateKey = "business";
-  } else if (typeArg === "--blank") {
-    console.log("▸  Type: Blank (from argument)\n");
-    templateKey = "blank";
+  if (typeArg) {
+    console.log(`▸  Type: ${typeArg.charAt(0).toUpperCase() + typeArg.slice(1)} (from argument)\n`);
+    templateKey = typeArg;
   } else {
-    const choice = await askChoice(rl, "[0] Project type?", [
-      "Portfolio     — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
-      "Business Site — local business (services, reviews, FAQ, contact, footer)",
-      "Blank         — minimal scaffold, no components (clean starting point)",
-    ]);
-    const keys = ["portfolio", "business", "blank"];
-    templateKey = keys[(choice ?? 1) - 1];
+    const descriptions = {
+      portfolio: "Portfolio     — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
+      business:  "Business Site — local business (services, reviews, FAQ, contact, footer)",
+      blank:     "Blank         — minimal scaffold, no components (clean starting point)",
+    };
+    const choices = templateKeys.map((k) => descriptions[k] || k.charAt(0).toUpperCase() + k.slice(1));
+    const choice = await askChoice(rl, "[0] Project type?", choices);
+    templateKey = templateKeys[(choice ?? 1) - 1];
   }
 
   // ── Copy base scaffold ─────────────────────────────────────────────────────
@@ -133,8 +182,10 @@ async function main() {
   console.log("\n─── Running npm install ─────────────────────────────────────────\n");
   try {
     execSync("npm install", { stdio: "inherit", cwd: absOutput });
-  } catch {
-    console.warn("  npm install encountered warnings — check output above.");
+  } catch (err) {
+    console.error("\n  Error: npm install failed. Check the output above for details.");
+    console.error("  You can retry manually: cd", absOutput, "&& npm install\n");
+    process.exit(1);
   }
 
   writeLaunchkit({ name: projectName, type: result.type, features: result.features });

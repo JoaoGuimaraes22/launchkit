@@ -3,7 +3,7 @@ import { getDictionary } from "../../get-dictionary";
 import ProfileSidebar from "./components/ProfileSidebar";
 import HeroFull from "./components/HeroFull";
 import Work from "./components/Work";
-import Testimonials from "./components/Testimonials";
+import Reviews from "./components/Reviews";
 import Services from "./components/Services";
 import Process from "./components/Process";
 import About from "./components/About";
@@ -37,7 +37,7 @@ export default async function LocalePage({
 
           <div className="xl:max-w-4xl 2xl:max-w-5xl">
             <Work work={dict.work} locale={locale} />
-            <Testimonials testimonials={dict.testimonials} />
+            <Reviews reviews={dict.reviews} />
             <Services services={dict.services} />
             <Process process={dict.process} />
             <About about={dict.about} />

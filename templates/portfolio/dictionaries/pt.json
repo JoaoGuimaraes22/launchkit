@@ -1,12 +1,16 @@
 {
-  "nav": {
-    "home": "Início",
-    "work": "Projectos",
-    "reviews": "Avaliações",
-    "services": "Serviços",
-    "workflow": "Processo",
-    "about": "Sobre",
-    "contact": "Contacto"
+  "navbar": {
+    "logo": "YOUR NAME",
+    "cta": "Iniciar Projeto",
+    "links": [
+      { "id": "home", "label": "Início" },
+      { "id": "work", "label": "Projectos" },
+      { "id": "testimonials", "label": "Avaliações" },
+      { "id": "services", "label": "Serviços" },
+      { "id": "process", "label": "Processo" },
+      { "id": "about", "label": "Sobre" },
+      { "id": "contact", "label": "Contacto" }
+    ]
   },
   "hero": {
     "name": "YOUR NAME",
@@ -53,7 +57,7 @@
       }
     ]
   },
-  "testimonials": {
+  "reviews": {
     "title_line1": "O QUE OS CLIENTES",
     "title_line2": "DIZEM",
     "subtitle": "Feedback real de clientes.",

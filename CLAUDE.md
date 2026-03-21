@@ -1,459 +1,124 @@
-# launchkit — Portfolio · Business Site Generator
+# launchkit — Generator Tool
 
-**Generator tool** — `node scripts/setup.js --name my-project --output ../` creates a standalone Next.js project at `../my-project/`. The tool repo stays clean; generated projects are self-contained apps with a `.launchkit` context file that the tool reads for toggle/reset/validate/status operations via `--project`.
+`node scripts/setup.js --name my-project --output ../` creates a standalone Next.js project. The tool repo stays clean; generated projects are self-contained with a `.launchkit` file for toggle/reset/validate/status via `--project`.
 
-All sections below describe the **post-setup** state of a generated project.
+Next.js 16 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
 
-Next.js 16.1.6 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
+## Tool Structure
 
-## Stack & Config (generated project)
+```text
+scripts/
+  lib.js              Shared helpers: FS ops, .launchkit I/O, collapseI18nBase, loadTemplates, detectStateFromRegistry, LOCALES
+  setup.js            --name + --output → create project, delegate to template module
+  toggle.js           --project → enable/disable features
+  reset.js            --project → strip to base scaffold
+  validate.js         --project → check YOUR_* placeholders, TODOs, images, .env.local
+  status.js           --project → read-only feature state
+  templates/
+    portfolio.js      setup(), featureList (with detectFile + deps), enable(), disable()
+    business.js       same interface + recolor(), whatsapp has custom detect
+    blank.js          setup(), minimal featureList (i18n only)
+templates/
+  base/               Clean Next.js scaffold (copied first to every project)
+  portfolio/          Portfolio source: app/[locale]/, api/, dialogflow/, dictionaries/, public/
+  business/           Business source: app/[locale]/, api/contact/, dictionaries/, public/
+```
+
+All scripts support `--help`. If `--project` is omitted, scripts fall back to cwd.
+
+**Adding a template:** create `scripts/templates/foo.js` exporting `{ type, featureList, detectState, setup, enable, disable }` and `templates/foo/`. Templates are auto-discovered at runtime from `scripts/templates/` — no manual registration needed. Each feature in `featureList` should declare `detectFile` (use `{compDir}` placeholder for component paths), `deps` (array of feature keys it depends on), and standard `label`/`key`.
+
+## Generated Project Config
 
 - **Middleware**: `proxy.ts` (NOT `middleware.ts`)
-- **i18n**: `i18n-config.ts` + `get-dictionary.ts` + `dictionaries/en.json` + `dictionaries/pt.json`. Locales: `en` (default), `pt`. Export: `i18n.locales`, not `locales`.
-- **params type**: `params: Promise<{ locale: string }>` with `(await params) as { locale: Locale }` cast
-- **Fonts**: Geist Sans / Geist Mono · **BG**: `#fafafa` · **Accent**: `indigo-600`
-- **Real contacts**: email `Jssgmrs22@gmail.com`, GitHub `JoaoGuimaraes22`, LinkedIn `joão-sebastião-guimarães-4abaa7197`
+- **i18n**: `i18n-config.ts` + `get-dictionary.ts` + `dictionaries/{en,pt}.json`. Export: `i18n.locales`. Locale list centralized in `lib.js` as `LOCALES`
+- **params**: `params: Promise<{ locale: string }>` with `(await params) as { locale: Locale }` cast
+- **Fonts**: Geist Sans/Mono · **BG**: `#fafafa` · **Accent**: `indigo-600`
 
-## Tool Repo Structure
+## Feature Detection
 
-```text
-launchkit/                    ← this repo (the generator tool)
-  package.json                tool scripts only — NO Next.js deps
-  CLAUDE.md / SETUP.md / README.md
-  scripts/
-    lib.js                    TOOL_ROOT/target() pattern, FS helpers, readline helpers, .launchkit I/O
-    setup.js                  Orchestrator — --output <path> creates project, delegates to template module
-    toggle.js                 --project <path> — enable/disable features in an existing project
-    reset.js                  --project <path> — removes everything setup.js copied
-    validate.js               --project <path> — checks YOUR_* placeholders, TODO: TEMPLATE, images, .env.local
-    status.js                 --project <path> — read-only status display
-    templates/
-      portfolio.js            Portfolio module: setup(), featureList, detectState(), enable(), disable()
-      business.js             Business module: same interface + recolor()
-      blank.js                Blank module: setup() only (no toggleable features)
-  templates/
-    base/                     Clean Next.js scaffold (copied to every generated project first)
-      package.json            Next.js deps, scripts: dev/build/start/lint (NO launchkit scripts)
-      tsconfig.json / next.config.ts / postcss.config.mjs / eslint.config.mjs / .gitignore
-      app/layout.tsx / app/page.tsx / app/globals.css / app/favicon.ico
-    portfolio/                Source for Portfolio type (layered on top of base)
-      app/[locale]/           locale layout, page, components, work/[slug]/
-      app/api/                chat/, contact/
-      app/components/         LanguageSwitcher, NavDropdown, ScrollProgress
-      app/robots.ts / app/sitemap.ts
-      root/                   proxy.ts, i18n-config.ts, get-dictionary.ts (copied to root if i18n on)
-      dictionaries/           en.json, pt.json
-      dialogflow/             Dialogflow ES agent config
-      public/                 hero.jpg, profile.jpg, og-image.png, projects/
-      BOOTSTRAP.md            Claude kickstart for portfolio customization
-    business/                 Source for Business Site type (layered on top of base)
-      app/[locale]/           locale layout, page, components
-      app/api/contact/        Resend route
-      app/robots.ts / app/sitemap.ts
-      root/                   proxy.ts, i18n-config.ts, get-dictionary.ts
-      dictionaries/           en.json, pt.json
-      public/                 hero.jpg
-      BOOTSTRAP.md            Claude kickstart for business customization
-```
+Features are detected by file existence via `detectFile` in each feature's registry entry (overrides `.launchkit` if files changed manually). Detection is driven by `detectStateFromRegistry()` in `lib.js` — templates only need custom `detectState` logic for content-based checks (e.g. business `whatsapp` checks for `wa.me/` in Contact.tsx).
 
-**Adding a new template type** — create `scripts/templates/new-type.js` exporting `{ type, featureList, detectState, setup, enable, disable }`, add it to the `TEMPLATES` map in `setup.js` and `toggle.js`, and create `templates/new-type/` with the template files.
+**Portfolio:** `webglHero` → `{compDir}/HeroFull.tsx`, `chatbot` → `app/api/chat/route.ts`, `contactForm` → `app/api/contact/route.ts`, `testimonials` → `{compDir}/Reviews.tsx`, `work` → `{compDir}/Work.tsx`, `sidebar` → `{compDir}/ProfileSidebar.tsx`, `i18n` → `i18n-config.ts`
 
-## Generated Project Structure (portfolio)
+**Business:** `contactForm` → `app/api/contact/route.ts`, `floatingCTA` → `{compDir}/FloatingCTA.tsx`, `whatsapp` → custom (content-based), `i18n` → `i18n-config.ts`
 
-```text
-proxy.ts                      middleware (locale redirect)
-i18n-config.ts                locales + Locale type
-get-dictionary.ts             lazy JSON loader
-dictionaries/en.json / pt.json
-app/[locale]/
-  layout.tsx                  generateMetadata (OG/Twitter/JSON-LD), ScrollProgress
-  page.tsx                    HeroFull + sidebar layout
-  work/[slug]/
-    page.tsx                  project detail (server component)
-    ScreenshotGallery.tsx     client — infinite horizontal scroll gallery
-  components/
-    Navbar.tsx                CLIENT — transparent→white on scroll; scrolled prop → NavDropdown, LanguageSwitcher
-    NavDropdown.tsx           IntersectionObserver section tracking
-    HeroFull.tsx              CLIENT — WebGL shader + parallax hero.jpg
-    Testimonials.tsx          CLIENT — infinite vertical scroll columns
-    Services.tsx              CLIENT — 2×2 card grid + modal popup
-    Work.tsx                  id="work", image cards → /[locale]/work/[slug]
-    Process.tsx               id="process", numbered steps
-    About.tsx                 id="about", bio + fun facts
-    Contact.tsx               id="contact", form + social links
-    ProfileSidebar.tsx        sticky card: photo, bio, CTA, ChatNudge, social icons
-    ChatNudge.tsx             CLIENT — fires open-chat custom event
-    ScrollProgress.tsx        fixed top indigo bar, z-60
-    ChatWidget.tsx            CLIENT — Dialogflow ES chat, fixed bottom-right z-50
-app/api/chat/route.ts         POST proxy → Dialogflow ES detectIntent
-public/
-  hero.jpg / profile.jpg / og-image.png
-  projects/[slug-folder]/1-5.png   (folder ≠ slug — see Projects table)
-```
+**Feature dependencies:** declared via `deps` array in `featureList`. Toggle warns before enabling a feature with missing deps or disabling a feature that others depend on. Example: business `whatsapp` depends on `["contactForm", "floatingCTA"]`.
 
-## Layout (page.tsx)
+Components live in `app/[locale]/components/` (i18n on) or `app/components/` (i18n off).
 
-```tsx
-<>
-  <HeroFull hero={dict.hero} /> {/* full-width, outside sidebar */}
-  <div className="md:flex xl:mx-auto xl:max-w-350">
-    <aside className="hidden md:flex md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:w-88 ...">
-      <ProfileSidebar />
-    </aside>
-    <main className="min-w-0 flex-1">
-      <div className="xl:max-w-4xl 2xl:max-w-5xl">
-        <Work /> <Testimonials /> <Services /> <Process /> <About /> <Contact />
-      </div>
-    </main>
-  </div>
-</>
-```
-
-No `pt-14` on outer wrapper — navbar floats over HeroFull. Sidebar `md:top-14` clears navbar after hero.
-
-## Sections
-
-| Section      | id             | Nav label | Dict key       |
-| ------------ | -------------- | --------- | -------------- |
-| Hero         | `home`         | Home      | `hero`         |
-| Work         | `work`         | Work      | `work`         |
-| Testimonials | `testimonials` | Reviews   | `testimonials` |
-| Services     | `services`     | Services  | `services`     |
-| Process      | `process`      | Workflow  | `process`      |
-| About        | `about`        | About     | `about`        |
-| Contact      | `contact`      | Contact   | `contact`      |
-
-## HeroFull
-
-Client component. Layer order (bottom → top):
-
-1. `<motion.div h-[130%]>` wrapping `<Image fill>` for hero.jpg — parallax `y: useTransform([0,1], ["0%","20%"])`
-2. `<div className="bg-zinc-900/70">` — uniform dark overlay so shader pops
-3. `<canvas mix-blend-screen>` — WebGL fragment shader (4 animated blobs + mouse blob)
-4. `<div bg-linear-to-t from-zinc-900/90>` — gradient overlay for text legibility
-5. Content: title (white/white-25), tagline, CTAs, stats, scroll cue
-
-**WebGL shader**: `getContext("webgl", { alpha: true })`, clears to transparent each frame. 4 always-animated blobs (indigo/violet/sky/rose) on sin/cos orbits, `t * 0.60`. Mouse blob lerps at `0.12` per frame. `mix-blend-mode: screen` → black = transparent, colors overlay photo. Fallback: `bg-zinc-950` on section.
-
-## Testimonials
-
-Client component. `bg-zinc-50`. Infinite vertical scroll via `@keyframes testimonials-scroll-up` (`translateY(0 → -33.333%)`), arrays tripled for seamless loop. Hover pauses via `hover:[animation-play-state:paused]`.
-
-- **Desktop (md+)**: 3 columns — left `20s`, middle `35s` (slowest), right `25s`
-- **Mobile**: 1 column, all 9 items, `65s`
-- Top/bottom gradient fade overlays (`bg-linear-to-b/t from-zinc-50`)
-- Card hover: `hover:scale-[1.02] hover:shadow-md hover:border-zinc-200 transition-all duration-300`
-- Dict: `{ title_line1, title_line2, subtitle, items: [{ quote, name, role, avatar }] }` — 9 items total (3 per desktop column)
-
-## Services
-
-Client component. 2×2 grid (`grid-cols-1 sm:grid-cols-2 gap-4`), `min-h-55` cards.
-
-**Card styles** (by index):
-
-| #   | Background        | Text color | Hover            |
-| --- | ----------------- | ---------- | ---------------- |
-| 0   | `bg-indigo-600`   | white      | `brightness-110` |
-| 1   | `bg-white border` | zinc-900   | `shadow-md`      |
-| 2   | `bg-zinc-100`     | zinc-900   | `shadow-md`      |
-| 3   | `bg-indigo-50`    | indigo-900 | `shadow-md`      |
-
-Card anatomy: title + description (top), `Learn more →` button + large emoji (bottom). Clicking "Learn more" opens an `AnimatePresence` modal with `scale 0.92→1` entrance, checklist of `details[]` items, Escape/backdrop-click to close, body scroll locked.
-
-**Tech stack strip** below cards — 5 hardcoded categories (Frontend/indigo, Backend/blue, Database/emerald, Cloud & DevOps/amber, AI & Tools/violet), pills from `PILL_COLORS`.
-
-Dict: `services.items[].details: string[]` (added) — bullet points shown in modal.
-
-## ScreenshotGallery
-
-- Triples array, starts scrollLeft at middle set; stride measured via `getBoundingClientRect`
-- Reset teleports ±singleSetWidth; suppressed during arrow scroll via `suppressResetRef` + 450ms
-- Double-rAF init (single rAF too early for flex layout)
-- Mobile: 1 image (`w-full`) · Desktop: 3 images (`md:w-[calc((100%-2rem)/3)]`)
-
-## Design Patterns
-
-- **Two-tone title**: line1 `text-zinc-900`, line2 `text-zinc-200` · `font-black uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl xl:text-[7rem]` · `motion.div leading-none mb-12`
-- **Hero title**: line1 `text-white`, line2 `text-white/25` · `xl:text-[8rem]`
-- **Section padding**: `px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32`
-- **Scroll entrance**: `useInView(ref, { once: true, margin: "-80px" })`, stagger `delay: i * 0.12`
-- **Ease**: `[0.16, 1, 0.3, 1] as const` everywhere
-- **Cards**: `rounded-2xl border border-zinc-100 bg-white shadow-sm`
-- **Avatar colors**: `AVATAR_COLORS` array indigo/blue/emerald/amber/rose/cyan `bg-*-100 text-*-700`
-
-## Dictionary Shape
+## .launchkit
 
 ```json
 {
-  "nav": { "home","work","reviews","services","workflow","about","contact" },
-  "hero": { "name","card_bio","title_line1","title_line2","tagline","cta","cta_secondary","stats":[{"value","label"}] },
-  "work": { "title_line1","title_line2","cta","projects":[{ "slug","title","description","long_description","image","images","tags","live","github" }] },
-  "testimonials": { "title_line1","title_line2","subtitle","items":[{ "quote","name","role","avatar" }] },
-  "services": { "title_line1","title_line2","stack_label","items":[{ "icon","title","description","details":["..."] }] },
-  "process":  { "title_line1","title_line2","steps":[{ "number","title","description" }] },
-  "about":    { "title_line1","title_line2","bio","fun_facts":[{ "emoji","text" }] },
-  "contact":  { "title_line1","title_line2","body","form_name","form_email","form_message",
-                "form_name_placeholder","form_email_placeholder","form_message_placeholder",
-                "form_submit","form_success","email_label","email","github","linkedin" }
+  "version": 1,
+  "name": "my-project",
+  "type": "portfolio",
+  "features": { "i18n": true, "webglHero": true, "chatbot": false, "contactForm": true, "testimonials": true, "work": true, "sidebar": true }
 }
 ```
 
-## Projects (6 live)
+Business features: `i18n`, `contactForm`, `floatingCTA`, `whatsapp`, `accentColor`. Do not delete this file.
 
-| Slug               | Folder           | Live                              |
-| ------------------ | ---------------- | --------------------------------- |
-| `cascais-volley`   | `cascaisvolley/` | cascaisvolley.com                 |
-| `koya-bistro`      | `restaurant/`    | koya-bistro.vercel.app            |
-| `sorriso-plus`     | `clinic/`        | dentist-flax-psi.vercel.app       |
-| `aquafix`          | `plumber/`       | plumber-xi.vercel.app             |
-| `revicar`          | `mechanic/`      | mechanic-five.vercel.app          |
-| `bella-hair-salon` | `hairsalon/`     | hair-salon-omega-taupe.vercel.app |
+## Placeholder Markers
 
-## Tailwind v4
+Grep for these in generated projects:
+
+- `YOUR_NAME`, `YOUR_EMAIL`, `YOUR_GITHUB`, `YOUR_LINKEDIN`, `YOUR_DOMAIN`
+- `YOUR_CITY`, `YOUR_TIMEZONE` (portfolio ProfileSidebar)
+- `YOUR_BUSINESS`, `YOUR_PHONE`, `YOUR_WHATSAPP_NUMBER`, `YOUR_ADDRESS` (business)
+- `// TODO: TEMPLATE` — marks manual Claude cleanup needed
+
+## Dictionary Shapes
+
+**Portfolio:**
+
+```json
+{
+  "navbar": { "logo", "cta", "links": [{ "id", "label" }] },
+  "hero": { "name", "card_bio", "title_line1", "title_line2", "tagline", "cta", "cta_secondary", "stats": [{ "value", "label" }] },
+  "work": { "title_line1", "title_line2", "cta", "projects": [{ "slug", "title", "description", "long_description", "image", "images", "tags", "live", "github" }] },
+  "reviews": { "title_line1", "title_line2", "subtitle", "items": [{ "quote", "name", "role", "avatar" }] },
+  "services": { "title_line1", "title_line2", "stack_label", "items": [{ "icon", "title", "description", "details": [] }] },
+  "process": { "title_line1", "title_line2", "steps": [{ "number", "title", "description" }] },
+  "about": { "title_line1", "title_line2", "bio", "fun_facts": [{ "emoji", "text" }] },
+  "contact": { "title_line1", "title_line2", "body", "form_*", "email", "github", "linkedin" }
+}
+```
+
+**Business:** `navbar`, `hero`, `about`, `services`, `reviews` (with `rating`), `faq`, `contact` (with `phone`, `address`, `whatsapp`, `map_link`), `footer`, `cta`
+
+## Tailwind v4 Gotchas
 
 - `bg-linear-to-br` not `bg-gradient-to-br`
 - `mix-blend-screen` not `mix-blend-mode-screen`
-- `min-h-55` not `min-h-[220px]` · `max-w-55` not `max-w-[220px]`
-- `md:w-88`, `z-60`, `max-w-350` — no arbitrary values for these
-- Arbitrary calc: `w-[calc((100%-2rem)/3)]` — no underscores (linter enforces)
-- Linter suggests canonical classes — always apply suggestions
-
-## Scripts (run from tool repo)
-
-All scripts are run from the launchkit tool directory. Setup uses `--name` + `--output` to create a project folder. All other scripts use `--project` to operate on an existing generated project.
-
-| Script         | Command                                                            | What it does                                                             |
-| -------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| Setup          | `node scripts/setup.js --name my-project --output ../`             | Create project: select template, toggle features, copy scaffold, install |
-| Setup (direct) | `node scripts/setup.js --name my-project --output ../ --portfolio` | Skip type-selection prompt, go straight to feature selection             |
-| Toggle         | `node scripts/toggle.js --project ../my-project`                   | Enable/disable individual features without full reset                    |
-| Reset          | `node scripts/reset.js --project ../my-project`                    | Remove everything setup.js copied; restore base scaffold state           |
-| Validate       | `node scripts/validate.js --project ../my-project`                 | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments   |
-| Status         | `node scripts/status.js --project ../my-project`                   | Read-only status display of template type and feature state              |
-| Dialogflow gen | `node dialogflow/generate.js` (from generated project)             | Regenerate `intents/` from `generate.js` source (portfolio only)         |
-| Dialogflow zip | `node dialogflow/zip.js` (from generated project)                  | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import       |
-
-> If `--project` is omitted, scripts fall back to the current working directory — so running from inside a generated project also works. **Dialogflow workflow**: edit `generate.js` (look for `// EDIT:` comments) → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import zip in Dialogflow console. Never edit `intents/` directly.
-
-### Generated project scripts (inside the project)
-
-| Script | Command         | What it does                              |
-| ------ | --------------- | ----------------------------------------- |
-| Dev    | `npm run dev`   | Start Next.js dev server (localhost:3000) |
-| Build  | `npm run build` | Production build                          |
-| Start  | `npm run start` | Start production server                   |
-| Lint   | `npm run lint`  | Run ESLint                                |
-
-## Chatbot (Dialogflow ES)
-
-- Auth: `GOOGLE_CREDENTIALS` (service account JSON, single-line) + `DIALOGFLOW_PROJECT_ID=portfolio-xost`
-- Session: `crypto.randomUUID()` in `useState` — one per tab
-- ZIP: always use `node dialogflow/zip.js` (forward-slash paths — PowerShell breaks Dialogflow import)
-- Restore: Dialogflow console → Settings → Import & Export → Restore from zip
-
-## SEO
-
-- `generateMetadata` in `[locale]/layout.tsx` — OG, Twitter, JSON-LD Person schema
-- Language alternates: `en` → `/en`, `pt` → `/pt`
+- `min-h-55`, `md:w-88`, `z-60`, `max-w-350` — use numeric scale, not arbitrary
+- Arbitrary calc: `w-[calc((100%-2rem)/3)]` — no underscores
 
 ## Known Gotchas
 
 - `params` must be `Promise<{ locale: string }>`, cast with `as { locale: Locale }`
-- Framer Motion ease in variants → type errors; inline `ease: [0.16, 1, 0.3, 1] as const`
+- Framer Motion ease in variants → type errors; use `ease: [0.16, 1, 0.3, 1] as const`
 - `React.FormEvent` deprecated in React 19 — use `{ preventDefault(): void }`
-- ScrollProgress `z-60` (above Navbar `z-50`)
-- HeroFull is outside the sidebar layout — `id="home"` lives there
-- WebGL canvas needs `alpha: true` + `premultipliedAlpha: false` + `gl.clear` each frame for transparency
-- ScreenshotGallery: double-rAF for init; `suppressResetRef` during smooth scroll
-- `scroll-behavior: smooth` on `html` in `globals.css`
+- ScrollProgress `z-60` > Navbar `z-50`
+- HeroFull is outside sidebar layout — `id="home"` lives there
+- WebGL: `alpha: true` + `premultipliedAlpha: false` + `gl.clear` each frame
+- ScreenshotGallery: double-rAF init; `suppressResetRef` during smooth scroll
 - `app/page.tsx` must export a default or build fails
-- Navbar is a client component — do not revert to server component
+- Navbar is a client component — do not revert to server
 
-## Template & Bootstrap
+## Chatbot (Dialogflow ES)
 
-Run `node scripts/setup.js --name my-project --output ../` from the tool repo to generate a new project at `../my-project/`. Then paste the relevant BOOTSTRAP.md into a Claude Code conversation (opened in the generated project) to fill in content.
+- Auth: `GOOGLE_CREDENTIALS` (single-line JSON) + `DIALOGFLOW_PROJECT_ID`
+- ZIP: `node dialogflow/zip.js` (forward slashes — PowerShell breaks import)
+- Restore: Dialogflow console → Settings → Import & Export → Restore from zip
+- Workflow: edit `generate.js` → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import. Never edit `intents/` directly.
 
-- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
-- **Business Site** → `templates/business/BOOTSTRAP.md`
+## Bootstrap Flow
 
-### Placeholder Markers
-
-Personal content uses these sentinel strings — grep for them in the generated project to find what needs replacing:
-
-- `YOUR_NAME` — full name
-- `YOUR_EMAIL` — email address
-- `YOUR_GITHUB` — GitHub username
-- `YOUR_LINKEDIN` — LinkedIn profile slug
-- `YOUR_DOMAIN` — site URL / Vercel domain
-- `YOUR_CITY` / `YOUR_TIMEZONE` — location in ProfileSidebar
-- `// TODO: TEMPLATE` — comment left by setup script marking manual Claude cleanup
-
-### `.launchkit`
-
-`setup.js` writes `.launchkit` (JSON) in the generated project at the end of every run. It is the authoritative source for template type and initial feature choices — read by toggle, status, reset, and validate scripts via `--project`.
-
-```json
-{
-  "name": "my-project",
-  "type": "portfolio",
-  "features": {
-    "i18n": true,
-    "webglHero": true,
-    "chatbot": false,
-    "contactForm": true,
-    "testimonials": true,
-    "work": true,
-    "sidebar": true
-  }
-}
-```
-
-For a business site the `features` keys are `i18n`, `contactForm`, `floatingCTA`, `whatsapp`. `toggle.js` updates this file after each toggle. Do not delete it.
-
-### Feature Detection
-
-Check file existence in the generated project to determine which features are currently active (overrides `.launchkit` if files were changed manually):
-
-| Feature        | Active if this file exists                   |
-| -------------- | -------------------------------------------- |
-| i18n           | `i18n-config.ts`                             |
-| WebGL Hero     | `app/[locale]/components/HeroFull.tsx`       |
-| Chatbot        | `app/api/chat/route.ts`                      |
-| Contact Form   | `app/api/contact/route.ts`                   |
-| Testimonials   | `app/[locale]/components/Testimonials.tsx`   |
-| Work           | `app/[locale]/components/Work.tsx`           |
-| ProfileSidebar | `app/[locale]/components/ProfileSidebar.tsx` |
-
-If i18n was disabled during setup, `app/[locale]/` does not exist — `setup.js` collapses it to `app/` automatically. Substitute `app/` for `app/[locale]/` in the paths above.
-
-### Bootstrap Flow
-
-When helping someone customize a generated project:
-
-1. Read this file (`CLAUDE.md`) completely
-2. Check active features using the table above (in the generated project directory)
-3. `node scripts/validate.js --project <path>` (from tool repo) or `npm run validate` (if run from project) — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
-4. Follow the relevant BOOTSTRAP.md to gather project details before touching anything
-5. Always update both `en.json` and `pt.json` together if i18n is active
-6. Validate again to confirm clean, then `npm run lint && npm run build` (from the generated project)
-
----
-
-## Business Site Template
-
-When setup selects **Business Site**, the business template is layered on top of the base scaffold in the generated project from `templates/business/`. Use `templates/business/BOOTSTRAP.md` as the Claude kickstart.
-
-### Feature Detection (Business Site)
-
-| Feature         | Active if this file exists                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| Business site   | `app/[locale]/components/Footer.tsx` (or `app/components/Footer.tsx` if i18n disabled)           |
-| i18n            | `i18n-config.ts`                                                                                 |
-| Contact form    | `app/api/contact/route.ts`                                                                       |
-| FloatingCTA bar | `app/[locale]/components/FloatingCTA.tsx` (or `app/components/FloatingCTA.tsx` if i18n disabled) |
-
-### Key Differences from Portfolio
-
-- **No sidebar** — all sections are full-width stacked
-- **No WebGL** — hero uses `<Image fill>` + dark overlay, CSS transitions only
-- **Footer present** — `Footer.tsx` is a full 3-column server component (`bg-zinc-900`)
-- **FloatingCTA** — fixed mobile bottom bar with Call / WhatsApp / Book buttons
-- **No Dialogflow** — no chatbot, no `app/api/chat/` route
-- **Dict key**: `dict.navbar` (not `dict.nav`) — links are an array `navbar.links[]`
-- **Navbar** reads links from `dict.navbar.links[]` — the array controls nav items
-
-### Business Site Components
-
-```text
-app/[locale]/components/
-  Navbar.tsx         CLIENT — transparent→white on scroll; links from dict.navbar.links[]
-  HeroContent.tsx    CLIENT — Image fill bg + overlay, two-line headline, stats, dual CTAs
-  About.tsx          SERVER — lg:grid-cols-2 side-by-side, about.jpg, stat cards
-  Services.tsx       SERVER — lg:grid-cols-3 grid, emoji icon in bg-indigo-50 container
-  Reviews.tsx        SERVER — lg:grid-cols-3 grid, star ratings, avatar initials
-  FAQ.tsx            CLIENT — accordion, single openIndex state, chevron rotates
-  Contact.tsx        CLIENT — form + contact info column, fetch /api/contact
-  Footer.tsx         SERVER — lg:grid-cols-3 (brand/nav/contact), bg-zinc-900
-  FloatingCTA.tsx    CLIENT — fixed bottom bar, md:hidden, Call/WhatsApp/Book
-  ScrollProgress.tsx fixed top indigo bar (shared with portfolio)
-  LangSetter.tsx     sets html[lang] attr (shared with portfolio)
-  LanguageSwitcher.tsx locale toggle (shared, present if i18n enabled)
-```
-
-### Business Site Dict Shape
-
-```json
-{
-  "navbar": {
-    "logo": "YOUR_BUSINESS",
-    "cta": "Book Now",
-    "links": [{ "id": "about", "label": "About" }, ...]
-  },
-  "hero": {
-    "title_line1": "YOUR", "title_line2": "HEADLINE",
-    "tagline": "...", "cta": "Book Now", "cta_secondary": "Learn More",
-    "stats": [{ "value": "0+", "label": "Clients Served" }]
-  },
-  "about": {
-    "title_line1": "ABOUT", "title_line2": "US",
-    "body": "...",
-    "stats": [{ "value": "0+", "label": "Years Experience" }]
-  },
-  "services": {
-    "title_line1": "OUR", "title_line2": "SERVICES",
-    "items": [{ "icon": "⭐", "title": "Service", "description": "..." }]
-  },
-  "reviews": {
-    "title_line1": "WHAT CLIENTS", "title_line2": "SAY",
-    "subtitle": "...",
-    "items": [{ "quote": "...", "name": "...", "role": "...", "rating": 5 }]
-  },
-  "faq": {
-    "title_line1": "COMMON", "title_line2": "QUESTIONS",
-    "items": [{ "question": "...", "answer": "..." }]
-  },
-  "contact": {
-    "title_line1": "GET IN", "title_line2": "TOUCH",
-    "body": "...",
-    "form_name": "Name", "form_email": "Email", "form_phone": "Phone",
-    "form_message": "Message", "form_submit": "Send Message", "form_success": "Message sent!",
-    "phone": "YOUR_PHONE", "email": "YOUR_EMAIL",
-    "address": "YOUR_ADDRESS", "hours": "Mon–Fri 9am–6pm",
-    "whatsapp": "YOUR_WHATSAPP_NUMBER",
-    "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
-  },
-  "footer": {
-    "tagline": "Short brand tagline.",
-    "address": "YOUR_ADDRESS", "hours": "Mon–Fri 9am–6pm",
-    "phone": "YOUR_PHONE", "email": "YOUR_EMAIL",
-    "copyright": "© 2025 YOUR_BUSINESS. All rights reserved.",
-    "nav_links": [{ "id": "about", "label": "About" }, ...]
-  },
-  "cta": {
-    "call_label": "Call Now", "phone": "YOUR_PHONE",
-    "whatsapp_label": "WhatsApp", "whatsapp": "YOUR_WHATSAPP_NUMBER",
-    "book_label": "Book Now"
-  }
-}
-```
-
-### Business Site Placeholder Markers
-
-- `YOUR_BUSINESS` — business name (Navbar logo, JSON-LD, Footer)
-- `YOUR_PHONE` — phone number with country code
-- `YOUR_WHATSAPP_NUMBER` — digits only, no spaces (for wa.me URL)
-- `YOUR_EMAIL` — contact email
-- `YOUR_ADDRESS` — physical address
-- `YOUR_DOMAIN` — site URL / Vercel domain
-
-### Business Site Bootstrap Flow
-
-1. Read `CLAUDE.md` completely
-2. Check active features using the business feature detection table above (in the generated project)
-3. `node scripts/validate.js --project <path>` (from tool repo) or `npm run validate` (from project) — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
-4. Follow `templates/business/BOOTSTRAP.md` to gather content
-5. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
-6. Update `app/[locale]/layout.tsx` (or `app/layout.tsx` if i18n was disabled): `SITE_URL`, title, description, `jsonLd`
-7. Accent color replacement: **automated by `setup.js`** if a preset was chosen; only needed for custom hex values
-8. i18n routing collapse: **automated by `setup.js`** — `app/[locale]/` does not exist if i18n was disabled
-9. Validate again to confirm clean, then `npm run lint && npm run build` (from the generated project)
+1. Read this file
+2. Check active features via file existence
+3. `node scripts/validate.js --project <path>` — find remaining placeholders
+4. Follow the relevant `BOOTSTRAP.md` to gather content
+5. Update both `en.json` and `pt.json` if i18n active
+6. Validate again, then `npm run lint && npm run build`

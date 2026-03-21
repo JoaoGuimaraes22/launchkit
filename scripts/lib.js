@@ -8,6 +8,22 @@ const path = require("path");
 // Absolute path to the launchkit tool root (one level above scripts/)
 const TOOL_ROOT = path.resolve(__dirname, "..");
 
+// Schema version for .launchkit files. Bump when the format changes.
+const LAUNCHKIT_VERSION = 1;
+
+// Supported locales — single source of truth. First entry is the default/fallback.
+const LOCALES = ["en", "pt"];
+const DEFAULT_LOCALE = LOCALES[0];
+
+// Dictionary file paths derived from LOCALES.
+const DICT_FILES = LOCALES.map((l) => `dictionaries/${l}.json`);
+
+// Returns locale file paths excluding the default (for deletion during i18n collapse).
+const SECONDARY_DICT_FILES = DICT_FILES.slice(1);
+
+// TypeScript literal for generated sitemap files.
+const LOCALES_TS_LITERAL = `[${LOCALES.map((l) => `"${l}"`).join(", ")}] as const`;
+
 // Target project directory — defaults to TOOL_ROOT, set via setTarget()
 let _target = TOOL_ROOT;
 
@@ -31,11 +47,14 @@ function deleteIfExists(relPath) {
 }
 
 // Recursively copies srcRel (from TOOL_ROOT) → destRel (in _target), logging each file.
-// Skips missing sources.
-function copyDir(srcRel, destRel) {
+// Throws if source is missing unless { optional: true } is passed.
+function copyDir(srcRel, destRel, { optional = false } = {}) {
   const src = path.join(TOOL_ROOT, srcRel);
   const dest = path.join(_target, destRel);
-  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(src)) {
+    if (optional) return;
+    throw new Error(`copyDir: source directory not found: ${srcRel}`);
+  }
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(src)) {
     const srcEntry = path.join(src, entry);
@@ -50,13 +69,13 @@ function copyDir(srcRel, destRel) {
 }
 
 // Copies a single file from TOOL_ROOT/srcRel → _target/destRel.
-// Creates parent directories as needed. Warns if source is missing.
-function copyFile(srcRel, destRel) {
+// Creates parent directories as needed. Throws if source is missing unless { optional: true }.
+function copyFile(srcRel, destRel, { optional = false } = {}) {
   const src = path.join(TOOL_ROOT, srcRel);
   const dest = path.join(_target, destRel);
   if (!fs.existsSync(src)) {
-    console.warn("  [warn] source not found:", srcRel);
-    return;
+    if (optional) { console.warn("  [warn] source not found:", srcRel); return; }
+    throw new Error(`copyFile: source not found: ${srcRel}`);
   }
   fs.mkdirSync(path.dirname(dest), { recursive: true });
   fs.copyFileSync(src, dest);
@@ -94,6 +113,15 @@ function copyDirInProject(srcRel, destRel) {
   }
 }
 
+// Verifies that a file or directory exists at relPath (in _target). Throws if missing.
+// Used after copy operations to confirm the copy succeeded before deleting the source.
+function assertExists(relPath) {
+  const full = path.join(_target, relPath);
+  if (!fs.existsSync(full)) {
+    throw new Error(`Expected ${relPath} to exist after copy, but it was not found. Aborting to prevent data loss.`);
+  }
+}
+
 // Removes every line that contains `substring` from a file. No-op if file is missing.
 function removeLineContaining(relPath, substring) {
   const full = path.join(_target, relPath);
@@ -110,21 +138,25 @@ function removeLineContaining(relPath, substring) {
 }
 
 // Replaces all occurrences of searchStr with replaceStr in a file. No-op if file is missing.
+// Returns true if a replacement was made, false otherwise. Warns when the search string wasn't found.
 function replaceInFile(relPath, searchStr, replaceStr) {
   const full = path.join(_target, relPath);
-  if (!fs.existsSync(full)) return;
+  if (!fs.existsSync(full)) return false;
   const original = fs.readFileSync(full, "utf8");
   const updated = original.split(searchStr).join(replaceStr);
   if (updated !== original) {
     fs.writeFileSync(full, updated, "utf8");
     console.log("  [patched]", relPath);
+    return true;
   }
+  console.warn("  [warn] replaceInFile: search string not found in", relPath);
+  return false;
 }
 
 // Adds depName@version to package.json dependencies if not already present.
 function addDependency(depName, version) {
   const pkgPath = path.join(_target, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  const pkg = safeJsonParse(fs.readFileSync(pkgPath, "utf8"), "package.json");
   if (!pkg.dependencies) pkg.dependencies = {};
   if (!pkg.dependencies[depName]) {
     pkg.dependencies[depName] = version;
@@ -136,11 +168,49 @@ function addDependency(depName, version) {
 // Removes depName from package.json dependencies if present.
 function removeDependency(depName) {
   const pkgPath = path.join(_target, "package.json");
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  const pkg = safeJsonParse(fs.readFileSync(pkgPath, "utf8"), "package.json");
   if (pkg.dependencies && pkg.dependencies[depName]) {
     delete pkg.dependencies[depName];
     fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n", "utf8");
     console.log("  [patched] package.json — removed dependency:", depName);
+  }
+}
+
+// ── navbar.links[] helpers (dict-based nav patching) ─────────────────────────
+
+// Inserts a nav link into navbar.links[] in a dict JSON file, after the entry with afterId.
+// If afterId is null, prepends to the array.
+function addNavLink(dictRelPath, link, afterId) {
+  const full = path.join(_target, dictRelPath);
+  if (!fs.existsSync(full)) return;
+  const dict = safeJsonParse(fs.readFileSync(full, "utf8"), dictRelPath);
+  if (!dict.navbar || !Array.isArray(dict.navbar.links)) return;
+  if (dict.navbar.links.some((l) => l.id === link.id)) return; // already present
+  if (afterId === null) {
+    dict.navbar.links.unshift(link);
+  } else {
+    const idx = dict.navbar.links.findIndex((l) => l.id === afterId);
+    if (idx !== -1) {
+      dict.navbar.links.splice(idx + 1, 0, link);
+    } else {
+      dict.navbar.links.push(link);
+    }
+  }
+  fs.writeFileSync(full, JSON.stringify(dict, null, 2) + "\n", "utf8");
+  console.log("  [patched]", dictRelPath, `— added nav link: ${link.id}`);
+}
+
+// Removes a nav link by id from navbar.links[] in a dict JSON file.
+function removeNavLink(dictRelPath, sectionId) {
+  const full = path.join(_target, dictRelPath);
+  if (!fs.existsSync(full)) return;
+  const dict = safeJsonParse(fs.readFileSync(full, "utf8"), dictRelPath);
+  if (!dict.navbar || !Array.isArray(dict.navbar.links)) return;
+  const before = dict.navbar.links.length;
+  dict.navbar.links = dict.navbar.links.filter((l) => l.id !== sectionId);
+  if (dict.navbar.links.length !== before) {
+    fs.writeFileSync(full, JSON.stringify(dict, null, 2) + "\n", "utf8");
+    console.log("  [patched]", dictRelPath, `— removed nav link: ${sectionId}`);
   }
 }
 
@@ -167,6 +237,25 @@ function askChoice(rl, question, choices) {
   });
 }
 
+// ── Safe JSON parse ──────────────────────────────────────────────────────────
+
+// Parses JSON with an actionable error message on failure.
+// `label` describes the file for the error message (e.g. "dictionaries/en.json").
+function safeJsonParse(raw, label) {
+  try {
+    return JSON.parse(raw);
+  } catch (err) {
+    throw new Error(`Failed to parse ${label}: ${err.message}`);
+  }
+}
+
+// Reads and parses a JSON file relative to _target. Throws with a clear message on failure.
+function readJsonFile(relPath) {
+  const full = path.join(_target, relPath);
+  const raw = fs.readFileSync(full, "utf8");
+  return safeJsonParse(raw, relPath);
+}
+
 // ── .launchkit I/O ────────────────────────────────────────────────────────────
 
 function readLaunchkit() {
@@ -176,11 +265,129 @@ function readLaunchkit() {
     console.error("  Run node scripts/setup.js first.\n");
     process.exit(1);
   }
-  return JSON.parse(fs.readFileSync(p, "utf8"));
+  const state = safeJsonParse(fs.readFileSync(p, "utf8"), ".launchkit");
+  // Validate required fields
+  if (!state.type || !state.features) {
+    console.error("\n  Error: .launchkit is missing required fields (type, features).");
+    console.error("  The file may be corrupted. Run reset + setup to regenerate.\n");
+    process.exit(1);
+  }
+  // Version migration: stamp version if missing (pre-v1 files), warn if newer
+  if (state.version === undefined) {
+    state.version = LAUNCHKIT_VERSION;
+    writeLaunchkit(state);
+    console.log("  [migrated] .launchkit — added version field (v1)");
+  } else if (state.version > LAUNCHKIT_VERSION) {
+    console.error(`\n  Error: .launchkit version ${state.version} is newer than this tool (v${LAUNCHKIT_VERSION}).`);
+    console.error("  Update launchkit to the latest version.\n");
+    process.exit(1);
+  }
+  return state;
 }
 
+// Writes .launchkit atomically: write to a temp file, then rename.
+// Automatically stamps the current LAUNCHKIT_VERSION.
 function writeLaunchkit(state) {
-  fs.writeFileSync(path.join(_target, ".launchkit"), JSON.stringify(state, null, 2) + "\n", "utf8");
+  state.version = LAUNCHKIT_VERSION;
+  const dest = path.join(_target, ".launchkit");
+  const tmp = dest + ".tmp";
+  fs.writeFileSync(tmp, JSON.stringify(state, null, 2) + "\n", "utf8");
+  fs.renameSync(tmp, dest);
+}
+
+// ── Shared i18n collapse (app/[locale]/ → app/) ─────────────────────────────
+
+// Core i18n collapse logic shared by all templates.
+// Moves components + layout + page from app/[locale]/ → app/, patches locale
+// references out, removes pt.json. Calls opts.beforePatchLayout / opts.afterMove
+// / opts.afterCollapse for template-specific patches.
+//
+// opts:
+//   extraDirs     — additional app/[locale]/ subdirs to move (e.g. ["work"])
+//   description   — single-line English description for generateMetadata fallback
+//   pageFnName    — export function name in page.tsx (e.g. "LocalePage", "BusinessPage")
+//   beforePatchLayout(features)  — called after move, before layout patches
+//   afterCollapse(features)      — called after all shared patches are done
+function collapseI18nBase(features, opts = {}) {
+  console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
+
+  const {
+    extraDirs = [],
+    pageFnName = "LocalePage",
+    beforePatchLayout,
+    afterCollapse,
+  } = opts;
+
+  // ── 1. Move files (copy-all, verify, then delete source) ─────────────────────
+  copyDirInProject("app/[locale]/components", "app/components");
+  for (const dir of extraDirs) {
+    copyDirInProject(`app/[locale]/${dir}`, `app/${dir}`);
+  }
+  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
+  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
+  // Verify copies before deleting source
+  assertExists("app/components");
+  assertExists("app/layout.tsx");
+  assertExists("app/page.tsx");
+  for (const dir of extraDirs) assertExists(`app/${dir}`);
+  deleteIfExists("app/[locale]");
+
+  if (beforePatchLayout) beforePatchLayout(features);
+
+  // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
+  replaceInFile(
+    "app/layout.tsx",
+    'import { getDictionary } from "../../get-dictionary";',
+    'import dict from "../dictionaries/en.json";'
+  );
+  removeLineContaining("app/layout.tsx", "import { type Locale }");
+  replaceInFile(
+    "app/layout.tsx",
+    'export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}): Promise<Metadata> {',
+    "export async function generateMetadata(): Promise<Metadata> {"
+  );
+  removeLineContaining("app/layout.tsx", "const { locale } = (await params)");
+  removeLineContaining("app/layout.tsx", "const dict = await getDictionary");
+  replaceInFile(
+    "app/layout.tsx",
+    "    alternates: {\n      canonical: `${SITE_URL}/${locale}`,\n      languages: {\n        en: `${SITE_URL}/en`,\n        pt: `${SITE_URL}/pt`,\n      },\n    },",
+    "    alternates: { canonical: SITE_URL },"
+  );
+  replaceInFile("app/layout.tsx", "`${SITE_URL}/${locale}`", "SITE_URL");
+  removeLineContaining("app/layout.tsx", 'locale: locale === "pt"');
+  replaceInFile(
+    "app/layout.tsx",
+    "export default async function LocaleLayout({\n  children,\n  params,\n}: {\n  children: React.ReactNode;\n  params: Promise<{ locale: string }>;\n}) {",
+    "export default async function LocaleLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {"
+  );
+  replaceInFile("app/layout.tsx", "<Navbar locale={locale} nav={", "<Navbar nav={");
+
+  // ── 3. Patch app/page.tsx ────────────────────────────────────────────────────
+  replaceInFile(
+    "app/page.tsx",
+    'import { getDictionary } from "../../get-dictionary";',
+    'import dict from "../dictionaries/en.json";'
+  );
+  removeLineContaining("app/page.tsx", "import { type Locale }");
+  replaceInFile(
+    "app/page.tsx",
+    `export default async function ${pageFnName}({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {`,
+    `export default async function ${pageFnName}() {`
+  );
+  removeLineContaining("app/page.tsx", "const { locale } = (await params)");
+  removeLineContaining("app/page.tsx", "const dict = await getDictionary");
+
+  // ── 4. Patch app/components/Navbar.tsx ──────────────────────────────────────
+  removeLineContaining("app/components/Navbar.tsx", "import { type Locale }");
+  removeLineContaining("app/components/Navbar.tsx", "locale: Locale;");
+  replaceInFile("app/components/Navbar.tsx", "{ locale, nav }", "{ nav }");
+
+  // ── 5. Remove secondary locale dictionaries ─────────────────────────────────
+  for (const f of SECONDARY_DICT_FILES) deleteIfExists(f);
+
+  if (afterCollapse) afterCollapse(features);
+
+  console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
 }
 
 // ── Template file copy ────────────────────────────────────────────────────────
@@ -198,6 +405,63 @@ function copyBaseScaffold() {
   copyDir("templates/base", ".");
 }
 
+// ── --help flag ──────────────────────────────────────────────────────────────
+
+// Prints usage text and exits if --help or -h is present in argv.
+function checkHelp(usage) {
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    console.log(usage);
+    process.exit(0);
+  }
+}
+
+// ── Feature registry helpers ──────────────────────────────────────────────────
+
+// Builds a feature state object from the registry's detectFile declarations.
+// featureList entries with a `detectFile` string are checked via fs.existsSync.
+// `{compDir}` in detectFile is replaced with the actual compDir path.
+// Entries with `detect: "custom"` or no detectFile are skipped (must be handled
+// by the template's own detectState override).
+function detectStateFromRegistry(featureList, compDir) {
+  const state = {};
+  for (const f of featureList) {
+    if (f.recolor) continue;
+    if (f.detectFile) {
+      const filePath = f.detectFile.replace("{compDir}", compDir);
+      state[f.key] = fs.existsSync(path.join(_target, filePath));
+    }
+    // detect: "custom" entries are not handled here — template fills them in
+  }
+  return state;
+}
+
+// ── Template autodiscovery ────────────────────────────────────────────────────
+
+// Scans scripts/templates/ at runtime and returns { key: module } for each .js
+// file that exports the required interface (type, featureList, detectState, setup).
+// Caches after first call. Replaces the hardcoded TEMPLATES maps in setup/toggle/status.
+let _templateCache = null;
+
+function loadTemplates() {
+  if (_templateCache) return _templateCache;
+  const templatesDir = path.join(__dirname, "templates");
+  const entries = fs.readdirSync(templatesDir).filter((f) => f.endsWith(".js"));
+  _templateCache = {};
+  for (const file of entries) {
+    const mod = require(path.join(templatesDir, file));
+    const key = path.basename(file, ".js");
+    // Validate required interface
+    const missing = ["type", "featureList", "detectState", "setup", "enable", "disable"]
+      .filter((fn) => mod[fn] === undefined);
+    if (missing.length > 0) {
+      console.warn(`  [warn] templates/${file} missing exports: ${missing.join(", ")} — skipped`);
+      continue;
+    }
+    _templateCache[key] = mod;
+  }
+  return _templateCache;
+}
+
 // ── --project flag parser ─────────────────────────────────────────────────────
 
 // Call from scripts that operate on an existing project.
@@ -212,6 +476,12 @@ function parseProjectFlag() {
 
 module.exports = {
   TOOL_ROOT,
+  LAUNCHKIT_VERSION,
+  LOCALES,
+  DEFAULT_LOCALE,
+  DICT_FILES,
+  SECONDARY_DICT_FILES,
+  LOCALES_TS_LITERAL,
   setTarget,
   target,
   deleteIfExists,
@@ -223,6 +493,9 @@ module.exports = {
   replaceInFile,
   addDependency,
   removeDependency,
+  safeJsonParse,
+  readJsonFile,
+  assertExists,
   ask,
   askChoice,
   readLaunchkit,
@@ -230,4 +503,10 @@ module.exports = {
   copyTemplateFiles,
   copyBaseScaffold,
   parseProjectFlag,
+  checkHelp,
+  collapseI18nBase,
+  addNavLink,
+  removeNavLink,
+  loadTemplates,
+  detectStateFromRegistry,
 };

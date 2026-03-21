@@ -5,7 +5,23 @@
 
 const fs = require("fs");
 const path = require("path");
-const { target, setTarget, parseProjectFlag } = require("./lib");
+const { target, setTarget, parseProjectFlag, safeJsonParse, checkHelp } = require("./lib");
+
+checkHelp(`
+launchkit — Reset
+
+  Removes everything added by setup.js, restoring the base scaffold state.
+
+Usage:
+  node scripts/reset.js [--project <path>]
+
+Options:
+  --project <path>    Path to the generated project (default: cwd)
+  -h, --help          Show this help message
+
+Examples:
+  node scripts/reset.js --project ../my-site
+`);
 
 // ── Resolve target project ───────────────────────────────────────────────────
 setTarget(parseProjectFlag());
@@ -50,7 +66,7 @@ const OPTIONAL_DEPS = ["resend", "google-auth-library", "adm-zip"];
 function removeOptionalDeps() {
   const pkgPath = path.join(target(), "package.json");
   if (!fs.existsSync(pkgPath)) return;
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+  const pkg = safeJsonParse(fs.readFileSync(pkgPath, "utf8"), "package.json");
   let changed = false;
   for (const dep of OPTIONAL_DEPS) {
     if (pkg.dependencies?.[dep]) { delete pkg.dependencies[dep]; changed = true; }

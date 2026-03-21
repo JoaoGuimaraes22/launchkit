@@ -1,73 +1,34 @@
 # launchkit
 
-A production-ready bootstrapper for multiple site types — personal portfolio and local business website — built with Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4, and Framer Motion. Designed to grow: each template is a self-contained unit under `templates/[type]/`, making it easy to add new site types.
+Next.js 16 project generator — creates standalone sites from templates with configurable features.
 
-## Project Types
+## Templates
 
-```text
-npm run setup
-  → [1] Portfolio     — personal showcase with WebGL hero, sidebar, chatbot, project gallery
-  → [2] Business Site — local business with hero, services, reviews, FAQ, contact, footer
-  → [3] Blank         — minimal scaffold (layout + page + dictionaries), clean starting point
-```
-
-### Portfolio
-
-Pre-built components for a personal portfolio:
-
-- WebGL shader hero with animated blobs and parallax
-- Bilingual i18n routing (`/en`, `/pt`)
-- Infinite-scroll testimonials, 2×2 services grid with modals
-- Project gallery with detail pages and screenshot gallery
-- Sticky profile sidebar
-- Dialogflow ES chatbot
-- Resend contact form
-- SEO: OG/Twitter metadata, JSON-LD Person schema, sitemap, robots.txt
-
-### Business Site
-
-Pre-built generic components for any local business (restaurant, clinic, salon, plumber, mechanic, etc.):
-
-- Hero with background image, two-line headline, stats, and dual CTAs
-- About section with image and stat cards
-- Services grid (6 cards with emoji icons)
-- Reviews with star ratings and avatars
-- FAQ accordion
-- Contact form (Resend) + contact info column
-- Footer (3-column: brand / nav / contact)
-- FloatingCTA mobile bar (Call / WhatsApp / Book)
-- Bilingual i18n routing (optional)
-- SEO: OG/Twitter metadata, JSON-LD LocalBusiness schema, sitemap, robots.txt
+- **Portfolio** — WebGL hero, sidebar, chatbot, project gallery, testimonials, contact form
+- **Business Site** — hero, services, reviews, FAQ, contact, footer, FloatingCTA
+- **Blank** — minimal scaffold, clean starting point
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_GITHUB/launchkit my-project
-cd my-project
-npm install
-npm run setup           # interactive: select project type + features
+git clone <repo-url> launchkit && cd launchkit
+node scripts/setup.js --name my-site --output ../
+# or skip type prompt:
+node scripts/setup.js --name my-site --output ../ --portfolio
 ```
 
-Skip the type prompt with a shorthand:
+Then in the generated project: copy `.env.example` → `.env.local`, paste the relevant `BOOTSTRAP.md` into Claude Code, replace placeholder images, `npm run dev`.
+
+## Scripts
+
+All scripts support `--help`. Run from the launchkit directory.
 
 ```bash
-npm run setup:portfolio   # go straight to portfolio feature selection
-npm run setup:business    # go straight to business site feature selection
+node scripts/setup.js --name <name> --output <dir> [--portfolio|--business|--blank]
+node scripts/toggle.js --project <path>     # enable/disable features
+node scripts/status.js --project <path>     # view feature state
+node scripts/validate.js --project <path>   # check placeholders + TODOs
+node scripts/reset.js --project <path>      # strip back to base scaffold
 ```
 
-Then paste the relevant bootstrap file into a Claude Code conversation:
-
-- **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
-- **Business Site** → `templates/business/BOOTSTRAP.md`
-- **Blank** → `templates/blank/BOOTSTRAP.md`
-
-To enable or disable features after setup:
-
-```bash
-npm run toggle    # enable/disable individual features without a full reset
-npm run status    # print current template type and active feature state
-npm run validate  # check for unreplaced placeholders, TODOs, and default images
-npm run check     # pre-deploy gate: validate → lint → build
-```
-
-See `SETUP.md` for the full setup guide and `CLAUDE.md` for architecture reference.
+See [SETUP.md](SETUP.md) for the full guide and [CLAUDE.md](CLAUDE.md) for architecture reference.

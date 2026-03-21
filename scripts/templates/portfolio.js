@@ -9,14 +9,18 @@ const {
   ask,
   copyDir,
   copyFile,
-  copyFileInProject,
-  copyDirInProject,
   copyTemplateFiles,
   deleteIfExists,
   removeLineContaining,
   replaceInFile,
   addDependency,
   removeDependency,
+  addNavLink,
+  removeNavLink,
+  collapseI18nBase,
+  DICT_FILES,
+  LOCALES_TS_LITERAL,
+  detectStateFromRegistry,
 } = require("../lib");
 
 const TYPE = "portfolio";
@@ -24,28 +28,19 @@ const TYPE = "portfolio";
 // ── Feature list (used by toggle UI) ─────────────────────────────────────────
 
 const featureList = [
-  { key: "webglHero",    label: "WebGL Hero (shader + parallax)" },
-  { key: "chatbot",      label: "Chatbot (Dialogflow ES)" },
-  { key: "contactForm",  label: "Contact Form (Resend API)" },
-  { key: "testimonials", label: "Testimonials section" },
-  { key: "work",         label: "Work section (project gallery)" },
-  { key: "sidebar",      label: "ProfileSidebar (sticky desktop)" },
-  { key: "i18n",         label: "i18n routing", unsupported: true },
+  { key: "webglHero",    label: "WebGL Hero (shader + parallax)", deps: [], detectFile: "{compDir}/HeroFull.tsx" },
+  { key: "chatbot",      label: "Chatbot (Dialogflow ES)",        deps: [], detectFile: "app/api/chat/route.ts" },
+  { key: "contactForm",  label: "Contact Form (Resend API)",      deps: [], detectFile: "app/api/contact/route.ts" },
+  { key: "testimonials", label: "Testimonials section",           deps: [], detectFile: "{compDir}/Reviews.tsx" },
+  { key: "work",         label: "Work section (project gallery)", deps: [], detectFile: "{compDir}/Work.tsx" },
+  { key: "sidebar",      label: "ProfileSidebar (sticky desktop)", deps: [], detectFile: "{compDir}/ProfileSidebar.tsx" },
+  { key: "i18n",         label: "i18n routing", unsupported: true, deps: [], detectFile: "i18n-config.ts" },
 ];
 
 // ── Feature detection ─────────────────────────────────────────────────────────
 
 function detectState(compDir) {
-  const exists = (rel) => fs.existsSync(path.join(target(), rel));
-  return {
-    i18n:         exists("i18n-config.ts"),
-    webglHero:    exists(`${compDir}/HeroFull.tsx`),
-    chatbot:      exists("app/api/chat/route.ts"),
-    contactForm:  exists("app/api/contact/route.ts"),
-    testimonials: exists(`${compDir}/Testimonials.tsx`),
-    work:         exists(`${compDir}/Work.tsx`),
-    sidebar:      exists(`${compDir}/ProfileSidebar.tsx`),
-  };
+  return detectStateFromRegistry(featureList, compDir);
 }
 
 // ── i18n-collapse helpers (patch locale refs out of individual components) ────
@@ -94,6 +89,12 @@ function collapseChatWidgetTsx(compDir) {
     "const s = {\n  title: \"Chat with me\",\n  subtitle: \"Typically replies instantly\",\n  placeholder: \"Type a message...\",\n  greeting: \"Hi! I'm YOUR_NAME's assistant. Ask me anything about their work, services, or availability.\",\n  ariaLabel: \"Open chat\",\n  bubble: \"Ask me anything\",\n  chips: [\"What services do you offer?\", \"What's your pricing?\", \"Are you available?\", \"Show me your work\"],\n};\n\nexport default function ChatWidget() {"
   );
   removeLineContaining(`${compDir}/ChatWidget.tsx`, "const s = strings[locale]");
+  replaceInFile(`${compDir}/ChatWidget.tsx`, "message: text, sessionId, locale", 'message: text, sessionId, locale: "en"');
+  replaceInFile(
+    `${compDir}/ChatWidget.tsx`,
+    'locale === "pt" ? "Erro de ligação. Tenta novamente." : "Connection error. Please try again."',
+    '"Connection error. Please try again."'
+  );
 }
 
 // ── Sitemap regeneration (portfolio: i18n × work matrix) ─────────────────────
@@ -105,7 +106,7 @@ function regenerateSitemap(i18nActive, workEnabled) {
 import { getDictionary } from "../get-dictionary";
 
 const SITE_URL = "https://your-domain.vercel.app";
-const locales = ["en", "pt"] as const;
+const locales = ${LOCALES_TS_LITERAL};
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const dict = await getDictionary("en");
@@ -133,7 +134,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     content = `import type { MetadataRoute } from "next";
 
 const SITE_URL = "https://YOUR_DOMAIN";
-const locales = ["en", "pt"] as const;
+const locales = ${LOCALES_TS_LITERAL};
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return locales.map((locale) => ({
@@ -176,113 +177,72 @@ export default function sitemap(): MetadataRoute.Sitemap {
 // ── Full i18n collapse (app/[locale]/ → app/) ─────────────────────────────────
 
 function collapseI18n(features) {
-  console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
+  collapseI18nBase(features, {
+    extraDirs: features.work ? ["work"] : [],
+    pageFnName: "LocalePage",
+    beforePatchLayout() {
+      // Portfolio-specific: description collapse
+      replaceInFile(
+        "app/layout.tsx",
+        '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu perfil em português. Disponível para freelance."\n      : "Short description of your profile in English. Available for freelance.";',
+        '  const description = "Short description of your profile in English. Available for freelance.";'
+      );
+    },
+    afterCollapse(f) {
+      // Portfolio-specific layout patches
+      replaceInFile("app/layout.tsx", "<ChatWidget locale={locale} />", "<ChatWidget />");
+      removeLineContaining("app/layout.tsx", "import LangSetter");
+      removeLineContaining("app/layout.tsx", "<LangSetter");
 
-  // ── 1. Move files ────────────────────────────────────────────────────────────
-  copyDirInProject("app/[locale]/components", "app/components");
-  if (features.work) copyDirInProject("app/[locale]/work", "app/work");
-  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
-  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
-  deleteIfExists("app/[locale]");
+      // Portfolio-specific page patches
+      replaceInFile("app/page.tsx", " locale={locale}", "");
 
-  // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
-  replaceInFile(
-    "app/layout.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/layout.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/layout.tsx",
-    'export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}): Promise<Metadata> {',
-    "export async function generateMetadata(): Promise<Metadata> {"
-  );
-  removeLineContaining("app/layout.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/layout.tsx", "const dict = await getDictionary");
-  replaceInFile(
-    "app/layout.tsx",
-    '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu perfil em português. Disponível para freelance."\n      : "Short description of your profile in English. Available for freelance.";',
-    '  const description = "Short description of your profile in English. Available for freelance.";'
-  );
-  replaceInFile(
-    "app/layout.tsx",
-    "    alternates: {\n      canonical: `${SITE_URL}/${locale}`,\n      languages: {\n        en: `${SITE_URL}/en`,\n        pt: `${SITE_URL}/pt`,\n      },\n    },",
-    "    alternates: { canonical: SITE_URL },"
-  );
-  replaceInFile("app/layout.tsx", "`${SITE_URL}/${locale}`", "SITE_URL");
-  removeLineContaining("app/layout.tsx", 'locale: locale === "pt"');
-  replaceInFile(
-    "app/layout.tsx",
-    "export default async function LocaleLayout({\n  children,\n  params,\n}: {\n  children: React.ReactNode;\n  params: Promise<{ locale: string }>;\n}) {",
-    "export default async function LocaleLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {"
-  );
-  replaceInFile("app/layout.tsx", "<Navbar locale={locale} nav={", "<Navbar nav={");
-  replaceInFile("app/layout.tsx", "<ChatWidget locale={locale} />", "<ChatWidget />");
+      // Portfolio-specific Navbar patches
+      removeLineContaining("app/components/Navbar.tsx", "import LanguageSwitcher");
+      replaceInFile("app/components/Navbar.tsx", "href={`/${locale}`}", 'href="/"');
+      removeLineContaining("app/components/Navbar.tsx", "<LanguageSwitcher");
+      deleteIfExists("app/components/LanguageSwitcher.tsx");
+      deleteIfExists("app/components/LangSetter.tsx");
 
-  // ── 3. Patch app/page.tsx ────────────────────────────────────────────────────
-  replaceInFile(
-    "app/page.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/page.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/page.tsx",
-    "export default async function LocalePage({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {",
-    "export default async function LocalePage() {"
-  );
-  removeLineContaining("app/page.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/page.tsx", "const dict = await getDictionary");
-  replaceInFile("app/page.tsx", " locale={locale}", "");
+      // Portfolio-specific component patches
+      if (f.sidebar)                     collapseSidebarTsx("app/components");
+      if (f.work)                        collapseWorkTsx("app/components");
+      if (f.sidebar && f.chatbot)        collapseChatNudgeTsx("app/components");
+      if (f.chatbot)                     collapseChatWidgetTsx("app/components");
 
-  // ── 4. Patch app/components/Navbar.tsx ──────────────────────────────────────
-  removeLineContaining("app/components/Navbar.tsx", "import { type Locale }");
-  removeLineContaining("app/components/Navbar.tsx", "locale: Locale;");
-  replaceInFile("app/components/Navbar.tsx", "{ locale, nav }", "{ nav }");
-
-  // ── 5. Portfolio-specific component patches ──────────────────────────────────
-  if (features.sidebar)                          collapseSidebarTsx("app/components");
-  if (features.work)                             collapseWorkTsx("app/components");
-  if (features.sidebar && features.chatbot)      collapseChatNudgeTsx("app/components");
-  if (features.chatbot)                          collapseChatWidgetTsx("app/components");
-
-  if (features.work) {
-    replaceInFile(
-      "app/work/[slug]/page.tsx",
-      'import { getDictionary } from "../../../../get-dictionary";',
-      'import dict from "../../../dictionaries/en.json";'
-    );
-    removeLineContaining("app/work/[slug]/page.tsx", "import { type Locale }");
-    removeLineContaining("app/work/[slug]/page.tsx", "  locale: string;");
-    replaceInFile(
-      "app/work/[slug]/page.tsx",
-      "export async function generateStaticParams() {\n  const enDict = await getDictionary(\"en\");\n  return enDict.work.projects.flatMap((project) =>\n    [\"en\", \"pt\"].map((locale) => ({ locale, slug: project.slug })),\n  );\n}",
-      "export function generateStaticParams() {\n  return dict.work.projects.map((project) => ({ slug: project.slug }));\n}"
-    );
-    replaceInFile(
-      "app/work/[slug]/page.tsx",
-      "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
-      "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
-    );
-    replaceInFile(
-      "app/work/[slug]/page.tsx",
-      "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
-      "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
-    );
-    replaceInFile("app/work/[slug]/page.tsx", "href={`/${locale}#work`}", 'href="/#work"');
-    // Upgrade sitemap to include work paths
-    fs.writeFileSync(
-      path.join(target(), "app/sitemap.ts"),
-      `import type { MetadataRoute } from "next";\nimport dict from "../dictionaries/en.json";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  const slugs = dict.work.projects.map((p) => p.slug);\n  return [\n    { url: SITE_URL, lastModified: new Date() },\n    ...slugs.map((slug) => ({ url: \`\${SITE_URL}/work/\${slug}\`, lastModified: new Date() })),\n  ];\n}\n`,
-      "utf8"
-    );
-    console.log("  [patched] sitemap.ts — updated with work paths");
-  }
-
-  // ── 6. Remove pt.json ────────────────────────────────────────────────────────
-  deleteIfExists("dictionaries/pt.json");
-
-  console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
+      if (f.work) {
+        replaceInFile(
+          "app/work/[slug]/page.tsx",
+          'import { getDictionary } from "../../../../get-dictionary";',
+          'import dict from "../../../dictionaries/en.json";'
+        );
+        removeLineContaining("app/work/[slug]/page.tsx", "import { type Locale }");
+        removeLineContaining("app/work/[slug]/page.tsx", "  locale: string;");
+        replaceInFile(
+          "app/work/[slug]/page.tsx",
+          "export async function generateStaticParams() {\n  const enDict = await getDictionary(\"en\");\n  return enDict.work.projects.flatMap((project) =>\n    [\"en\", \"pt\"].map((locale) => ({ locale, slug: project.slug })),\n  );\n}",
+          "export function generateStaticParams() {\n  return dict.work.projects.map((project) => ({ slug: project.slug }));\n}"
+        );
+        replaceInFile(
+          "app/work/[slug]/page.tsx",
+          "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
+          "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
+        );
+        replaceInFile(
+          "app/work/[slug]/page.tsx",
+          "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
+          "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
+        );
+        replaceInFile("app/work/[slug]/page.tsx", "href={`/${locale}#work`}", 'href="/#work"');
+        fs.writeFileSync(
+          path.join(target(), "app/sitemap.ts"),
+          `import type { MetadataRoute } from "next";\nimport dict from "../dictionaries/en.json";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  const slugs = dict.work.projects.map((p) => p.slug);\n  return [\n    { url: SITE_URL, lastModified: new Date() },\n    ...slugs.map((slug) => ({ url: \`\${SITE_URL}/work/\${slug}\`, lastModified: new Date() })),\n  ];\n}\n`,
+          "utf8"
+        );
+        console.log("  [patched] sitemap.ts — updated with work paths");
+      }
+    },
+  });
 }
 
 // ── Enable feature ────────────────────────────────────────────────────────────
@@ -340,19 +300,18 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       break;
     }
     case "testimonials": {
-      copyFile("templates/portfolio/app/[locale]/components/Testimonials.tsx", `${compDir}/Testimonials.tsx`);
+      copyFile("templates/portfolio/app/[locale]/components/Reviews.tsx", `${compDir}/Reviews.tsx`);
       replaceInFile(pageFile,
         'import Services from "./components/Services";',
-        'import Testimonials from "./components/Testimonials";\nimport Services from "./components/Services";'
+        'import Reviews from "./components/Reviews";\nimport Services from "./components/Services";'
       );
       replaceInFile(pageFile,
         "            <Services services={dict.services} />",
-        "            <Testimonials testimonials={dict.testimonials} />\n            <Services services={dict.services} />"
+        "            <Reviews reviews={dict.reviews} />\n            <Services services={dict.services} />"
       );
-      replaceInFile(`${compDir}/Navbar.tsx`,
-        '    { id: "services", label: nav.services },',
-        '    { id: "testimonials", label: nav.reviews },\n    { id: "services", label: nav.services },'
-      );
+      for (const dictFile of DICT_FILES) {
+        addNavLink(dictFile, { id: "testimonials", label: dictFile.includes("pt") ? "Avaliações" : "Reviews" }, "work");
+      }
       break;
     }
     case "work": {
@@ -367,10 +326,10 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       const workJSX = i18nActive
         ? "            <Work work={dict.work} locale={locale} />"
         : "            <Work work={dict.work} />";
-      if (fs.readFileSync(path.join(target(), pageFile), "utf8").includes("<Testimonials testimonials")) {
+      if (fs.readFileSync(path.join(target(), pageFile), "utf8").includes("<Reviews reviews")) {
         replaceInFile(pageFile,
-          "            <Testimonials testimonials={dict.testimonials} />",
-          workJSX + "\n            <Testimonials testimonials={dict.testimonials} />"
+          "            <Reviews reviews={dict.reviews} />",
+          workJSX + "\n            <Reviews reviews={dict.reviews} />"
         );
       } else {
         replaceInFile(pageFile,
@@ -378,10 +337,9 @@ function enable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
           workJSX + "\n            <Services services={dict.services} />"
         );
       }
-      replaceInFile(`${compDir}/Navbar.tsx`,
-        '    { id: "home", label: nav.home },',
-        '    { id: "home", label: nav.home },\n    { id: "work", label: nav.work },'
-      );
+      for (const dictFile of DICT_FILES) {
+        addNavLink(dictFile, { id: "work", label: dictFile.includes("pt") ? "Projectos" : "Projects" }, "home");
+      }
       regenerateSitemap(i18nActive, true);
       break;
     }
@@ -438,17 +396,11 @@ function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       break;
     }
     case "testimonials": {
-      deleteIfExists(`${compDir}/Testimonials.tsx`);
-      removeLineContaining(pageFile, 'import Testimonials from "./components/Testimonials"');
-      removeLineContaining(pageFile, "<Testimonials");
-      const navbarPath = path.join(target(), `${compDir}/Navbar.tsx`);
-      if (fs.existsSync(navbarPath)) {
-        const content = fs.readFileSync(navbarPath, "utf8");
-        const updated = content.split("\n").filter((l) => !l.includes('"testimonials"') && !l.includes("nav.reviews")).join("\n");
-        if (updated !== content) {
-          fs.writeFileSync(navbarPath, updated, "utf8");
-          console.log("  [patched]", `${compDir}/Navbar.tsx`, "— removed testimonials nav entry");
-        }
+      deleteIfExists(`${compDir}/Reviews.tsx`);
+      removeLineContaining(pageFile, 'import Reviews from "./components/Reviews"');
+      removeLineContaining(pageFile, "<Reviews");
+      for (const dictFile of DICT_FILES) {
+        removeNavLink(dictFile, "testimonials");
       }
       break;
     }
@@ -458,14 +410,8 @@ function disable(key, { compDir, pageFile, layoutFile, i18nActive, current }) {
       deleteIfExists("public/projects");
       removeLineContaining(pageFile, 'import Work from "./components/Work"');
       removeLineContaining(pageFile, "<Work");
-      const navbarPath2 = path.join(target(), `${compDir}/Navbar.tsx`);
-      if (fs.existsSync(navbarPath2)) {
-        const content2 = fs.readFileSync(navbarPath2, "utf8");
-        const updated2 = content2.split("\n").filter((l) => !(l.includes('"work"') && l.includes("nav.work"))).join("\n");
-        if (updated2 !== content2) {
-          fs.writeFileSync(navbarPath2, updated2, "utf8");
-          console.log("  [patched]", `${compDir}/Navbar.tsx`, "— removed work nav entry");
-        }
+      for (const dictFile of DICT_FILES) {
+        removeNavLink(dictFile, "work");
       }
       regenerateSitemap(i18nActive, false);
       break;
@@ -575,19 +521,15 @@ async function setup(rl) {
   }
 
   if (!features.testimonials) {
-    console.log("⚙  Testimonials: disabled");
-    deleteIfExists("app/[locale]/components/Testimonials.tsx");
-    removeLineContaining("app/[locale]/page.tsx", 'import Testimonials from "./components/Testimonials"');
-    removeLineContaining("app/[locale]/page.tsx", "<Testimonials");
-    const navbarPath = path.join(target(), "app/[locale]/components/Navbar.tsx");
-    if (fs.existsSync(navbarPath)) {
-      const content = fs.readFileSync(navbarPath, "utf8");
-      const updated = content.split("\n").filter((l) => !l.includes('"testimonials"') && !l.includes("nav.reviews")).join("\n");
-      if (updated !== content) fs.writeFileSync(navbarPath, updated, "utf8");
-      console.log("  [patched] Navbar.tsx — removed testimonials entry");
+    console.log("⚙  Reviews: disabled");
+    deleteIfExists("app/[locale]/components/Reviews.tsx");
+    removeLineContaining("app/[locale]/page.tsx", 'import Reviews from "./components/Reviews"');
+    removeLineContaining("app/[locale]/page.tsx", "<Reviews");
+    for (const dictFile of DICT_FILES) {
+      removeNavLink(dictFile, "testimonials");
     }
   } else {
-    console.log("✓  Testimonials: enabled");
+    console.log("✓  Reviews: enabled");
   }
 
   if (!features.work) {
@@ -597,15 +539,11 @@ async function setup(rl) {
     deleteIfExists("public/projects");
     removeLineContaining("app/[locale]/page.tsx", 'import Work from "./components/Work"');
     removeLineContaining("app/[locale]/page.tsx", "<Work");
-    const navbarPath2 = path.join(target(), "app/[locale]/components/Navbar.tsx");
-    if (fs.existsSync(navbarPath2)) {
-      const content2 = fs.readFileSync(navbarPath2, "utf8");
-      const updated2 = content2.split("\n").filter((l) => !(l.includes('"work"') && l.includes("nav.work"))).join("\n");
-      if (updated2 !== content2) fs.writeFileSync(navbarPath2, updated2, "utf8");
-      console.log("  [patched] Navbar.tsx — removed work entry");
+    for (const dictFile of DICT_FILES) {
+      removeNavLink(dictFile, "work");
     }
     if (features.i18n) {
-      const locales = '["en", "pt"] as const';
+      const locales = LOCALES_TS_LITERAL;
       fs.writeFileSync(
         path.join(target(), "app/sitemap.ts"),
         `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\nconst locales = ${locales};\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return locales.map((locale) => ({\n    url: \`\${SITE_URL}/\${locale}\`,\n    lastModified: new Date(),\n    alternates: {\n      languages: Object.fromEntries(locales.map((l) => [l, \`\${SITE_URL}/\${l}\`])),\n    },\n  }));\n}\n`,

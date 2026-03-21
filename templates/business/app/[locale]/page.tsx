@@ -1,6 +1,6 @@
 import { type Locale } from "../../i18n-config";
 import { getDictionary } from "../../get-dictionary";
-import HeroContent from "./components/HeroContent";
+import Hero from "./components/Hero";
 import About from "./components/About";
 import Services from "./components/Services";
 import Reviews from "./components/Reviews";
@@ -19,7 +19,7 @@ export default async function BusinessPage({
 
   return (
     <>
-      <HeroContent hero={dict.hero} />
+      <Hero hero={dict.hero} />
       <About about={dict.about} />
       <Services services={dict.services} />
       <Reviews reviews={dict.reviews} />

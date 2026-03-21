@@ -5,16 +5,28 @@
 
 const fs = require("fs");
 const path = require("path");
-const { target, setTarget, parseProjectFlag, readLaunchkit } = require("./lib");
+const { target, setTarget, parseProjectFlag, readLaunchkit, checkHelp, loadTemplates } = require("./lib");
+
+checkHelp(`
+launchkit — Status
+
+  Read-only display of template type and current feature state.
+
+Usage:
+  node scripts/status.js [--project <path>]
+
+Options:
+  --project <path>    Path to the generated project (default: cwd)
+  -h, --help          Show this help message
+
+Examples:
+  node scripts/status.js --project ../my-site
+`);
 
 // ── Resolve target project ───────────────────────────────────────────────────
 setTarget(parseProjectFlag());
 
-const TEMPLATES = {
-  portfolio: require("./templates/portfolio"),
-  business:  require("./templates/business"),
-  blank:     require("./templates/blank"),
-};
+const TEMPLATES = loadTemplates();
 
 const state       = readLaunchkit();
 const { type }    = state;

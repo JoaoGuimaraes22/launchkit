@@ -8,16 +8,29 @@ const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-const { target, setTarget, parseProjectFlag, ask, askChoice, readLaunchkit, writeLaunchkit } = require("./lib");
+const { target, setTarget, parseProjectFlag, ask, askChoice, readLaunchkit, writeLaunchkit, checkHelp, loadTemplates } = require("./lib");
+
+checkHelp(`
+launchkit — Toggle Features
+
+  Enable or disable individual features in an existing project.
+
+Usage:
+  node scripts/toggle.js [--project <path>]
+
+Options:
+  --project <path>    Path to the generated project (default: cwd)
+  -h, --help          Show this help message
+
+Examples:
+  node scripts/toggle.js --project ../my-site
+  cd ../my-site && node ../launchkit/scripts/toggle.js
+`);
 
 // ── Resolve target project ───────────────────────────────────────────────────
 setTarget(parseProjectFlag());
 
-const TEMPLATES = {
-  portfolio: require("./templates/portfolio"),
-  business:  require("./templates/business"),
-  blank:     require("./templates/blank"),
-};
+const TEMPLATES = loadTemplates();
 
 // ── Main toggle loop ──────────────────────────────────────────────────────────
 
@@ -101,6 +114,32 @@ async function runToggle(rl) {
   // ── Enable / disable ──────────────────────────────────────────────────────────
   const isCurrentlyEnabled = current[selected.key];
   const action = isCurrentlyEnabled ? "disable" : "enable";
+
+  // ── Dependency checks ────────────────────────────────────────────────────────
+  const selectedDeps = selected.deps || [];
+  if (action === "enable" && selectedDeps.length > 0) {
+    const missingDeps = selectedDeps.filter((d) => !current[d]);
+    if (missingDeps.length > 0) {
+      const labels = missingDeps.map((d) => features.find((f) => f.key === d)?.label || d);
+      console.log(`\n  ⚠  "${selected.label}" depends on: ${labels.join(", ")}`);
+      console.log("     Enable those features first, or the result may be incomplete.");
+      const proceed = await ask(rl, "  Continue anyway?");
+      if (!proceed) { console.log("\n  Cancelled.\n"); return false; }
+    }
+  }
+  if (action === "disable") {
+    const dependents = features.filter(
+      (f) => !f.unsupported && !f.recolor && (f.deps || []).includes(selected.key) && current[f.key]
+    );
+    if (dependents.length > 0) {
+      const labels = dependents.map((f) => f.label);
+      console.log(`\n  ⚠  Disabling "${selected.label}" may break: ${labels.join(", ")}`);
+      console.log("     Consider disabling those features first.");
+      const proceed = await ask(rl, "  Continue anyway?");
+      if (!proceed) { console.log("\n  Cancelled.\n"); return false; }
+    }
+  }
+
   const confirmed = await ask(rl, `\n  ${action.charAt(0).toUpperCase() + action.slice(1)} "${selected.label}"?`);
 
   if (!confirmed) {
@@ -132,8 +171,10 @@ async function runToggle(rl) {
     console.log("\n─── Running npm install ─────────────────────────────────────────\n");
     try {
       execSync("npm install", { stdio: "inherit", cwd: target() });
-    } catch {
-      console.warn("  npm install encountered warnings — check output above.");
+    } catch (err) {
+      console.error("\n  Error: npm install failed. Check the output above for details.");
+      console.error("  You can retry manually: cd", target(), "&& npm install\n");
+      process.exit(1);
     }
   }
 

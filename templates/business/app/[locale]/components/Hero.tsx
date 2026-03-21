@@ -17,7 +17,7 @@ interface HeroDict {
   stats: Stat[];
 }
 
-export default function HeroContent({ hero }: { hero: HeroDict }) {
+export default function Hero({ hero }: { hero: HeroDict }) {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLElement>(null);
 

@@ -6,7 +6,24 @@
 
 const fs = require("fs");
 const path = require("path");
-const { TOOL_ROOT, target, setTarget, parseProjectFlag } = require("./lib");
+const { TOOL_ROOT, target, setTarget, parseProjectFlag, checkHelp } = require("./lib");
+
+checkHelp(`
+launchkit — Validate
+
+  Checks for unreplaced YOUR_* placeholders, TODO: TEMPLATE comments,
+  default placeholder images, and missing .env.local.
+
+Usage:
+  node scripts/validate.js [--project <path>]
+
+Options:
+  --project <path>    Path to the generated project (default: cwd)
+  -h, --help          Show this help message
+
+Examples:
+  node scripts/validate.js --project ../my-site
+`);
 
 // ── Resolve target project ───────────────────────────────────────────────────
 setTarget(parseProjectFlag());

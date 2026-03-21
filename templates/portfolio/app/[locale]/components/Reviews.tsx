@@ -10,15 +10,15 @@ interface TestimonialItem {
   avatar: string | null;
 }
 
-interface TestimonialsDict {
+interface ReviewsDict {
   title_line1: string;
   title_line2: string;
   subtitle: string;
   items: TestimonialItem[];
 }
 
-interface TestimonialsProps {
-  testimonials: TestimonialsDict;
+interface ReviewsProps {
+  reviews: ReviewsDict;
 }
 
 const AVATAR_COLORS = [
@@ -109,15 +109,15 @@ function ScrollColumn({
   );
 }
 
-export default function Testimonials({ testimonials }: TestimonialsProps) {
+export default function Reviews({ reviews }: ReviewsProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
-  const col1 = testimonials.items.slice(0, 3);
-  const col2 = testimonials.items.slice(3, 6);
-  const col3 = testimonials.items.slice(6, 9);
+  const col1 = reviews.items.slice(0, 3);
+  const col2 = reviews.items.slice(3, 6);
+  const col3 = reviews.items.slice(6, 9);
   // Mobile: all items in one column
-  const allItems = testimonials.items;
+  const allItems = reviews.items;
 
   return (
     <section
@@ -139,14 +139,14 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
       >
         <h2 className="font-black uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl xl:text-[7rem] text-zinc-900">
-          {testimonials.title_line1}
+          {reviews.title_line1}
         </h2>
         <h2 className="font-black uppercase tracking-tight text-4xl sm:text-5xl md:text-6xl xl:text-[7rem] text-zinc-200">
-          {testimonials.title_line2}
+          {reviews.title_line2}
         </h2>
-        {testimonials.subtitle && (
+        {reviews.subtitle && (
           <p className="mt-4 text-sm text-zinc-500 max-w-md">
-            {testimonials.subtitle}
+            {reviews.subtitle}
           </p>
         )}
       </motion.div>
