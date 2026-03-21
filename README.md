@@ -44,12 +44,28 @@ Pre-built generic components for any local business (restaurant, clinic, salon, 
 git clone https://github.com/YOUR_GITHUB/launchkit my-project
 cd my-project
 npm install
-node scripts/setup.js   # select project type and features
+npm run setup           # interactive: select project type + features
+```
+
+Skip the type prompt with a shorthand:
+
+```bash
+npm run setup:portfolio   # go straight to portfolio feature selection
+npm run setup:business    # go straight to business site feature selection
 ```
 
 Then paste the relevant bootstrap file into a Claude Code conversation:
 
 - **Portfolio** → `templates/portfolio/BOOTSTRAP.md`
 - **Business Site** → `templates/business/BOOTSTRAP.md`
+
+To enable or disable features after setup:
+
+```bash
+npm run toggle    # enable/disable individual features without a full reset
+npm run status    # print current template type and active feature state
+npm run validate  # check for unreplaced placeholders, TODOs, and default images
+npm run check     # pre-deploy gate: validate → lint → build
+```
 
 See `SETUP.md` for the full setup guide and `CLAUDE.md` for architecture reference.

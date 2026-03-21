@@ -51,5 +51,6 @@
 
 ## Docs
 
-- [ ] `README.md` quick start — mention `npm run setup:portfolio`, `setup:business`, and `toggle`
-- [ ] Audit both `BOOTSTRAP.md` files for accuracy against current template component state
+- [x] `README.md` quick start — mention `npm run setup:portfolio`, `setup:business`, and `toggle`
+- [x] Audit both `BOOTSTRAP.md` files for accuracy against current template component state
+- [ ] Redo both of these after completing multiple changes

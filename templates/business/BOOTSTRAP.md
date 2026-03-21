@@ -11,8 +11,7 @@ You are helping bootstrap a new local business website from `launchkit`. The arc
 Before starting:
 1. Read `CLAUDE.md` completely
 2. Check which features are active using the feature detection rules in the "Template & Bootstrap" section
-3. `grep -r "YOUR_" app dictionaries templates --include="*.ts" --include="*.tsx" --include="*.json"` — see remaining placeholders
-4. `grep -r "TODO: TEMPLATE" app --include="*.ts" --include="*.tsx"` — find cleanup tasks
+3. Run `npm run validate` — lists all unreplaced `YOUR_*` placeholders, `TODO: TEMPLATE` comments, and default images still in place
 
 ---
 
@@ -97,6 +96,8 @@ If i18n is enabled (check: `i18n-config.ts` exists), also fill `dictionaries/pt.
 ### 3d. Accent color
 **Automated by `setup.js`** — if you chose a color other than Indigo during setup, all `indigo-` Tailwind classes were already replaced across every business component.
 
+To change the accent color after setup, run `npm run toggle` and select "Brand accent color" — no manual find-and-replace needed.
+
 If you need a custom hex color not in the preset list, do a project-wide find-and-replace of `indigo-` with the arbitrary Tailwind values (e.g. `bg-[#2563eb]`, `text-[#2563eb]`) in the files listed in CLAUDE.md.
 
 ### 3e. SEO
@@ -149,8 +150,8 @@ If `app/api/contact/route.ts` exists:
 ## Step 7 — Verify
 
 ```bash
-npm run lint
-npm run build
+npm run validate  # confirm no placeholders, TODOs, or default images remain
+npm run check     # validate → lint → build in sequence, exits on first failure
 npm run dev
 ```
 

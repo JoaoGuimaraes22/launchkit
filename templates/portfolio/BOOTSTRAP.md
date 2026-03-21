@@ -11,8 +11,7 @@ You are helping bootstrap a new portfolio project from `launchkit`. The full sta
 Before starting:
 1. Read `CLAUDE.md` completely
 2. Check which features are active by testing file existence (rules in the "Template & Bootstrap" section of `CLAUDE.md`)
-3. Run: `grep -r "YOUR_" app dictionaries --include="*.ts" --include="*.tsx" --include="*.json"` to see all placeholders
-4. Run: `grep -r "TODO: TEMPLATE" app --include="*.ts" --include="*.tsx"` to find cleanup tasks left by the setup script
+3. Run `npm run validate` — lists all unreplaced `YOUR_*` placeholders, `TODO: TEMPLATE` comments, and default images still in place
 
 ---
 
@@ -158,8 +157,8 @@ Walk me through:
 Run in order and fix any errors:
 
 ```bash
-npm run lint
-npm run build
+npm run validate  # confirm no placeholders, TODOs, or default images remain
+npm run check     # validate → lint → build in sequence, exits on first failure
 npm run dev
 ```
 
