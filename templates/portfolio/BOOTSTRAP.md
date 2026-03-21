@@ -108,24 +108,17 @@ After all content is applied, search for and remove all `// TODO: TEMPLATE` comm
 
 ---
 
-## Step 4 — i18n Routing Collapse (only if i18n was disabled)
+## Step 4 — i18n Routing Collapse
 
-If `i18n-config.ts` does NOT exist, the `app/[locale]/` folder still needs to be collapsed to `app/`. Do this **after** Step 3 content updates are applied:
+**Automated by `setup.js`** — if i18n was disabled during setup, the collapse was already done:
 
-1. Move `app/[locale]/layout.tsx` → overwrite `app/layout.tsx`
-2. Move `app/[locale]/page.tsx` → overwrite `app/page.tsx`
-3. Move `app/[locale]/components/` → `app/components/`
-4. Move `app/[locale]/work/` → `app/work/` (if work section is active)
-5. Delete the now-empty `app/[locale]/` folder
-6. Fix all import paths in moved files (remove extra `../../` levels)
-7. In all moved files: remove `import { type Locale } from "../../i18n-config"` and `Locale` type references
-8. Replace `const { locale } = (await params) as { locale: Locale }` and `getDictionary(locale)` calls:
-   - In `layout.tsx` and `page.tsx`: remove `params` from function signature, replace `getDictionary(locale)` with `import dict from "../dictionaries/en.json"` (static import at top of file)
-   - Remove `locale` prop from all components that accepted it (`Navbar`, `Work`, `ChatWidget`, `ProfileSidebar`)
-9. In `Navbar.tsx`: remove `LanguageSwitcher` import + JSX (already deleted by setup script)
-10. In components that branched on `locale` for strings (e.g., former `ChatWidget`): remove locale branching, keep only English strings
-11. In `work/[slug]/page.tsx` (if active): remove `locale` from `generateStaticParams`, simplify to only return slugs without locale prefix
-12. Update `app/page.tsx` root (the redirect stub): change to simply render the locale layout directly (no redirect needed)
+- `app/[locale]/` moved to `app/` with all TypeScript rewritten
+- Locale params, `Locale` types, `getDictionary` calls removed
+- Static `import dict from "../dictionaries/en.json"` added
+- Component locale props stripped (`Navbar`, `Work`, `ChatWidget`, `ProfileSidebar`)
+- `dictionaries/pt.json` deleted
+
+If you need to verify: `app/[locale]/` should not exist, and `i18n-config.ts` should not exist.
 
 ---
 

@@ -52,8 +52,9 @@ Select your project type, then answer `y/n` for each feature:
 | **Contact Form** | Resend email sender + `/api/contact` route |
 | **FloatingCTA** | Fixed mobile bottom bar with Call / WhatsApp / Book buttons |
 | **WhatsApp button** | WhatsApp link in FloatingCTA and contact section |
+| **Brand accent color** | Replaces all `indigo-` Tailwind classes with your chosen color (8 presets) |
 
-The script copies the selected template into `app/`, applies feature removals, and generates a trimmed `.env.example`.
+The script copies the selected template into `app/`, applies feature removals, replaces accent colors, collapses i18n routing if disabled, and generates a trimmed `.env.example`.
 
 ### 3. Set up environment variables
 
@@ -109,8 +110,9 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 1. Create an agent at [console.dialogflow.com](https://console.dialogflow.com)
 2. In Google Cloud Console: create a service account with **Dialogflow API Client** role, download JSON key
 3. Set `GOOGLE_CREDENTIALS` (single-line JSON) and `DIALOGFLOW_PROJECT_ID` in `.env.local`
-4. Seed intents: `node dialogflow/zip.js` → import `dialogflow/portfolio-agent.zip` into Dialogflow
-5. Edit `dialogflow/intents/` to match your actual FAQ answers
+4. Edit `dialogflow/generate.js` — look for `// EDIT:` comments and update name, services, pricing, email, projects, location
+5. Run `node dialogflow/generate.js` → then `node dialogflow/zip.js` → import `dialogflow/portfolio-agent.zip` into Dialogflow
+   **Do not edit `dialogflow/intents/` directly** — they are overwritten by `generate.js`
 
 ### Resend Contact Form (if enabled)
 
@@ -121,14 +123,15 @@ Deploy to [Vercel](https://vercel.com) — connect your repo and add the env var
 
 ---
 
-## Grep for Placeholders
+## Validate Before Deploying
 
-After bootstrapping, verify no placeholders remain:
+After bootstrapping, run:
 
 ```bash
-grep -r "YOUR_" app dictionaries --include="*.ts" --include="*.tsx" --include="*.json"
-grep -r "TODO: TEMPLATE" app --include="*.ts" --include="*.tsx"
+npm run validate
 ```
+
+This checks for unreplaced `YOUR_*` placeholders, `// TODO: TEMPLATE` comments, and a missing `.env.local`. Exits with code `1` if anything is found.
 
 ---
 

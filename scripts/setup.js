@@ -135,15 +135,13 @@ async function setupPortfolio(rl) {
     console.log("⚙  i18n: disabled");
     deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
     deleteIfExists("app/[locale]/components/LangSetter.tsx");
-    // Write a minimal sitemap that doesn't depend on get-dictionary
+    // Write a minimal sitemap (collapseI18n will upgrade it if work is enabled)
     fs.writeFileSync(
       path.join(ROOT, "app/sitemap.ts"),
-      `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\n// TODO: TEMPLATE — add slugs after i18n collapse and content setup\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
+      `import type { MetadataRoute } from "next";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  return [{ url: SITE_URL, lastModified: new Date() }];\n}\n`,
       "utf8"
     );
     console.log("  [patched] sitemap.ts — simplified (no i18n)");
-    console.log("\n  ⚠  The app/[locale]/ routing collapse requires TypeScript refactoring.");
-    console.log("     Paste templates/portfolio/BOOTSTRAP.md into a Claude Code conversation to complete this.\n");
   }
 
   if (!features.webglHero) {
@@ -262,6 +260,8 @@ async function setupPortfolio(rl) {
     console.log("✓  ProfileSidebar: enabled");
   }
 
+  if (!features.i18n) collapseI18n("portfolio", features);
+
   return { type: "portfolio", features };
 }
 
@@ -311,8 +311,6 @@ async function setupBusiness(rl) {
       "utf8"
     );
     console.log("  [patched] sitemap.ts — simplified (no i18n)");
-    console.log("\n  ⚠  The app/[locale]/ routing collapse requires TypeScript refactoring.");
-    console.log("     Paste templates/business/BOOTSTRAP.md into a Claude Code conversation to complete this.\n");
   }
 
   if (!features.contactForm) {
@@ -363,7 +361,199 @@ async function setupBusiness(rl) {
   }
   console.log(`✓  Accent color: ${accentColor}`);
 
+  if (!features.i18n) collapseI18n("business", features);
+
   return { type: "business", features };
+}
+
+// ─── i18n Routing Collapse ────────────────────────────────────────────────────
+// Called at the end of setupPortfolio / setupBusiness when i18n is disabled.
+// Moves app/[locale]/ → app/ and rewrites all locale-specific TypeScript.
+
+function collapseI18n(type, features) {
+  console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
+
+  // ── 1. Move files ──────────────────────────────────────────────────────────
+  copyDir("app/[locale]/components", "app/components");
+  if (type === "portfolio" && features.work) {
+    copyDir("app/[locale]/work", "app/work");
+  }
+  const localeBase = path.join(ROOT, "app/[locale]");
+  fs.copyFileSync(path.join(localeBase, "layout.tsx"), path.join(ROOT, "app/layout.tsx"));
+  console.log("  [moved]  app/[locale]/layout.tsx → app/layout.tsx");
+  fs.copyFileSync(path.join(localeBase, "page.tsx"), path.join(ROOT, "app/page.tsx"));
+  console.log("  [moved]  app/[locale]/page.tsx → app/page.tsx");
+  deleteIfExists("app/[locale]");
+
+  // ── 2. Patch app/layout.tsx ────────────────────────────────────────────────
+  // Static dict import replaces getDictionary
+  replaceInFile(
+    "app/layout.tsx",
+    'import { getDictionary } from "../../get-dictionary";',
+    'import dict from "../dictionaries/en.json";'
+  );
+  removeLineContaining("app/layout.tsx", "import { type Locale }");
+  // generateMetadata: strip params from signature
+  replaceInFile(
+    "app/layout.tsx",
+    'export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}): Promise<Metadata> {',
+    "export async function generateMetadata(): Promise<Metadata> {"
+  );
+  // Remove locale extraction + getDictionary calls (applies to both functions)
+  removeLineContaining("app/layout.tsx", "const { locale } = (await params)");
+  removeLineContaining("app/layout.tsx", "const dict = await getDictionary");
+  // Replace locale-conditional description (portfolio)
+  replaceInFile(
+    "app/layout.tsx",
+    '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu perfil em português. Disponível para freelance."\n      : "Short description of your profile in English. Available for freelance.";',
+    '  const description = "Short description of your profile in English. Available for freelance.";'
+  );
+  // Replace locale-conditional description (business)
+  replaceInFile(
+    "app/layout.tsx",
+    '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu negócio em português."\n      : "Short description of your business in English.";',
+    '  const description = "Short description of your business in English.";'
+  );
+  // Simplify alternates to canonical-only
+  replaceInFile(
+    "app/layout.tsx",
+    "    alternates: {\n      canonical: `${SITE_URL}/${locale}`,\n      languages: {\n        en: `${SITE_URL}/en`,\n        pt: `${SITE_URL}/pt`,\n      },\n    },",
+    "    alternates: { canonical: SITE_URL },"
+  );
+  // Fix locale-suffixed URL strings (openGraph.url + jsonLd.url)
+  replaceInFile("app/layout.tsx", "`${SITE_URL}/${locale}`", "SITE_URL");
+  // Remove OG locale field
+  removeLineContaining("app/layout.tsx", 'locale: locale === "pt"');
+  // LocaleLayout: strip params from signature
+  replaceInFile(
+    "app/layout.tsx",
+    "export default async function LocaleLayout({\n  children,\n  params,\n}: {\n  children: React.ReactNode;\n  params: Promise<{ locale: string }>;\n}) {",
+    "export default async function LocaleLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {"
+  );
+  // Fix component props that accepted locale
+  replaceInFile("app/layout.tsx", "<Navbar locale={locale} nav={", "<Navbar nav={");
+  replaceInFile("app/layout.tsx", "<ChatWidget locale={locale} />", "<ChatWidget />");
+
+  // ── 3. Patch app/page.tsx ──────────────────────────────────────────────────
+  replaceInFile(
+    "app/page.tsx",
+    'import { getDictionary } from "../../get-dictionary";',
+    'import dict from "../dictionaries/en.json";'
+  );
+  removeLineContaining("app/page.tsx", "import { type Locale }");
+  // Portfolio page function signature
+  replaceInFile(
+    "app/page.tsx",
+    "export default async function LocalePage({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {",
+    "export default async function LocalePage() {"
+  );
+  // Business page function signature
+  replaceInFile(
+    "app/page.tsx",
+    "export default async function BusinessPage({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {",
+    "export default async function BusinessPage() {"
+  );
+  removeLineContaining("app/page.tsx", "const { locale } = (await params)");
+  removeLineContaining("app/page.tsx", "const dict = await getDictionary");
+  // Remove locale props from JSX (portfolio: ProfileSidebar, Work)
+  replaceInFile("app/page.tsx", " locale={locale}", "");
+
+  // ── 4. Patch app/components/Navbar.tsx ────────────────────────────────────
+  removeLineContaining("app/components/Navbar.tsx", "import { type Locale }");
+  removeLineContaining("app/components/Navbar.tsx", "locale: Locale;");
+  replaceInFile("app/components/Navbar.tsx", "{ locale, nav }", "{ nav }");
+
+  // ── 5. Portfolio-specific component patches ────────────────────────────────
+  if (type === "portfolio") {
+    // ProfileSidebar (if sidebar was enabled)
+    if (features.sidebar) {
+      removeLineContaining("app/components/ProfileSidebar.tsx", "import { type Locale }");
+      removeLineContaining("app/components/ProfileSidebar.tsx", "locale: Locale;");
+      replaceInFile("app/components/ProfileSidebar.tsx", "{ hero, locale, mobile }", "{ hero, mobile }");
+      replaceInFile("app/components/ProfileSidebar.tsx", "<CtaButton locale={locale} />", "<CtaButton />");
+      replaceInFile("app/components/ProfileSidebar.tsx", "<ChatNudge locale={locale} />", "<ChatNudge />");
+      replaceInFile(
+        "app/components/ProfileSidebar.tsx",
+        "function CtaButton({ locale }: { locale: Locale })",
+        "function CtaButton()"
+      );
+      replaceInFile("app/components/ProfileSidebar.tsx", "href={`/${locale}#contact`}", 'href="/#contact"');
+    }
+
+    // Work.tsx (if work was enabled)
+    if (features.work) {
+      removeLineContaining("app/components/Work.tsx", "import { type Locale }");
+      removeLineContaining("app/components/Work.tsx", "locale: Locale;");
+      replaceInFile("app/components/Work.tsx", "{ work, locale }", "{ work }");
+      replaceInFile("app/components/Work.tsx", "`/${locale}/work/${project.slug}`", "`/work/${project.slug}`");
+    }
+
+    // ChatNudge.tsx (present only when sidebar + chatbot both enabled)
+    if (features.sidebar && features.chatbot) {
+      replaceInFile(
+        "app/components/ChatNudge.tsx",
+        'import { type Locale } from "../../../i18n-config";\n\nconst nudgeText: Record<Locale, string> = {\n  en: "Have questions? Chat with me",\n  pt: "Tens dúvidas? Fala comigo",\n};\n\nexport default function ChatNudge({ locale }: { locale: Locale }) {',
+        "export default function ChatNudge() {"
+      );
+      replaceInFile(
+        "app/components/ChatNudge.tsx",
+        "{nudgeText[locale] ?? nudgeText.en}",
+        '"Have questions? Chat with me"'
+      );
+    }
+
+    // ChatWidget.tsx (present only when chatbot was enabled)
+    if (features.chatbot) {
+      removeLineContaining("app/components/ChatWidget.tsx", "import { type Locale }");
+      // Collapse bilingual strings object → flat English-only const
+      replaceInFile(
+        "app/components/ChatWidget.tsx",
+        "const strings = {\n  en: {\n    title: \"Chat with me\",\n    subtitle: \"Typically replies instantly\",\n    placeholder: \"Type a message...\",\n    greeting: \"Hi! I'm YOUR_NAME's assistant. Ask me anything about their work, services, or availability.\",\n    ariaLabel: \"Open chat\",\n    bubble: \"Ask me anything\",\n    chips: [\"What services do you offer?\", \"What's your pricing?\", \"Are you available?\", \"Show me your work\"],\n  },\n  pt: {\n    title: \"Fala comigo\",\n    subtitle: \"Responde quase instantaneamente\",\n    placeholder: \"Escreve uma mensagem...\",\n    greeting: \"Olá! Sou o assistente de YOUR_NAME. Pergunta-me sobre o seu trabalho, serviços ou disponibilidade.\",\n    ariaLabel: \"Abrir chat\",\n    bubble: \"Pergunta-me algo\",\n    chips: [\"Que serviços ofereces?\", \"Qual é o teu preço?\", \"Estás disponível?\", \"Mostra o teu trabalho\"],\n  },\n};\n\nexport default function ChatWidget({ locale }: { locale: Locale }) {",
+        "const s = {\n  title: \"Chat with me\",\n  subtitle: \"Typically replies instantly\",\n  placeholder: \"Type a message...\",\n  greeting: \"Hi! I'm YOUR_NAME's assistant. Ask me anything about their work, services, or availability.\",\n  ariaLabel: \"Open chat\",\n  bubble: \"Ask me anything\",\n  chips: [\"What services do you offer?\", \"What's your pricing?\", \"Are you available?\", \"Show me your work\"],\n};\n\nexport default function ChatWidget() {"
+      );
+      removeLineContaining("app/components/ChatWidget.tsx", "const s = strings[locale]");
+    }
+
+    // app/work/[slug]/page.tsx (present only when work was enabled)
+    if (features.work) {
+      replaceInFile(
+        "app/work/[slug]/page.tsx",
+        'import { getDictionary } from "../../../../get-dictionary";',
+        'import dict from "../../../dictionaries/en.json";'
+      );
+      removeLineContaining("app/work/[slug]/page.tsx", "import { type Locale }");
+      removeLineContaining("app/work/[slug]/page.tsx", "  locale: string;");
+      replaceInFile(
+        "app/work/[slug]/page.tsx",
+        "export async function generateStaticParams() {\n  const enDict = await getDictionary(\"en\");\n  return enDict.work.projects.flatMap((project) =>\n    [\"en\", \"pt\"].map((locale) => ({ locale, slug: project.slug })),\n  );\n}",
+        "export function generateStaticParams() {\n  return dict.work.projects.map((project) => ({ slug: project.slug }));\n}"
+      );
+      replaceInFile(
+        "app/work/[slug]/page.tsx",
+        "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
+        "export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
+      );
+      replaceInFile(
+        "app/work/[slug]/page.tsx",
+        "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ locale: string; slug: string }>;\n}) {\n  const { locale, slug } = (await params) as Params & { locale: Locale };\n  const dict = await getDictionary(locale);",
+        "export default async function WorkPage({\n  params,\n}: {\n  params: Promise<{ slug: string }>;\n}) {\n  const { slug } = await params;"
+      );
+      replaceInFile("app/work/[slug]/page.tsx", "href={`/${locale}#work`}", 'href="/#work"');
+
+      // Upgrade sitemap to include work paths now that dict is statically importable
+      fs.writeFileSync(
+        path.join(ROOT, "app/sitemap.ts"),
+        `import type { MetadataRoute } from "next";\nimport dict from "../dictionaries/en.json";\n\nconst SITE_URL = "https://YOUR_DOMAIN";\n\nexport default function sitemap(): MetadataRoute.Sitemap {\n  const slugs = dict.work.projects.map((p) => p.slug);\n  return [\n    { url: SITE_URL, lastModified: new Date() },\n    ...slugs.map((slug) => ({ url: \`\${SITE_URL}/work/\${slug}\`, lastModified: new Date() })),\n  ];\n}\n`,
+        "utf8"
+      );
+      console.log("  [patched] sitemap.ts — updated with work paths");
+    }
+  }
+
+  // ── 6. Remove pt.json (no longer served) ──────────────────────────────────
+  deleteIfExists("dictionaries/pt.json");
+
+  console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
 }
 
 // ─── .env.example ─────────────────────────────────────────────────────────────

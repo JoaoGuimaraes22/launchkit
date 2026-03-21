@@ -107,20 +107,17 @@ Search and remove all `// TODO: TEMPLATE` comments after content is applied.
 
 ---
 
-## Step 4 — i18n Routing Collapse (only if i18n was disabled)
+## Step 4 — i18n Routing Collapse
 
-If `i18n-config.ts` does NOT exist, collapse `app/[locale]/` → `app/`:
+**Automated by `setup.js`** — if i18n was disabled during setup, the collapse was already done:
 
-1. Move `app/[locale]/layout.tsx` → overwrite `app/layout.tsx`
-2. Move `app/[locale]/page.tsx` → overwrite `app/page.tsx`
-3. Move `app/[locale]/components/` → `app/components/`
-4. Delete `app/[locale]/`
-5. Fix all import paths (remove extra `../../` levels)
-6. Remove `import { type Locale }` and all `Locale` type references
-7. Replace `getDictionary(locale)` with `import dict from "../dictionaries/en.json"`
-8. Remove `locale` prop from `Navbar` and any other components that accepted it
-9. Remove `LanguageSwitcher` import and JSX from `Navbar.tsx` (already deleted by setup script)
-10. Update `app/page.tsx` root (redirect stub) to simply render the page directly
+- `app/[locale]/` moved to `app/` with all TypeScript rewritten
+- Locale params, `Locale` types, `getDictionary` calls removed
+- Static `import dict from "../dictionaries/en.json"` added
+- `Navbar` locale prop stripped
+- `dictionaries/pt.json` deleted
+
+If you need to verify: `app/[locale]/` should not exist, and `i18n-config.ts` should not exist.
 
 ---
 

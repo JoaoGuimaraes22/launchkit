@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(node scripts/validate.js)",
-      "Bash(echo \"Exit code: $?\")"
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(grep -r locale: /c/Users/jssgm/Dev/Projects/next-portfolio-template/templates/portfolio/app/ --include=*.tsx)",
+      "Bash(grep -r locale: /c/Users/jssgm/Dev/Projects/next-portfolio-template/templates/business/app/ --include=*.tsx)"
     ]
   }
 }

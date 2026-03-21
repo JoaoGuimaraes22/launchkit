@@ -197,6 +197,18 @@ Dict: `services.items[].details: string[]` (added) — bullet points shown in mo
 - Arbitrary calc: `w-[calc((100%-2rem)/3)]` — no underscores (linter enforces)
 - Linter suggests canonical classes — always apply suggestions
 
+## Scripts
+
+| Script | Command | What it does |
+| ------ | ------- | ----------- |
+| Setup | `node scripts/setup.js` | Select template, toggle features, collapse i18n if disabled, replace accent color (business), generate `.env.example` |
+| Reset | `npm run reset` | Remove everything setup.js added; restore base state |
+| Validate | `npm run validate` | Check for unreplaced `YOUR_*` placeholders + `TODO: TEMPLATE` comments; exit 1 if found |
+| Dialogflow gen | `node dialogflow/generate.js` | Regenerate `intents/` from `generate.js` source (portfolio only) |
+| Dialogflow zip | `node dialogflow/zip.js` | Bundle `intents/` into `portfolio-agent.zip` for Dialogflow import (portfolio only) |
+
+> **Dialogflow workflow**: edit `generate.js` (look for `// EDIT:` comments) → `node dialogflow/generate.js` → `node dialogflow/zip.js` → import zip in Dialogflow console. Never edit `intents/` directly.
+
 ## Chatbot (Dialogflow ES)
 
 - Auth: `GOOGLE_CREDENTIALS` (service account JSON, single-line) + `DIALOGFLOW_PROJECT_ID=portfolio-xost`
@@ -255,7 +267,7 @@ Check file existence to determine which features are active in a cloned instance
 | Work | `app/[locale]/components/Work.tsx` |
 | ProfileSidebar | `app/[locale]/components/ProfileSidebar.tsx` |
 
-If i18n is disabled, substitute `app/` for `app/[locale]/` in the paths above.
+If i18n was disabled during setup, `app/[locale]/` does not exist — `setup.js` collapses it to `app/` automatically. Substitute `app/` for `app/[locale]/` in the paths above.
 
 ### Bootstrap Flow
 
@@ -263,11 +275,10 @@ When helping someone customize a fresh clone:
 
 1. Read this file (`CLAUDE.md`) completely
 2. Check active features using the table above
-3. `grep -r "YOUR_" app dictionaries` — see remaining placeholders
-4. `grep -r "TODO: TEMPLATE" app` — see cleanup tasks from setup script
-5. Follow `templates/portfolio/BOOTSTRAP.md` to gather project details before touching anything
-6. Always update both `en.json` and `pt.json` together if i18n is active
-7. Run `npm run lint && npm run build` after all changes
+3. `npm run validate` — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
+4. Follow `templates/portfolio/BOOTSTRAP.md` to gather project details before touching anything
+5. Always update both `en.json` and `pt.json` together if i18n is active
+6. `npm run validate` again to confirm clean, then `npm run lint && npm run build`
 
 ---
 
@@ -279,10 +290,10 @@ When `node scripts/setup.js` selects **Business Site**, the business template is
 
 | Feature | Active if this file exists |
 |---------|---------------------------|
-| Business site | `app/[locale]/components/Footer.tsx` |
+| Business site | `app/[locale]/components/Footer.tsx` (or `app/components/Footer.tsx` if i18n disabled) |
 | i18n | `i18n-config.ts` |
 | Contact form | `app/api/contact/route.ts` |
-| FloatingCTA bar | `app/[locale]/components/FloatingCTA.tsx` |
+| FloatingCTA bar | `app/[locale]/components/FloatingCTA.tsx` (or `app/components/FloatingCTA.tsx` if i18n disabled) |
 
 ### Key Differences from Portfolio
 
@@ -382,11 +393,10 @@ app/[locale]/components/
 
 1. Read `CLAUDE.md` completely
 2. Check active features using the business feature detection table above
-3. `grep -r "YOUR_" app dictionaries` — find remaining placeholders
-4. `grep -r "TODO: TEMPLATE" app` — find cleanup tasks
-5. Follow `templates/business/BOOTSTRAP.md` to gather content
-6. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
-7. Update `app/[locale]/layout.tsx`: `SITE_URL`, title, description, `jsonLd`
-8. Replace all `indigo-` accent classes with brand color in business components
-9. If i18n disabled: collapse `app/[locale]/` → `app/` (see `templates/business/BOOTSTRAP.md` Step 4)
-10. Run `npm run lint && npm run build`
+3. `npm run validate` — lists all remaining `YOUR_*` placeholders and `TODO: TEMPLATE` comments
+4. Follow `templates/business/BOOTSTRAP.md` to gather content
+5. Apply to `dictionaries/en.json` (and `pt.json` if i18n active)
+6. Update `app/[locale]/layout.tsx` (or `app/layout.tsx` if i18n was disabled): `SITE_URL`, title, description, `jsonLd`
+7. Accent color replacement: **automated by `setup.js`** if a preset was chosen; only needed for custom hex values
+8. i18n routing collapse: **automated by `setup.js`** — `app/[locale]/` does not exist if i18n was disabled
+9. `npm run validate` again to confirm clean, then `npm run lint && npm run build`
