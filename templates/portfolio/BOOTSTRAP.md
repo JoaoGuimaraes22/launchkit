@@ -194,7 +194,7 @@ After `npm run dev`, do a visual pass:
 
 Final commit when clean:
 
-```
+```bash
 feat: initial portfolio customization
 ```
 

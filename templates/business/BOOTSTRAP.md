@@ -41,33 +41,41 @@ Ask me ALL of the following **in a single numbered list** (don't start any work 
 After I answer Step 1, ask for content for each section. Ask all section questions at once in one message:
 
 **Hero:**
+
 - Two headline lines (large display text — all caps, e.g. "PROFESSIONAL / PLUMBING")
 - One-sentence tagline (value proposition)
 - Primary CTA label (e.g. "Book Now", "Get a Quote", "Call Today")
 - Secondary CTA label (e.g. "Learn More", "Our Services")
 
 **About:**
+
 - 2 short paragraphs about the business (who you are, approach, values)
 - 3 stats (value + label — can reuse hero stats or use different ones)
 
 **Services:**
+
 - 6 services — for each: emoji icon, title, 1-sentence description
 
 **Reviews:**
+
 - 4–6 testimonials — for each: quote, client name, role/context (e.g. "Homeowner, Cascais"), star rating (1–5)
 
 **FAQ:**
+
 - 6 questions + answers
 
 **Contact:**
+
 - Confirm phone, email, WhatsApp, address, hours (from Step 1 — or update them)
 - Contact section body text (1 sentence inviting them to reach out)
 
 **Footer:**
+
 - Confirm business name, tagline, address, hours, phone, email
 - Copyright year and entity name
 
 **FloatingCTA labels (if active):**
+
 - Call button label (e.g. "Call Now")
 - WhatsApp button label (e.g. "WhatsApp")
 - Book button label (e.g. "Book Now")
@@ -79,11 +87,13 @@ After I answer Step 1, ask for content for each section. Ask all section questio
 Once you have all answers, apply in this order:
 
 ### 3a. Dictionaries
+
 Fill `dictionaries/en.json` with all content. Follow the exact dict shape documented in `CLAUDE.md` business site section.
 
 If i18n is enabled (check: `i18n-config.ts` exists), also fill `dictionaries/pt.json` — ask me for Portuguese translations, or translate and confirm.
 
 ### 3b. Layout & Metadata
+
 - `app/[locale]/layout.tsx`:
   - `SITE_URL` → actual domain
   - `title` string → "Business Name — Short descriptor"
@@ -92,9 +102,11 @@ If i18n is enabled (check: `i18n-config.ts` exists), also fill `dictionaries/pt.
 - `app/layout.tsx`: `title` and `description` metadata → actual values
 
 ### 3c. Contact API route (if active)
+
 - `app/api/contact/route.ts`: `TO_EMAIL` → actual email
 
 ### 3d. Accent color
+
 **Automated by `setup.js`** — if you chose a color other than Indigo during setup, all `indigo-` Tailwind classes were already replaced across every business component.
 
 To change the accent color after setup, run `node scripts/toggle.js --project <path>` from the launchkit tool and select "Brand accent color" — no manual find-and-replace needed.
@@ -102,9 +114,11 @@ To change the accent color after setup, run `node scripts/toggle.js --project <p
 If you need a custom hex color not in the preset list, do a project-wide find-and-replace of `indigo-` with the arbitrary Tailwind values (e.g. `bg-[#2563eb]`, `text-[#2563eb]`) in the files listed in CLAUDE.md.
 
 ### 3e. SEO
+
 - `app/robots.ts` and `app/sitemap.ts`: replace `YOUR_DOMAIN` with actual domain
 
 ### 3f. Clean up TODO comments
+
 Search and remove all `// TODO: TEMPLATE` comments after content is applied.
 
 ---
@@ -127,11 +141,11 @@ If you need to verify: `app/[locale]/` should not exist, and `i18n-config.ts` sh
 
 Tell me which images still need replacing:
 
-| File | Description |
-|------|-------------|
-| `public/hero.jpg` | Hero background — dark photo that suits the business (1920×1080). Works best with people, interiors, or product shots. |
-| `public/about.jpg` | About section image — team photo, workspace, or product (aspect 4:3 or square) |
-| `public/og-image.png` | OG social card (1200×630) |
+| File                  | Description                                                                                                            |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `public/hero.jpg`     | Hero background — dark photo that suits the business (1920×1080). Works best with people, interiors, or product shots. |
+| `public/about.jpg`    | About section image — team photo, workspace, or product (aspect 4:3 or square)                                         |
+| `public/og-image.png` | OG social card (1200×630)                                                                                              |
 
 If images aren't ready, the placeholder files will work temporarily.
 
@@ -140,7 +154,9 @@ If images aren't ready, the placeholder files will work temporarily.
 ## Step 6 — External Services (if active)
 
 ### Contact Form (Resend)
+
 If `app/api/contact/route.ts` exists:
+
 1. Get a Resend API key at resend.com
 2. Set `RESEND_API_KEY` in `.env.local`
 3. Confirm `TO_EMAIL` in the route points to the right email
@@ -158,6 +174,7 @@ npm run dev       # preview the site
 ```
 
 Visual checklist after `npm run dev`:
+
 - [ ] Navbar: logo, links, language switcher (if i18n), CTA button all correct
 - [ ] Hero: headline, tagline, CTAs, stats all correct; background image loads
 - [ ] About: image loads, text and stats correct; accent color matches
@@ -170,7 +187,8 @@ Visual checklist after `npm run dev`:
 - [ ] No `YOUR_*` strings visible anywhere
 
 Final commit when clean:
-```
+
+```bash
 feat: initial business site customization — [Business Name]
 ```
 
