@@ -453,6 +453,7 @@ function checkHelp(usage) {
 // file that exports the required interface (type, setup).
 // Caches after first call. Replaces the hardcoded TEMPLATES maps in setup/toggle/status.
 let _templateCache = null;
+let _presetCache = null;
 
 function loadTemplates() {
   if (_templateCache) return _templateCache;
@@ -472,6 +473,24 @@ function loadTemplates() {
     _templateCache[key] = mod;
   }
   return _templateCache;
+}
+
+function loadPresets() {
+  if (_presetCache) return _presetCache;
+  const presetsDir = path.join(__dirname, "presets");
+  if (!fs.existsSync(presetsDir)) { _presetCache = []; return _presetCache; }
+  const entries = fs.readdirSync(presetsDir).filter((f) => f.endsWith(".js"));
+  _presetCache = [];
+  for (const file of entries) {
+    const mod = require(path.join(presetsDir, file));
+    const missing = ["name", "base", "sections"].filter((k) => mod[k] === undefined);
+    if (missing.length > 0) {
+      console.warn(`  [warn] presets/${file} missing fields: ${missing.join(", ")} — skipped`);
+      continue;
+    }
+    _presetCache.push(mod);
+  }
+  return _presetCache;
 }
 
 // ── --project flag parser ─────────────────────────────────────────────────────
@@ -639,6 +658,7 @@ module.exports = {
   addNavLink,
   removeNavLink,
   loadTemplates,
+  loadPresets,
   discoverSections,
   parseSectionsFromPage,
   detectInstalledSections,
