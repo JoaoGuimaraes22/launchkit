@@ -45,7 +45,7 @@ async function setup(rl) {
 
   if (features.i18n) {
     console.log("✓  i18n: enabled");
-    copyDir("templates/blank/root", ".");
+    copyDir("templates/presets/blank/root", ".");
   } else {
     console.log("⚙  i18n: disabled");
     fs.writeFileSync(

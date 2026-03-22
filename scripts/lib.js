@@ -436,7 +436,7 @@ function copyTemplateFiles(type) {
 
 // Copies base scaffold (package.json, tsconfig, configs, base app/) into the target project.
 function copyBaseScaffold() {
-  copyDir("templates/base", ".");
+  copyDir("templates/presets/base", ".");
 }
 
 // ── --help flag ──────────────────────────────────────────────────────────────

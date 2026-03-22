@@ -59,7 +59,7 @@ async function setup(rl) {
 
   if (i18n) {
     console.log("✓  i18n: enabled");
-    copyDir("templates/portfolio/root", ".");
+    copyDir("templates/presets/portfolio/root", ".");
   } else {
     console.log("⚙  i18n: disabled");
     deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");

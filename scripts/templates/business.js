@@ -81,7 +81,7 @@ async function setup(rl) {
 
   if (i18n) {
     console.log("✓  i18n: enabled");
-    copyDir("templates/business/root", ".");
+    copyDir("templates/presets/business/root", ".");
   } else {
     console.log("⚙  i18n: disabled");
     fs.writeFileSync(

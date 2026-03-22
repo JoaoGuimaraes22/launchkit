@@ -32,9 +32,11 @@ configs/
     default/          bg:#fafafa fg:#111111 accent:indigo (baseline)
     midnight/         bg:#0c0c0f fg:#f4f4f5 accent:violet
 templates/
-  base/               Clean Next.js scaffold (copied first to every project)
-  portfolio/          Portfolio base: app/[locale]/ core layout only (Hero, Services, Process, About, Contact)
-  business/           Business base: app/[locale]/ core layout only (Hero, About, Services, Reviews, FAQ, Contact, Footer)
+  presets/
+    base/             Clean Next.js scaffold (copied first to every project)
+    blank/            Minimal scaffold — base only, no page sections
+    portfolio/        Portfolio base: app/[locale]/ core layout only (Hero, Services, Process, About, Contact)
+    business/         Business base: app/[locale]/ core layout only (Hero, About, Services, Reviews, FAQ, Contact, Footer)
   sections/           Section library — each section has variants with component + dict + meta.json
     skills/grid/      Categorized grid cards with animated progress bars
     skills/bars/      Flat horizontal progress bars list

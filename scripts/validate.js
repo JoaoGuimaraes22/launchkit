@@ -127,7 +127,7 @@ const imagesToCheck = [
   { rel: "public/og-image.png", tmpl: null }, // not shipped — just check existence
 ];
 if (isPortfolio) {
-  imagesToCheck.push({ rel: "public/profile.jpg", tmpl: "templates/portfolio/public/profile.jpg" });
+  imagesToCheck.push({ rel: "public/profile.jpg", tmpl: "templates/presets/portfolio/public/profile.jpg" });
 }
 if (isBusiness) {
   imagesToCheck.push({ rel: "public/about.jpg", tmpl: null });
