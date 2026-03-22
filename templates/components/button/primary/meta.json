@@ -1,0 +1,6 @@
+{
+  "componentName": "Button",
+  "description": "Primary CTA button with hover animation and outline variant",
+  "accentColorToken": "indigo",
+  "dependencies": []
+}

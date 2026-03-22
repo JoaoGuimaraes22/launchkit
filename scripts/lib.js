@@ -301,9 +301,10 @@ function readLaunchkit() {
     console.error("  The file may be corrupted. Run reset + setup to regenerate.\n");
     process.exit(1);
   }
-  // Ensure features and sections exist (backward compat with pre-Phase 4 projects)
+  // Ensure features, sections, and components exist (backward compat)
   if (!state.features) state.features = {};
   if (!state.sections) state.sections = {};
+  if (!state.components) state.components = {};
   // Version migration: stamp version if missing (pre-v1 files), warn if newer
   if (state.version === undefined) {
     state.version = LAUNCHKIT_VERSION;
@@ -493,6 +494,55 @@ function loadPresets() {
   return _presetCache;
 }
 
+// ── Component discovery ───────────────────────────────────────────────────────
+
+let _componentCache = null;
+
+// Scans templates/components/[name]/[variant]/ and returns an array of
+// { name, variants: [{ name, dir, meta }] }.
+function discoverComponents() {
+  if (_componentCache) return _componentCache;
+  const root = path.join(TOOL_ROOT, "templates", "components");
+  if (!fs.existsSync(root)) return (_componentCache = []);
+  const components = [];
+  for (const name of fs.readdirSync(root)) {
+    const dir = path.join(root, name);
+    if (!fs.statSync(dir).isDirectory()) continue;
+    const variants = [];
+    for (const variantName of fs.readdirSync(dir)) {
+      const variantDir = path.join(dir, variantName);
+      if (!fs.statSync(variantDir).isDirectory()) continue;
+      const metaPath = path.join(variantDir, "meta.json");
+      if (!fs.existsSync(metaPath)) continue;
+      variants.push({ name: variantName, dir: variantDir,
+        meta: JSON.parse(fs.readFileSync(metaPath, "utf8")) });
+    }
+    if (variants.length > 0) components.push({ name, variants });
+  }
+  return (_componentCache = components);
+}
+
+// Checks which components from the library are present in compDir/ui/.
+// Uses .launchkit.components to resolve the recorded variant.
+function detectInstalledComponents(compDir, launchkitComponents) {
+  const components = discoverComponents();
+  const installed = {};
+  for (const comp of components) {
+    const anyMeta = comp.variants[0].meta;
+    if (!anyMeta.componentName) continue;
+    const detected = fs.existsSync(
+      path.join(_target, compDir, "ui", `${anyMeta.componentName}.tsx`)
+    );
+    if (!detected) continue;
+    const recorded = launchkitComponents && launchkitComponents[comp.name];
+    const variant = recorded
+      ? comp.variants.find((v) => v.name === recorded.variant) || comp.variants[0]
+      : comp.variants[0];
+    installed[comp.name] = { variant: variant.name, meta: variant.meta, variantDir: variant.dir };
+  }
+  return installed;
+}
+
 // ── --project flag parser ─────────────────────────────────────────────────────
 
 // Call from scripts that operate on an existing project.
@@ -659,6 +709,8 @@ module.exports = {
   removeNavLink,
   loadTemplates,
   loadPresets,
+  discoverComponents,
+  detectInstalledComponents,
   discoverSections,
   parseSectionsFromPage,
   detectInstalledSections,
