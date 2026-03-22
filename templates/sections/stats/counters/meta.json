@@ -1,0 +1,16 @@
+{
+  "componentName": "StatsCounters",
+  "dictKey": "statsCounters",
+  "navLink": null,
+  "templates": ["portfolio", "business"],
+  "defaultAfter": "hero",
+  "pageSection": true,
+  "props": {
+    "i18n": "statsCounters={dict.statsCounters}",
+    "collapsed": "statsCounters={dict.statsCounters}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

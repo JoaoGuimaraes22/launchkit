@@ -1,0 +1,16 @@
+{
+  "componentName": "Pricing",
+  "dictKey": "pricing",
+  "navLink": { "id": "pricing", "label": { "en": "Pricing", "pt": "Preços" } },
+  "templates": ["business"],
+  "defaultAfter": "reviews",
+  "pageSection": true,
+  "props": {
+    "i18n": "pricing={dict.pricing}",
+    "collapsed": "pricing={dict.pricing}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

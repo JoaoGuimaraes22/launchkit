@@ -69,6 +69,11 @@ templates/
     reserve-bar/default/     Mobile sticky bottom bar; dispatches open-reservation event; links order URL
     menu/tabbed/             Tabbed category menu with highlight card and 2-col item grid (business)
     reservation/formspree/   Full-screen booking modal (calendar + time slots + Formspree); YOUR_FORMSPREE_ID
+    pricing/cards/           3-column pricing cards with popular highlight, feature list, CTA (business)
+    schedule/weekly/         7-day class timetable grid + mobile accordion, current-day highlight, 4 type colors (business)
+    stats/counters/          Animated RAF counter band with IntersectionObserver trigger (portfolio + business)
+    contact/map/             Google Maps iframe embed + address + directions CTA; YOUR_MAPS_EMBED_URL / YOUR_MAPS_DIRECTIONS_URL (business)
+    team/spotlight/          2-col team section with parallax image, glassmorphic stats overlay, tags + quote (portfolio + business)
   components/         UI atom library — each component has variants with component.tsx + meta.json
     button/primary/   Primary CTA button (solid + outline, sized, accent-aware)
     fade-in/default/  IntersectionObserver fade-in wrapper with direction (up/left/right/none) + delay props
@@ -106,6 +111,8 @@ All sections (template-native and library) are detected by `detectInstalledSecti
 **Business sections:** `contact-form` → `app/api/contact/route.ts`, `floating-cta` → `{compDir}/FloatingCTA.tsx`, `whatsapp` → custom (content-based)
 
 **Universal upsell sections:** `booking` → `{compDir}/Booking.tsx`, `google-reviews` → `{compDir}/GoogleReviews.tsx`
+
+**New universal sections:** `pricing` → `{compDir}/Pricing.tsx`, `schedule` → `{compDir}/Schedule.tsx`, `stats` → `{compDir}/StatsCounters.tsx`, `contact/map` → `{compDir}/ContactMap.tsx`, `team` → `{compDir}/Team.tsx`
 
 Components live in `app/[locale]/components/`.
 
@@ -206,6 +213,8 @@ Grep for these in generated projects:
 - `YOUR_GOOGLE_REVIEW_URL` (google-reviews section)
 - `YOUR_FORMSPREE_ID` (reservation/formspree section — get at formspree.io)
 - `YOUR_ORDER_URL` (reserve-bar/default section — link to external ordering platform)
+- `YOUR_MAPS_EMBED_URL` (contact/map section — Google Maps embed src URL)
+- `YOUR_MAPS_DIRECTIONS_URL` (contact/map section — Google Maps directions href)
 - `// TODO: TEMPLATE` — marks manual Claude cleanup needed
 
 Use `node scripts/personalize.js --project <path>` to replace all `YOUR_*` placeholders interactively or via `--profile client.json`. The script is template-aware, idempotent, and re-scans component files dynamically so it picks up new placeholders added by sections installed after initial setup.

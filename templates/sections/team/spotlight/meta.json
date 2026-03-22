@@ -1,0 +1,16 @@
+{
+  "componentName": "Team",
+  "dictKey": "team",
+  "navLink": { "id": "team", "label": { "en": "Team", "pt": "Equipa" } },
+  "templates": ["portfolio", "business"],
+  "defaultAfter": "about",
+  "pageSection": true,
+  "props": {
+    "i18n": "team={dict.team}",
+    "collapsed": "team={dict.team}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

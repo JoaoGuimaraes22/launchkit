@@ -1,0 +1,16 @@
+{
+  "componentName": "Schedule",
+  "dictKey": "schedule",
+  "navLink": { "id": "schedule", "label": { "en": "Schedule", "pt": "Horário" } },
+  "templates": ["business"],
+  "defaultAfter": "services",
+  "pageSection": true,
+  "props": {
+    "i18n": "schedule={dict.schedule}",
+    "collapsed": "schedule={dict.schedule}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

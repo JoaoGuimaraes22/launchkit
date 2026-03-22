@@ -1,0 +1,40 @@
+{
+  "schedule": {
+    "title_line1": "Schedule",
+    "title_line2": "Class Timetable",
+    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "noClass": "Rest day",
+    "today": "Today",
+    "types": [
+      { "key": "1", "label": "Primary" },
+      { "key": "2", "label": "Secondary" },
+      { "key": "3", "label": "Wellness" },
+      { "key": "4", "label": "Special" }
+    ],
+    "classes": [
+      { "time": "07:00", "name": "Morning Session", "day": 0, "type": "1" },
+      { "time": "09:30", "name": "Beginners Class", "day": 0, "type": "3" },
+      { "time": "18:30", "name": "Evening Session", "day": 0, "type": "1" },
+      { "time": "20:00", "name": "Advanced Class", "day": 0, "type": "2" },
+      { "time": "07:00", "name": "HIIT", "day": 1, "type": "1" },
+      { "time": "10:00", "name": "Yoga", "day": 1, "type": "3" },
+      { "time": "19:00", "name": "Intermediate Session", "day": 1, "type": "2" },
+      { "time": "07:00", "name": "Morning Session", "day": 2, "type": "1" },
+      { "time": "09:30", "name": "Meditation", "day": 2, "type": "3" },
+      { "time": "18:30", "name": "Evening Class", "day": 2, "type": "2" },
+      { "time": "19:30", "name": "Dance Workshop", "day": 2, "type": "4" },
+      { "time": "07:00", "name": "Morning Session", "day": 3, "type": "1" },
+      { "time": "10:00", "name": "Pilates", "day": 3, "type": "3" },
+      { "time": "19:00", "name": "Advanced Class", "day": 3, "type": "2" },
+      { "time": "20:30", "name": "Intensive Session", "day": 3, "type": "1" },
+      { "time": "07:00", "name": "HIIT", "day": 4, "type": "1" },
+      { "time": "09:30", "name": "Yoga", "day": 4, "type": "3" },
+      { "time": "18:30", "name": "Evening Class", "day": 4, "type": "2" },
+      { "time": "09:00", "name": "Weekend Session", "day": 5, "type": "1" },
+      { "time": "10:30", "name": "Open Class", "day": 5, "type": "2" },
+      { "time": "12:00", "name": "Special Workshop", "day": 5, "type": "4" },
+      { "time": "10:00", "name": "Sunday Class", "day": 6, "type": "3" },
+      { "time": "11:30", "name": "Open Session", "day": 6, "type": "1" }
+    ]
+  }
+}
