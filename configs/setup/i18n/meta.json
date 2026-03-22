@@ -1,9 +1,0 @@
-{
-  "key": "i18n",
-  "label": "Multi-language routing (i18n)",
-  "description": "Adds /en /pt routing with dictionaries and proxy.ts middleware",
-  "type": "boolean",
-  "default": true,
-  "prompt": "Include i18n (multi-language /en /pt routing)?",
-  "templates": null
-}

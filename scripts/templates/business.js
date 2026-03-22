@@ -1,16 +1,13 @@
 #!/usr/bin/env node
 // launchkit — Business Site template module
-// Owns: template file copy, accent color setup, i18n collapse logic.
-// i18n feature toggle is prompted and applied by setup.js via configs/setup/i18n/.
+// Owns: template file copy, accent color setup.
+// Language setup is prompted and applied by setup.js via configs/setup/languages/.
 // Optional sections (contact-form, floating-cta, whatsapp) are managed via sections.js / presets.
 
 const {
   askChoice,
   copyTemplateFiles,
-  deleteIfExists,
-  removeLineContaining,
   replaceInFile,
-  collapseI18nBase,
 } = require("../lib");
 
 const TYPE = "business";
@@ -37,33 +34,6 @@ function recolor(fromColor, toColor, compDir, layoutFile) {
   for (const f of files) {
     replaceInFile(f, `${fromColor}-`, `${toColor}-`);
   }
-}
-
-// ── Full i18n collapse (app/[locale]/ → app/) ─────────────────────────────────
-
-function collapseI18n() {
-  // Remove i18n-only components before collapse so they aren't copied to app/components/
-  deleteIfExists("app/[locale]/components/LanguageSwitcher.tsx");
-  deleteIfExists("app/[locale]/components/LangSetter.tsx");
-  collapseI18nBase(null, {
-    pageFnName: "BusinessPage",
-    beforePatchLayout() {
-      replaceInFile(
-        "app/layout.tsx",
-        '  const description =\n    locale === "pt"\n      ? "Descrição curta do seu negócio em português."\n      : "Short description of your business in English.";',
-        '  const description = "Short description of your business in English.";'
-      );
-    },
-    afterCollapse() {
-      removeLineContaining("app/layout.tsx", "import LangSetter");
-      removeLineContaining("app/layout.tsx", "<LangSetter");
-      removeLineContaining("app/components/Navbar.tsx", "import LanguageSwitcher");
-      replaceInFile("app/components/Navbar.tsx", "href={`/${locale}`}", 'href="/"');
-      removeLineContaining("app/components/Navbar.tsx", "<LanguageSwitcher");
-      deleteIfExists("app/components/LanguageSwitcher.tsx");
-      deleteIfExists("app/components/LangSetter.tsx");
-    },
-  });
 }
 
 // ── Template file copy + accent color ─────────────────────────────────────────
@@ -98,4 +68,4 @@ async function setup(rl) {
   return { type: TYPE, features: { accentColor }, sections: {} };
 }
 
-module.exports = { type: TYPE, setup, collapseI18n, recolor, COLOR_MAP, COLOR_LABELS };
+module.exports = { type: TYPE, setup, recolor, COLOR_MAP, COLOR_LABELS };

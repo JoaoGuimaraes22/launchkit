@@ -19,6 +19,14 @@ export function proxy(request: NextRequest) {
     return;
   }
 
+  // Single locale: rewrite internally so the URL stays clean (/ not /en/)
+  // Multiple locales: redirect to the locale detected from accept-language
+  if (i18n.locales.length === 1) {
+    return NextResponse.rewrite(
+      new URL(`/${i18n.defaultLocale}${pathname === "/" ? "" : pathname}`, request.url),
+    );
+  }
+
   const acceptLanguage = request.headers.get("accept-language") || "";
   const prefersPt =
     acceptLanguage.includes("pt") &&

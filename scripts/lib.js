@@ -18,9 +18,6 @@ const DEFAULT_LOCALE = LOCALES[0];
 // Dictionary file paths derived from LOCALES.
 const DICT_FILES = LOCALES.map((l) => `dictionaries/${l}.json`);
 
-// Returns locale file paths excluding the default (for deletion during i18n collapse).
-const SECONDARY_DICT_FILES = DICT_FILES.slice(1);
-
 // TypeScript literal for generated sitemap files.
 const LOCALES_TS_LITERAL = `[${LOCALES.map((l) => `"${l}"`).join(", ")}] as const`;
 
@@ -306,6 +303,10 @@ function readLaunchkit() {
   if (!state.sections) state.sections = {};
   if (!state.components) state.components = {};
   if (!state.features.palette) state.features.palette = "default";
+  // Backward compat: migrate old i18n boolean to languages key
+  if (state.features.languages === undefined) {
+    state.features.languages = state.features.i18n === false ? "en" : "en+pt";
+  }
   // Version migration: stamp version if missing (pre-v1 files), warn if newer
   if (state.version === undefined) {
     state.version = LAUNCHKIT_VERSION;
@@ -329,109 +330,14 @@ function writeLaunchkit(state) {
   fs.renameSync(tmp, dest);
 }
 
-// ── Shared i18n collapse (app/[locale]/ → app/) ─────────────────────────────
-
-// Core i18n collapse logic shared by all templates.
-// Moves components + layout + page from app/[locale]/ → app/, patches locale
-// references out, removes pt.json. Calls opts.beforePatchLayout / opts.afterMove
-// / opts.afterCollapse for template-specific patches.
-//
-// opts:
-//   extraDirs     — additional app/[locale]/ subdirs to move (e.g. ["work"])
-//   description   — single-line English description for generateMetadata fallback
-//   pageFnName    — export function name in page.tsx (e.g. "LocalePage", "BusinessPage")
-//   beforePatchLayout(features)  — called after move, before layout patches
-//   afterCollapse(features)      — called after all shared patches are done
-function collapseI18nBase(features, opts = {}) {
-  console.log("\n─── Collapsing i18n routing (app/[locale]/ → app/) ─────────────\n");
-
-  const {
-    extraDirs = [],
-    pageFnName = "LocalePage",
-    beforePatchLayout,
-    afterCollapse,
-  } = opts;
-
-  // ── 1. Move files (copy-all, verify, then delete source) ─────────────────────
-  copyDirInProject("app/[locale]/components", "app/components");
-  for (const dir of extraDirs) {
-    copyDirInProject(`app/[locale]/${dir}`, `app/${dir}`);
-  }
-  copyFileInProject("app/[locale]/layout.tsx", "app/layout.tsx");
-  copyFileInProject("app/[locale]/page.tsx", "app/page.tsx");
-  // Verify copies before deleting source
-  assertExists("app/components");
-  assertExists("app/layout.tsx");
-  assertExists("app/page.tsx");
-  for (const dir of extraDirs) assertExists(`app/${dir}`);
-  deleteIfExists("app/[locale]");
-
-  if (beforePatchLayout) beforePatchLayout(features);
-
-  // ── 2. Patch app/layout.tsx ──────────────────────────────────────────────────
-  replaceInFile(
-    "app/layout.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/layout.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/layout.tsx",
-    'export async function generateMetadata({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}): Promise<Metadata> {',
-    "export async function generateMetadata(): Promise<Metadata> {"
-  );
-  removeLineContaining("app/layout.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/layout.tsx", "const dict = await getDictionary");
-  replaceInFile(
-    "app/layout.tsx",
-    "    alternates: {\n      canonical: `${SITE_URL}/${locale}`,\n      languages: {\n        en: `${SITE_URL}/en`,\n        pt: `${SITE_URL}/pt`,\n      },\n    },",
-    "    alternates: { canonical: SITE_URL },"
-  );
-  replaceInFile("app/layout.tsx", "`${SITE_URL}/${locale}`", "SITE_URL");
-  removeLineContaining("app/layout.tsx", 'locale: locale === "pt"');
-  replaceInFile(
-    "app/layout.tsx",
-    "export default async function LocaleLayout({\n  children,\n  params,\n}: {\n  children: React.ReactNode;\n  params: Promise<{ locale: string }>;\n}) {",
-    "export default async function LocaleLayout({\n  children,\n}: {\n  children: React.ReactNode;\n}) {"
-  );
-  replaceInFile("app/layout.tsx", "<Navbar locale={locale} nav={", "<Navbar nav={");
-
-  // ── 3. Patch app/page.tsx ────────────────────────────────────────────────────
-  replaceInFile(
-    "app/page.tsx",
-    'import { getDictionary } from "../../get-dictionary";',
-    'import dict from "../dictionaries/en.json";'
-  );
-  removeLineContaining("app/page.tsx", "import { type Locale }");
-  replaceInFile(
-    "app/page.tsx",
-    `export default async function ${pageFnName}({\n  params,\n}: {\n  params: Promise<{ locale: string }>;\n}) {`,
-    `export default async function ${pageFnName}() {`
-  );
-  removeLineContaining("app/page.tsx", "const { locale } = (await params)");
-  removeLineContaining("app/page.tsx", "const dict = await getDictionary");
-
-  // ── 4. Patch app/components/Navbar.tsx ──────────────────────────────────────
-  removeLineContaining("app/components/Navbar.tsx", "import { type Locale }");
-  removeLineContaining("app/components/Navbar.tsx", "locale: Locale;");
-  replaceInFile("app/components/Navbar.tsx", "{ locale, nav }", "{ nav }");
-
-  // ── 5. Remove secondary locale dictionaries ─────────────────────────────────
-  for (const f of SECONDARY_DICT_FILES) deleteIfExists(f);
-
-  if (afterCollapse) afterCollapse(features);
-
-  console.log("\n✓  i18n routing collapsed — app/ is now locale-free");
-}
-
 // ── Template file copy ────────────────────────────────────────────────────────
 
 // Copies app/, dictionaries/, public/ from a template into the target project.
 // Dialogflow (portfolio-only) must be copied separately by the template module.
 function copyTemplateFiles(type) {
-  copyDir(`templates/${type}/app`, "app");
-  copyDir(`templates/${type}/dictionaries`, "dictionaries");
-  copyDir(`templates/${type}/public`, "public");
+  copyDir(`templates/presets/${type}/app`, "app");
+  copyDir(`templates/presets/${type}/dictionaries`, "dictionaries");
+  copyDir(`templates/presets/${type}/public`, "public");
 }
 
 // Copies base scaffold (package.json, tsconfig, configs, base app/) into the target project.
@@ -727,7 +633,6 @@ module.exports = {
   LOCALES,
   DEFAULT_LOCALE,
   DICT_FILES,
-  SECONDARY_DICT_FILES,
   LOCALES_TS_LITERAL,
   STRUCTURAL_COMPONENTS,
   setTarget,
@@ -754,7 +659,6 @@ module.exports = {
   copyBaseScaffold,
   parseProjectFlag,
   checkHelp,
-  collapseI18nBase,
   addNavLink,
   removeNavLink,
   loadTemplates,

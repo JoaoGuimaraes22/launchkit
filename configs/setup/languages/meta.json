@@ -1,0 +1,11 @@
+{
+  "key": "languages",
+  "label": "Language(s)",
+  "description": "Project language(s) — determines routing and available dictionaries",
+  "type": "select",
+  "options": ["en", "pt", "en+pt"],
+  "labels": ["English only", "Portuguese only", "English + Portuguese"],
+  "default": "en",
+  "prompt": "Project language(s)?",
+  "templates": null
+}

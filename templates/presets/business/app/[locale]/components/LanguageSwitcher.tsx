@@ -4,6 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { i18n, type Locale } from "../../../i18n-config";
 
 export default function LanguageSwitcher({ currentLocale, scrolled }: { currentLocale: Locale; scrolled: boolean }) {
+  if (i18n.locales.length <= 1) return null;
+
   const pathname = usePathname();
   const router = useRouter();
 

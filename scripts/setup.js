@@ -187,6 +187,9 @@ async function main() {
   for (const config of setupConfigs) {
     if (config.type === "boolean") {
       configAnswers[config.key] = await ask(rl, config.prompt);
+    } else if (config.type === "select") {
+      const choice = await askChoice(rl, config.prompt, config.labels ?? config.options);
+      configAnswers[config.key] = config.options[(choice ?? 1) - 1];
     }
   }
 
@@ -198,7 +201,7 @@ async function main() {
   const ctx = { projectType: result.type, tmpl, lib };
   for (const config of setupConfigs) {
     if (config.hooks?.apply) {
-      await config.hooks.apply({ ...ctx, enabled: configAnswers[config.key] });
+      await config.hooks.apply({ ...ctx, enabled: configAnswers[config.key], value: configAnswers[config.key] });
     }
   }
 
