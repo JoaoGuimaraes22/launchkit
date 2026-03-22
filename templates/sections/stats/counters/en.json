@@ -1,12 +1,10 @@
 {
-  "statsCounters": {
-    "title_line1": "By the Numbers",
-    "title_line2": "Results That Speak for Themselves",
-    "items": [
-      { "label": "Happy Clients", "target": 500, "suffix": "+" },
-      { "label": "Satisfaction Rate", "target": 98, "suffix": "%" },
-      { "label": "Years Experience", "target": 10, "suffix": "+" },
-      { "label": "Projects Delivered", "target": 250, "suffix": "+" }
-    ]
-  }
+  "title_line1": "By the Numbers",
+  "title_line2": "Results That Speak for Themselves",
+  "items": [
+    { "label": "Happy Clients", "target": 500, "suffix": "+" },
+    { "label": "Satisfaction Rate", "target": 98, "suffix": "%" },
+    { "label": "Years Experience", "target": 10, "suffix": "+" },
+    { "label": "Projects Delivered", "target": 250, "suffix": "+" }
+  ]
 }

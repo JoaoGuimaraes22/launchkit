@@ -1,19 +1,17 @@
 {
-  "team": {
-    "title_line1": "Our Team",
-    "title_line2": "The People Behind the Work",
-    "body": "We're a passionate team of professionals committed to delivering exceptional results. With years of combined experience, we bring expertise, creativity, and dedication to every project.",
-    "tags": ["Expert Team", "5+ Years", "Award Winning", "Client Focused"],
-    "quote": "Excellence is not a skill, it's an attitude.",
-    "stats": [
-      { "label": "Founded", "value": "2019" },
-      { "label": "Team Members", "value": "12+" },
-      { "label": "Projects Done", "value": "200+" },
-      { "label": "Happy Clients", "value": "150+" }
-    ],
-    "ctaLabel": "Work With Us",
-    "ctaHref": "#contact",
-    "imageUrl": "/team.jpg",
-    "imageAlt": "Our team at work"
-  }
+  "title_line1": "Our Team",
+  "title_line2": "The People Behind the Work",
+  "body": "We're a passionate team of professionals committed to delivering exceptional results. With years of combined experience, we bring expertise, creativity, and dedication to every project.",
+  "tags": ["Expert Team", "5+ Years", "Award Winning", "Client Focused"],
+  "quote": "Excellence is not a skill, it's an attitude.",
+  "stats": [
+    { "label": "Founded", "value": "2019" },
+    { "label": "Team Members", "value": "12+" },
+    { "label": "Projects Done", "value": "200+" },
+    { "label": "Happy Clients", "value": "150+" }
+  ],
+  "ctaLabel": "Work With Us",
+  "ctaHref": "#contact",
+  "imageUrl": "/team.jpg",
+  "imageAlt": "Our team at work"
 }

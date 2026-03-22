@@ -1,0 +1,21 @@
+{
+  "BUSINESS": "YOUR_BUSINESS",
+  "PHONE": "YOUR_PHONE",
+  "EMAIL": "YOUR_EMAIL",
+  "ADDRESS": "YOUR_ADDRESS",
+  "WHATSAPP_NUMBER": "YOUR_WHATSAPP_NUMBER",
+  "DOMAIN": "YOUR_DOMAIN",
+  "_content_hints": {
+    "hero_headline": "Handcrafted burgers and cocktails worth talking about",
+    "hero_tagline": "Fresh ingredients, bold flavours, great vibes",
+    "about_bio": "Born from a love of great food and good company. We craft every burger with premium ingredients, pair them with handcrafted cocktails, and serve them in a space made for sharing moments.",
+    "services": ["Artisan Burgers", "Handcrafted Cocktails", "Vegetarian Options", "Outdoor Seating"],
+    "faq_samples": [
+      "Do you take reservations?",
+      "Do you have vegetarian options?",
+      "Can I host a private event?",
+      "Do you offer delivery?"
+    ],
+    "reviews_note": "Use real Google reviews — 4.1 stars, 388 reviews"
+  }
+}

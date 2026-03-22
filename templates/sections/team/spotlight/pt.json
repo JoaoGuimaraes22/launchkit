@@ -1,19 +1,17 @@
 {
-  "team": {
-    "title_line1": "A Nossa Equipa",
-    "title_line2": "As Pessoas por Detrás do Trabalho",
-    "body": "Somos uma equipa apaixonada de profissionais comprometidos em entregar resultados excecionais. Com anos de experiência combinada, trazemos expertise, criatividade e dedicação a cada projeto.",
-    "tags": ["Equipa Especializada", "5+ Anos", "Premiada", "Foco no Cliente"],
-    "quote": "A excelência não é uma habilidade, é uma atitude.",
-    "stats": [
-      { "label": "Fundada em", "value": "2019" },
-      { "label": "Membros da Equipa", "value": "12+" },
-      { "label": "Projetos Concluídos", "value": "200+" },
-      { "label": "Clientes Satisfeitos", "value": "150+" }
-    ],
-    "ctaLabel": "Trabalhe Connosco",
-    "ctaHref": "#contact",
-    "imageUrl": "/team.jpg",
-    "imageAlt": "A nossa equipa em ação"
-  }
+  "title_line1": "A Nossa Equipa",
+  "title_line2": "As Pessoas por Detrás do Trabalho",
+  "body": "Somos uma equipa apaixonada de profissionais comprometidos em entregar resultados excecionais. Com anos de experiência combinada, trazemos expertise, criatividade e dedicação a cada projeto.",
+  "tags": ["Equipa Especializada", "5+ Anos", "Premiada", "Foco no Cliente"],
+  "quote": "A excelência não é uma habilidade, é uma atitude.",
+  "stats": [
+    { "label": "Fundada em", "value": "2019" },
+    { "label": "Membros da Equipa", "value": "12+" },
+    { "label": "Projetos Concluídos", "value": "200+" },
+    { "label": "Clientes Satisfeitos", "value": "150+" }
+  ],
+  "ctaLabel": "Trabalhe Connosco",
+  "ctaHref": "#contact",
+  "imageUrl": "/team.jpg",
+  "imageAlt": "A nossa equipa em ação"
 }

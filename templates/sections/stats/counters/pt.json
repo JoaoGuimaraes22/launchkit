@@ -1,12 +1,10 @@
 {
-  "statsCounters": {
-    "title_line1": "Em Números",
-    "title_line2": "Resultados que Falam por Si",
-    "items": [
-      { "label": "Clientes Satisfeitos", "target": 500, "suffix": "+" },
-      { "label": "Taxa de Satisfação", "target": 98, "suffix": "%" },
-      { "label": "Anos de Experiência", "target": 10, "suffix": "+" },
-      { "label": "Projetos Concluídos", "target": 250, "suffix": "+" }
-    ]
-  }
+  "title_line1": "Em Números",
+  "title_line2": "Resultados que Falam por Si",
+  "items": [
+    { "label": "Clientes Satisfeitos", "target": 500, "suffix": "+" },
+    { "label": "Taxa de Satisfação", "target": 98, "suffix": "%" },
+    { "label": "Anos de Experiência", "target": 10, "suffix": "+" },
+    { "label": "Projetos Concluídos", "target": 250, "suffix": "+" }
+  ]
 }

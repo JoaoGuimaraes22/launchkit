@@ -1,51 +1,49 @@
 {
-  "pricing": {
-    "title_line1": "Pricing",
-    "title_line2": "Simple, Transparent Plans",
-    "subtitle": "Choose the plan that works for you. No hidden fees, no surprises.",
-    "popular_label": "Most Popular",
-    "cta": "Get Started",
-    "disclaimer": "All plans include a 14-day free trial. Cancel anytime.",
-    "plans": [
-      {
-        "name": "Starter",
-        "price": "$29",
-        "period": "per month",
-        "popular": false,
-        "features": [
-          "1 user",
-          "10 projects",
-          "5 GB storage",
-          "Email support"
-        ]
-      },
-      {
-        "name": "Pro",
-        "price": "$79",
-        "period": "per month",
-        "popular": true,
-        "features": [
-          "5 users",
-          "Unlimited projects",
-          "50 GB storage",
-          "Priority support",
-          "Analytics dashboard"
-        ]
-      },
-      {
-        "name": "Enterprise",
-        "price": "$199",
-        "period": "per month",
-        "popular": false,
-        "features": [
-          "Unlimited users",
-          "Unlimited projects",
-          "500 GB storage",
-          "24/7 dedicated support",
-          "Custom integrations",
-          "SLA guarantee"
-        ]
-      }
-    ]
-  }
+  "title_line1": "Pricing",
+  "title_line2": "Simple, Transparent Plans",
+  "subtitle": "Choose the plan that works for you. No hidden fees, no surprises.",
+  "popular_label": "Most Popular",
+  "cta": "Get Started",
+  "disclaimer": "All plans include a 14-day free trial. Cancel anytime.",
+  "plans": [
+    {
+      "name": "Starter",
+      "price": "$29",
+      "period": "per month",
+      "popular": false,
+      "features": [
+        "1 user",
+        "10 projects",
+        "5 GB storage",
+        "Email support"
+      ]
+    },
+    {
+      "name": "Pro",
+      "price": "$79",
+      "period": "per month",
+      "popular": true,
+      "features": [
+        "5 users",
+        "Unlimited projects",
+        "50 GB storage",
+        "Priority support",
+        "Analytics dashboard"
+      ]
+    },
+    {
+      "name": "Enterprise",
+      "price": "$199",
+      "period": "per month",
+      "popular": false,
+      "features": [
+        "Unlimited users",
+        "Unlimited projects",
+        "500 GB storage",
+        "24/7 dedicated support",
+        "Custom integrations",
+        "SLA guarantee"
+      ]
+    }
+  ]
 }

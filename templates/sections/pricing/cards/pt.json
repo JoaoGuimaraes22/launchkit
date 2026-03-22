@@ -1,51 +1,49 @@
 {
-  "pricing": {
-    "title_line1": "Preços",
-    "title_line2": "Planos Simples e Transparentes",
-    "subtitle": "Escolha o plano que funciona para si. Sem taxas ocultas, sem surpresas.",
-    "popular_label": "Mais Popular",
-    "cta": "Começar Agora",
-    "disclaimer": "Todos os planos incluem 14 dias de teste gratuito. Cancele a qualquer momento.",
-    "plans": [
-      {
-        "name": "Starter",
-        "price": "29€",
-        "period": "por mês",
-        "popular": false,
-        "features": [
-          "1 utilizador",
-          "10 projetos",
-          "5 GB de armazenamento",
-          "Suporte por email"
-        ]
-      },
-      {
-        "name": "Pro",
-        "price": "79€",
-        "period": "por mês",
-        "popular": true,
-        "features": [
-          "5 utilizadores",
-          "Projetos ilimitados",
-          "50 GB de armazenamento",
-          "Suporte prioritário",
-          "Dashboard de análise"
-        ]
-      },
-      {
-        "name": "Enterprise",
-        "price": "199€",
-        "period": "por mês",
-        "popular": false,
-        "features": [
-          "Utilizadores ilimitados",
-          "Projetos ilimitados",
-          "500 GB de armazenamento",
-          "Suporte dedicado 24/7",
-          "Integrações personalizadas",
-          "Garantia SLA"
-        ]
-      }
-    ]
-  }
+  "title_line1": "Preços",
+  "title_line2": "Planos Simples e Transparentes",
+  "subtitle": "Escolha o plano que funciona para si. Sem taxas ocultas, sem surpresas.",
+  "popular_label": "Mais Popular",
+  "cta": "Começar Agora",
+  "disclaimer": "Todos os planos incluem 14 dias de teste gratuito. Cancele a qualquer momento.",
+  "plans": [
+    {
+      "name": "Starter",
+      "price": "29€",
+      "period": "por mês",
+      "popular": false,
+      "features": [
+        "1 utilizador",
+        "10 projetos",
+        "5 GB de armazenamento",
+        "Suporte por email"
+      ]
+    },
+    {
+      "name": "Pro",
+      "price": "79€",
+      "period": "por mês",
+      "popular": true,
+      "features": [
+        "5 utilizadores",
+        "Projetos ilimitados",
+        "50 GB de armazenamento",
+        "Suporte prioritário",
+        "Dashboard de análise"
+      ]
+    },
+    {
+      "name": "Enterprise",
+      "price": "199€",
+      "period": "por mês",
+      "popular": false,
+      "features": [
+        "Utilizadores ilimitados",
+        "Projetos ilimitados",
+        "500 GB de armazenamento",
+        "Suporte dedicado 24/7",
+        "Integrações personalizadas",
+        "Garantia SLA"
+      ]
+    }
+  ]
 }
