@@ -1,0 +1,13 @@
+{
+  "componentName": "ParallaxHero",
+  "dictKey": null,
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["business"],
+  "defaultAfter": null,
+  "props": {},
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

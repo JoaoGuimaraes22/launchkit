@@ -1,0 +1,15 @@
+{
+  "componentName": "GalleryStrip",
+  "dictKey": "galleryStrip",
+  "navLink": null,
+  "templates": ["portfolio", "business"],
+  "defaultAfter": "about",
+  "props": {
+    "i18n": "galleryStrip={dict.galleryStrip}",
+    "collapsed": "galleryStrip={dict.galleryStrip}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": null,
+  "dependencies": [],
+  "extraFiles": []
+}

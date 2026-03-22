@@ -1,0 +1,28 @@
+{
+  "reservation": {
+    "title": "Reservar Mesa",
+    "subtitle": "Reserve o seu lugar — confirmamos em poucas horas",
+    "name_label": "O seu nome",
+    "contact_label": "Email ou número de telemóvel",
+    "note_label": "Pedidos especiais (opcional)",
+    "guests_label": "Número de pessoas",
+    "date_label": "Escolha uma data",
+    "time_label": "Hora preferida",
+    "confirm_cta": "Confirmar Reserva",
+    "success_title": "Reserva Recebida!",
+    "success_body": "Confirmamos a sua reserva por email ou telemóvel em breve.",
+    "back_cta": "Fazer outra reserva",
+    "times": [
+      "12:00", "12:30", "13:00", "13:30",
+      "14:00", "14:30", "18:00", "18:30",
+      "19:00", "19:30", "20:00", "20:30",
+      "21:00", "21:30", "22:00", "22:30"
+    ],
+    "days": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+    "months": [
+      "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    ],
+    "guests_options": ["1 pessoa", "2 pessoas", "3 pessoas", "4 pessoas", "5 pessoas", "6+ pessoas"]
+  }
+}

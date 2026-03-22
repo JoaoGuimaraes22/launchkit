@@ -1,0 +1,51 @@
+{
+  "menu": {
+    "title": "Our Menu",
+    "subtitle": "Fresh ingredients, prepared daily with care",
+    "categories": [
+      {
+        "key": "starters",
+        "label": "Starters",
+        "highlight_image": "/menu/starters.jpg",
+        "items": [
+          { "name": "Bruschetta", "description": "Toasted sourdough with heirloom tomatoes, basil and olive oil", "price": "$9" },
+          { "name": "Soup of the Day", "description": "Ask your server for today's seasonal selection", "price": "$8" },
+          { "name": "Charcuterie Board", "description": "Cured meats, artisan cheeses and house-made pickles", "price": "$18" },
+          { "name": "Calamari Fritti", "description": "Lightly battered with lemon aioli", "price": "$14" }
+        ]
+      },
+      {
+        "key": "mains",
+        "label": "Mains",
+        "highlight_image": "/menu/mains.jpg",
+        "items": [
+          { "name": "Grilled Salmon", "description": "With seasonal vegetables and lemon-caper butter", "price": "$26" },
+          { "name": "Beef Tenderloin", "description": "8oz with truffle mashed potatoes and red wine jus", "price": "$34" },
+          { "name": "Mushroom Risotto", "description": "Arborio rice with wild mushrooms and parmesan", "price": "$22" },
+          { "name": "Roast Chicken", "description": "Half bird with herb butter and roasted potatoes", "price": "$24" }
+        ]
+      },
+      {
+        "key": "desserts",
+        "label": "Desserts",
+        "highlight_image": "/menu/desserts.jpg",
+        "items": [
+          { "name": "Tiramisu", "description": "Classic Italian dessert with espresso and mascarpone", "price": "$10" },
+          { "name": "Chocolate Lava Cake", "description": "Warm dark chocolate with vanilla bean ice cream", "price": "$11" },
+          { "name": "Panna Cotta", "description": "Vanilla cream with seasonal berry compote", "price": "$9" }
+        ]
+      },
+      {
+        "key": "drinks",
+        "label": "Drinks",
+        "highlight_image": "/menu/drinks.jpg",
+        "items": [
+          { "name": "House Wine", "description": "Red or white — ask for today's selection, glass", "price": "$8" },
+          { "name": "Craft Beer", "description": "Local rotating tap selection, pint", "price": "$7" },
+          { "name": "Fresh Lemonade", "description": "Squeezed to order with mint", "price": "$5" },
+          { "name": "Specialty Coffee", "description": "Espresso, cappuccino or flat white", "price": "$5" }
+        ]
+      }
+    ]
+  }
+}

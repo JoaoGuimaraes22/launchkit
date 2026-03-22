@@ -1,0 +1,16 @@
+{
+  "componentName": "ReserveBar",
+  "dictKey": "reserveBar",
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["business"],
+  "defaultAfter": null,
+  "props": {
+    "i18n": "reserveBar={dict.reserveBar}",
+    "collapsed": "reserveBar={dict.reserveBar}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

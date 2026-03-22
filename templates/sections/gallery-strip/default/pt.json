@@ -1,0 +1,12 @@
+{
+  "galleryStrip": {
+    "images": [
+      { "src": "/gallery/1.jpg", "alt": "Foto da galeria 1" },
+      { "src": "/gallery/2.jpg", "alt": "Foto da galeria 2" },
+      { "src": "/gallery/3.jpg", "alt": "Foto da galeria 3" },
+      { "src": "/gallery/4.jpg", "alt": "Foto da galeria 4" },
+      { "src": "/gallery/5.jpg", "alt": "Foto da galeria 5" },
+      { "src": "/gallery/6.jpg", "alt": "Foto da galeria 6" }
+    ]
+  }
+}

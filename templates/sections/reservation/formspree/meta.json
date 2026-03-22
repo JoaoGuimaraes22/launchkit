@@ -1,0 +1,16 @@
+{
+  "componentName": "Reservation",
+  "dictKey": "reservation",
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["business"],
+  "defaultAfter": null,
+  "props": {
+    "i18n": "reservation={dict.reservation}",
+    "collapsed": "reservation={dict.reservation}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

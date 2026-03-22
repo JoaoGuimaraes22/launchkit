@@ -1,0 +1,18 @@
+{
+  "componentName": "Menu",
+  "dictKey": "menu",
+  "navLink": {
+    "id": "menu",
+    "label": { "en": "Menu", "pt": "Menu" }
+  },
+  "templates": ["business"],
+  "defaultAfter": "about",
+  "props": {
+    "i18n": "menu={dict.menu}",
+    "collapsed": "menu={dict.menu}"
+  },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

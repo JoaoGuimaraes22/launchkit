@@ -1,0 +1,6 @@
+{
+  "componentName": "FadeIn",
+  "description": "Scroll-triggered fade-in animation wrapper with direction and delay props",
+  "accentColorToken": null,
+  "dependencies": []
+}

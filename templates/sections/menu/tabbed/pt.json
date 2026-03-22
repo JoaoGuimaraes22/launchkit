@@ -1,0 +1,51 @@
+{
+  "menu": {
+    "title": "O Nosso Menu",
+    "subtitle": "Ingredientes frescos, preparados diariamente com carinho",
+    "categories": [
+      {
+        "key": "starters",
+        "label": "Entradas",
+        "highlight_image": "/menu/starters.jpg",
+        "items": [
+          { "name": "Bruschetta", "description": "Pão de fermentação natural com tomate, manjericão e azeite", "price": "9€" },
+          { "name": "Sopa do Dia", "description": "Pergunte ao seu servidor pela seleção sazonal de hoje", "price": "8€" },
+          { "name": "Tábua de Frios", "description": "Enchidos curados, queijos artesanais e pickles caseiros", "price": "18€" },
+          { "name": "Calamares Fritos", "description": "Ligeiramente empanados com aioli de limão", "price": "14€" }
+        ]
+      },
+      {
+        "key": "mains",
+        "label": "Principais",
+        "highlight_image": "/menu/mains.jpg",
+        "items": [
+          { "name": "Salmão Grelhado", "description": "Com legumes da época e manteiga de limão e alcaparras", "price": "26€" },
+          { "name": "Lombo de Vaca", "description": "225g com puré de trufa e molho de vinho tinto", "price": "34€" },
+          { "name": "Risotto de Cogumelos", "description": "Arroz arbório com cogumelos silvestres e parmesão", "price": "22€" },
+          { "name": "Frango Assado", "description": "Meio frango com manteiga de ervas e batatas assadas", "price": "24€" }
+        ]
+      },
+      {
+        "key": "desserts",
+        "label": "Sobremesas",
+        "highlight_image": "/menu/desserts.jpg",
+        "items": [
+          { "name": "Tiramisu", "description": "Clássica sobremesa italiana com espresso e mascarpone", "price": "10€" },
+          { "name": "Bolo de Chocolate", "description": "Quente com chocolate negro e gelado de baunilha", "price": "11€" },
+          { "name": "Panna Cotta", "description": "Creme de baunilha com compota de frutos vermelhos", "price": "9€" }
+        ]
+      },
+      {
+        "key": "drinks",
+        "label": "Bebidas",
+        "highlight_image": "/menu/drinks.jpg",
+        "items": [
+          { "name": "Vinho da Casa", "description": "Tinto ou branco — pergunte pela seleção de hoje, copo", "price": "8€" },
+          { "name": "Cerveja Artesanal", "description": "Torneira rotativa local, imperial", "price": "7€" },
+          { "name": "Limonada Natural", "description": "Espremida na hora com hortelã", "price": "5€" },
+          { "name": "Café Especial", "description": "Espresso, cappuccino ou flat white", "price": "5€" }
+        ]
+      }
+    ]
+  }
+}

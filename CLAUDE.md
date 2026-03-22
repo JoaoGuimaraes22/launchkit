@@ -39,6 +39,7 @@ configs/
   palettes/           Live configs — changeable post-setup via config.js
     default/          bg:#fafafa fg:#111111 accent:indigo (baseline)
     midnight/         bg:#0c0c0f fg:#f4f4f5 accent:violet
+    azure-drift/      bg:#fcf9f2 fg:#1a1a1a accent:teal (coastal, warm sand)
   niche-profiles/     Starter JSON profiles for personalize.js --profile (niche-appropriate content hints)
     hvac.json         HVAC/heating/cooling services starter
     cleaning.json     Commercial & residential cleaning starter
@@ -63,8 +64,14 @@ templates/
     whatsapp/default/        WhatsApp button in Contact + FloatingCTA via markers
     booking/calendly/        Calendly inline embed; YOUR_CALENDLY_URL placeholder; no npm deps
     google-reviews/default/  Google review CTA with star display; YOUR_GOOGLE_REVIEW_URL placeholder
+    gallery-strip/default/   Autoscrolling image strip (CSS keyframes, infinite loop, pause on hover)
+    parallax-hero/default/   rAF-throttled parallax hero (business); swaps Hero ↔ ParallaxHero via hooks
+    reserve-bar/default/     Mobile sticky bottom bar; dispatches open-reservation event; links order URL
+    menu/tabbed/             Tabbed category menu with highlight card and 2-col item grid (business)
+    reservation/formspree/   Full-screen booking modal (calendar + time slots + Formspree); YOUR_FORMSPREE_ID
   components/         UI atom library — each component has variants with component.tsx + meta.json
     button/primary/   Primary CTA button (solid + outline, sized, accent-aware)
+    fade-in/default/  IntersectionObserver fade-in wrapper with direction (up/left/right/none) + delay props
 ```
 
 All scripts support `--help`. If `--project` is omitted, scripts fall back to cwd.
@@ -197,6 +204,8 @@ Grep for these in generated projects:
 - `YOUR_BUSINESS`, `YOUR_PHONE`, `YOUR_WHATSAPP_NUMBER`, `YOUR_ADDRESS` (business)
 - `YOUR_CALENDLY_URL` (booking/calendly section)
 - `YOUR_GOOGLE_REVIEW_URL` (google-reviews section)
+- `YOUR_FORMSPREE_ID` (reservation/formspree section — get at formspree.io)
+- `YOUR_ORDER_URL` (reserve-bar/default section — link to external ordering platform)
 - `// TODO: TEMPLATE` — marks manual Claude cleanup needed
 
 Use `node scripts/personalize.js --project <path>` to replace all `YOUR_*` placeholders interactively or via `--profile client.json`. The script is template-aware, idempotent, and re-scans component files dynamically so it picks up new placeholders added by sections installed after initial setup.
