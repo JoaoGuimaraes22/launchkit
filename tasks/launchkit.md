@@ -133,6 +133,9 @@ YOUR_ORDER_URL           reserve-bar
 YOUR_MAPS_EMBED_URL          contact/map  (Google Maps iframe src)
 YOUR_MAPS_DIRECTIONS_URL     contact/map  (directions button href)
 YOUR_ORDER_URL               reserve-bar  (TheFork, booking link, or takeaway platform)
+YOUR_CUISINE                 restaurant layout.tsx  (page title + JSON-LD)
+YOUR_CITY                    restaurant layout.tsx  (page title + JSON-LD address)
+YOUR_COUNTRY_CODE            restaurant layout.tsx  (JSON-LD address country)
 // TODO: TEMPLATE             marks manual content that needs replacing
 ```
 

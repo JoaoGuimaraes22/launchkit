@@ -35,9 +35,14 @@ export default function GoogleReviews({ googleReviews }: { googleReviews: Google
     <section
       id="google-reviews"
       ref={ref}
-      className="bg-zinc-900 px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32"
+      className="relative overflow-hidden bg-zinc-900 px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32"
     >
-      <div className="mx-auto max-w-2xl text-center">
+      {/* Center glow */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="h-120 w-120 rounded-full bg-indigo-600/10 blur-[140px]" />
+      </div>
+
+      <div className="relative mx-auto max-w-2xl text-center">
         {/* Heading */}
         <motion.div className="mb-8" {...fadeUp(0)}>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-none mb-4 text-white">

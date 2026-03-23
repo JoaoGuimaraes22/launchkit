@@ -32,7 +32,7 @@ export default function ReserveBar({ reserveBar }: { reserveBar: ReserveBarDict 
       <div className="flex gap-2 rounded-2xl bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-sm">
         <button
           onClick={openReservation}
-          className="flex-1 rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+          className="cursor-pointer flex-1 rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
         >
           {reserveBar.cta_reserve}
         </button>
@@ -40,7 +40,7 @@ export default function ReserveBar({ reserveBar }: { reserveBar: ReserveBarDict 
           href={reserveBar.order_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex-1 rounded-xl border border-zinc-700 py-3 text-center text-sm font-semibold text-zinc-100 transition-colors hover:bg-zinc-800"
+          className="cursor-pointer flex-1 rounded-xl border border-zinc-700 py-3 text-center text-sm font-semibold text-zinc-100 transition-colors hover:bg-zinc-800"
         >
           {reserveBar.cta_order}
         </a>

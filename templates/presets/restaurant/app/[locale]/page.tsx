@@ -23,7 +23,7 @@ export default async function RestaurantPage({
       <Menu menu={dict.menu} />
       <Reviews reviews={dict.reviews} />
       <FAQ faq={dict.faq} />
-      <Contact contact={dict.contact} contactMap={dict.contactMap} />
+      <Contact contact={dict.contact} contactMap={dict.contactMap} orderUrl={dict.reserveBar?.order_url ?? "YOUR_ORDER_URL"} />
       <Footer footer={dict.footer} logo={dict.navbar.logo} />
     </>
   );

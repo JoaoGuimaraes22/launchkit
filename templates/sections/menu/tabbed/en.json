@@ -1,6 +1,7 @@
 {
   "title": "Our Menu",
   "subtitle": "Fresh ingredients, prepared daily with care",
+  "chefs_pick": "Chef's Pick",
   "categories": [
     {
       "key": "starters",

@@ -1,6 +1,7 @@
 {
   "title": "O Nosso Menu",
   "subtitle": "Ingredientes frescos, preparados diariamente com carinho",
+  "chefs_pick": "Escolha do Chef",
   "categories": [
     {
       "key": "starters",

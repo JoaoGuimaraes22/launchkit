@@ -49,6 +49,13 @@ export default function Reservation({ reservation }: { reservation: ReservationD
   const close = useCallback(() => {
     setOpen(false);
     document.body.style.overflow = "";
+    setStatus("idle");
+    setSelectedDate(null);
+    setSelectedTime("");
+    setSelectedGuests("");
+    setName("");
+    setContact("");
+    setNote("");
   }, []);
 
   useEffect(() => {
@@ -164,7 +171,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
         {/* Close button */}
         <button
           onClick={close}
-          className="absolute right-4 top-4 z-10 rounded-full bg-zinc-100 p-2 text-zinc-500 hover:bg-zinc-200"
+          className="cursor-pointer absolute right-4 top-4 z-10 rounded-full bg-zinc-100 p-2 text-zinc-500 hover:bg-zinc-200"
           aria-label="Close"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -182,7 +189,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
               </div>
               <h2 id="reservation-title" className="mb-2 text-2xl font-bold">{reservation.success_title}</h2>
               <p className="mb-8 text-zinc-500">{reservation.success_body}</p>
-              <button onClick={reset} className="text-sm font-semibold text-indigo-600 hover:underline">
+              <button onClick={reset} className="cursor-pointer text-sm font-semibold text-indigo-600 hover:underline">
                 {reservation.back_cta}
               </button>
             </div>
@@ -316,7 +323,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
               <button
                 type="submit"
                 disabled={!selectedDate || !selectedTime || !selectedGuests || status === "submitting"}
-                className="w-full rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer w-full rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {status === "submitting" ? "…" : reservation.confirm_cta}
               </button>

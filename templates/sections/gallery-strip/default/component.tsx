@@ -21,26 +21,13 @@ export default function GalleryStrip({
 
   return (
     <section className="overflow-hidden bg-zinc-950 py-3">
-      <style>{`
-        @keyframes gallery-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .gallery-track {
-          animation: gallery-scroll 40s linear infinite;
-        }
-        .gallery-track:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
-
       <div className="gallery-track flex" style={{ width: "max-content" }}>
         {images.map((img, i) => (
           <div
             key={i}
             className="relative mx-1.5 h-48 w-72 shrink-0 overflow-hidden rounded-lg sm:h-56 sm:w-80"
           >
-            <Image src={img.src} alt={img.alt} fill className="object-cover" />
+            <Image src={img.src} alt={img.alt} fill className="object-cover" loading="lazy" />
           </div>
         ))}
       </div>

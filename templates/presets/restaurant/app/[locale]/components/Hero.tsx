@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
@@ -57,14 +58,18 @@ export default function Hero({ hero }: { hero: HeroDict }) {
   const prefersReduced = mounted ? (prefersReducedRaw ?? false) : false;
 
   const { scrollY } = useScroll();
+  // parallax: bg moves up at ~35% the scroll speed
   const bgY = useTransform(scrollY, [0, 800], [0, 280]);
+  // content fades and lifts slightly as user scrolls
   const contentOpacity = useTransform(scrollY, [0, 500], [1, 0]);
   const contentY = useTransform(scrollY, [0, 500], [0, -60]);
 
   useEffect(() => {
-    const mountTimer = setTimeout(() => setMounted(true), 0);
-    const visTimer = setTimeout(() => setVisible(true), 60);
-    return () => { clearTimeout(mountTimer); clearTimeout(visTimer); };
+    const timer = setTimeout(() => {
+      setMounted(true);
+      setVisible(true);
+    }, 60);
+    return () => clearTimeout(timer);
   }, []);
 
   const scrollTo = (id: string) => {
@@ -77,57 +82,35 @@ export default function Hero({ hero }: { hero: HeroDict }) {
       ref={sectionRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black"
     >
-      <style>{`
-        @keyframes slow-zoom {
-          from { transform: scale(1.15); }
-          to { transform: scale(1); }
-        }
-        @keyframes smoke-float {
-          0% { transform: translateY(0) scaleX(1); opacity: 0; }
-          10% { opacity: 1; }
-          80% { opacity: 0.6; }
-          100% { transform: translateY(-180px) scaleX(1.4); opacity: 0; }
-        }
-        @keyframes cinematic-up {
-          from { opacity: 0; transform: translateY(28px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes line-expand {
-          from { width: 0; opacity: 0; }
-          to { width: 200px; opacity: 1; }
-        }
-        @keyframes scrollPulse {
-          0%, 100% { transform: translateY(-100%); opacity: 0; }
-          30% { opacity: 1; }
-          70% { opacity: 1; }
-          100% { transform: translateY(200%); opacity: 0; }
-        }
-      `}</style>
-
       {/* Background — full bleed with parallax */}
       <motion.div
         className="absolute inset-0 overflow-hidden pointer-events-none"
         style={{ y: bgY }}
       >
+        {/* Slow zoom inner layer — extends beyond container for parallax headroom */}
         <div
-          className="absolute"
+          className="absolute left-[-15%] right-[-15%] md:left-0 md:right-0"
           style={{
             top: "-20%",
             bottom: "-20%",
-            left: 0,
-            right: 0,
             animation: prefersReduced ? undefined : "slow-zoom 22s ease-in-out infinite alternate",
           }}
         >
-          {/* TODO: TEMPLATE — replace /hero.jpg with your hero image */}
-          <div className="absolute inset-0 bg-zinc-900" />
+          <Image
+            src="/hero.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
         </div>
       </motion.div>
 
-      {/* Cinematic gradient overlay */}
-      <div className="absolute inset-0 bg-linear-to-t from-zinc-950/95 via-zinc-950/55 to-zinc-950/20" />
+      {/* Cinematic gradient overlay — dark at bottom, fades toward top */}
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-t from-zinc-950/95 via-zinc-950/55 to-zinc-950/20" />
 
-      {/* Smoke wisps */}
+      {/* Smoke wisps — above overlay, below content */}
       <div className="absolute inset-0 z-5 pointer-events-none overflow-hidden">
         <SmokeWisp delay={0} duration={4} left="39%" size={80} blur={12} hidden={prefersReduced} />
         <SmokeWisp delay={0.8} duration={5.2} left="48%" size={100} blur={16} hidden={prefersReduced} />
@@ -198,13 +181,13 @@ export default function Hero({ hero }: { hero: HeroDict }) {
         >
           <button
             onClick={() => scrollTo("contact")}
-            className="rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-indigo-700"
+            className="cursor-pointer rounded-xl bg-indigo-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-indigo-700"
           >
             {hero.cta}
           </button>
           <button
             onClick={() => scrollTo("menu")}
-            className="rounded-xl border border-white/30 px-8 py-3.5 text-sm font-semibold text-white/90 backdrop-blur-sm transition-colors hover:border-white/60 hover:bg-white/10"
+            className="cursor-pointer rounded-xl border border-white/30 px-8 py-3.5 text-sm font-semibold text-white/90 backdrop-blur-sm transition-colors hover:border-white/60 hover:bg-white/10"
           >
             {hero.cta_secondary}
           </button>
@@ -232,7 +215,7 @@ export default function Hero({ hero }: { hero: HeroDict }) {
         )}
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — scrollPulse line */}
       <div
         className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 flex flex-col items-center gap-2"
         style={

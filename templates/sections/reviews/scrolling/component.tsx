@@ -84,7 +84,7 @@ function ScrollColumn({
           prefersReduced
             ? {}
             : {
-                animation: `reviews-scroll-up ${duration} linear infinite`,
+                animation: `testimonials-scroll-up ${duration} linear infinite`,
               }
         }
       >
@@ -112,17 +112,10 @@ export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
 
   return (
     <section
-      id="reviews"
+      id="testimonials"
       ref={ref}
       className="px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32 bg-zinc-50"
     >
-      <style>{`
-        @keyframes reviews-scroll-up {
-          from { transform: translateY(0); }
-          to   { transform: translateY(-33.3333%); }
-        }
-      `}</style>
-
       <div className="mx-auto max-w-6xl">
         <motion.div
           className="leading-none mb-12"

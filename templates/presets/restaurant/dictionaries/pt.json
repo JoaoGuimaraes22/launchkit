@@ -109,6 +109,7 @@
     "title_line2": "ESTAMOS",
     "body": "Adoraríamos recebê-lo. Passe por cá, ligue-nos ou reserve mesa online.",
     "book_cta": "Reservar Mesa",
+    "order_cta": "Pedir Online",
     "phone": "YOUR_PHONE",
     "email": "YOUR_EMAIL",
     "address": "YOUR_ADDRESS",
@@ -116,8 +117,8 @@
     "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
   },
   "contactMap": {
+    "address": "YOUR_ADDRESS",
     "mapsEmbedUrl": "YOUR_MAPS_EMBED_URL",
-    "mapsDirectionsUrl": "YOUR_MAPS_DIRECTIONS_URL",
     "mapTitle": "A nossa localização no Google Maps"
   },
   "footer": {
@@ -126,6 +127,11 @@
     "hours": "Ter–Dom 12h–23h",
     "phone": "YOUR_PHONE",
     "email": "YOUR_EMAIL",
+    "book_cta": "Reservar Mesa",
+    "explore_label": "Explorar",
+    "hours_label": "Horário",
+    "find_us_label": "Encontre-nos",
+    "made_in": "Feito com amor",
     "copyright": "© 2025 YOUR_BUSINESS. Todos os direitos reservados.",
     "nav_links": [
       { "id": "about", "label": "Sobre" },

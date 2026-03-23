@@ -109,6 +109,7 @@
     "title_line2": "US",
     "body": "We'd love to welcome you. Drop by, give us a call, or book a table online.",
     "book_cta": "Book a Table",
+    "order_cta": "Order Online",
     "phone": "YOUR_PHONE",
     "email": "YOUR_EMAIL",
     "address": "YOUR_ADDRESS",
@@ -116,8 +117,8 @@
     "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
   },
   "contactMap": {
+    "address": "YOUR_ADDRESS",
     "mapsEmbedUrl": "YOUR_MAPS_EMBED_URL",
-    "mapsDirectionsUrl": "YOUR_MAPS_DIRECTIONS_URL",
     "mapTitle": "Our location on Google Maps"
   },
   "footer": {
@@ -126,6 +127,11 @@
     "hours": "Tue–Sun 12pm–11pm",
     "phone": "YOUR_PHONE",
     "email": "YOUR_EMAIL",
+    "book_cta": "Book a Table",
+    "explore_label": "Explore",
+    "hours_label": "Hours",
+    "find_us_label": "Find Us",
+    "made_in": "Made with love",
     "copyright": "© 2025 YOUR_BUSINESS. All rights reserved.",
     "nav_links": [
       { "id": "about", "label": "About" },

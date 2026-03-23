@@ -98,6 +98,27 @@ const PLACEHOLDER_MAP = {
       // Special: also replace YOUR_DOMAIN.vercel.app (SITE_URL default)
       special: "domain",
     },
+    {
+      key: "CUISINE",
+      label: "Cuisine type",
+      description: "E.g. Italian, Burgers, Sushi — used in page title and JSON-LD",
+      condition: (state) => state.type === "restaurant",
+      targets: (ctx) => [ctx.layoutFile],
+    },
+    {
+      key: "CITY",
+      label: "City name",
+      description: "E.g. Lisbon, Dubai — used in page title and JSON-LD address",
+      condition: (state) => state.type === "restaurant",
+      targets: (ctx) => [ctx.layoutFile],
+    },
+    {
+      key: "COUNTRY_CODE",
+      label: "Country code (ISO 3166-1 alpha-2)",
+      description: "E.g. PT, AE, US — used in JSON-LD address",
+      condition: (state) => state.type === "restaurant",
+      targets: (ctx) => [ctx.layoutFile],
+    },
     // ── Section-specific (only prompted when section is installed) ────────────
     {
       key: "ORDER_URL",

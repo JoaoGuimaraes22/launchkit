@@ -15,7 +15,7 @@ interface FAQDict {
 }
 
 export default function FAQ({ faq }: { faq: FAQDict }) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 

@@ -6,7 +6,13 @@ import Navbar from "./components/Navbar";
 import LangSetter from "./components/LangSetter";
 import { MotionConfig } from "framer-motion";
 
-const SITE_URL = "https://YOUR_DOMAIN.vercel.app";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://YOUR_DOMAIN.vercel.app";
+
+const SITE_TITLE = "YOUR_BUSINESS — YOUR_CUISINE in YOUR_CITY";
+const DESCRIPTIONS: Record<string, string> = {
+  pt: "Descrição curta do seu restaurante em português.",
+  en: "Short description of your restaurant in English.",
+};
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
@@ -18,12 +24,8 @@ export async function generateMetadata({
   const { locale } = (await params) as { locale: Locale };
   const dict = await getDictionary(locale);
 
-  const title = "YOUR_BUSINESS — Your Short Descriptor";
-  const descriptions: Record<string, string> = {
-    pt: "Descrição curta do seu restaurante em português.",
-    en: "Short description of your restaurant in English.",
-  };
-  const description = descriptions[locale] ?? descriptions.en;
+  const title = SITE_TITLE;
+  const description = DESCRIPTIONS[locale] ?? DESCRIPTIONS.en;
   const ogLocales: Record<string, string> = { pt: "pt_PT", en: "en_US" };
 
   return {
@@ -66,25 +68,43 @@ export default async function LocaleLayout({
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Restaurant",
+    "@type": ["LocalBusiness", "FoodEstablishment"],
     name: "YOUR_BUSINESS",
-    description: "Short description of your restaurant.",
+    description: DESCRIPTIONS[locale] ?? DESCRIPTIONS.en,
     url: `${SITE_URL}/${locale}`,
     email: "YOUR_EMAIL",
     telephone: "YOUR_PHONE",
+    image: `${SITE_URL}/og-image.png`,
+    servesCuisine: "YOUR_CUISINE",
+    priceRange: "€€",
     address: {
       "@type": "PostalAddress",
       streetAddress: "YOUR_ADDRESS",
+      addressLocality: "YOUR_CITY",
+      addressCountry: "YOUR_COUNTRY_CODE",
     },
-    servesCuisine: "YOUR_CUISINE",
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "12:00",
+        closes: "23:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Saturday", "Sunday"],
+        opens: "12:00",
+        closes: "00:00",
+      },
+    ],
   };
 
   return (
     <MotionConfig reducedMotion="user">
       <LangSetter locale={locale} />
       <a
-        href="#menu"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-lg focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+        href="#about"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
       >
         Skip to content
       </a>

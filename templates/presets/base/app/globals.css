@@ -16,7 +16,61 @@
   --foreground: #111111;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* Global keyboard focus ring — visible only on keyboard nav, not mouse */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Hero animations ─────────────────────────────────────────── */
+@keyframes slow-zoom {
+  from { transform: scale(1.15); }
+  to   { transform: scale(1); }
+}
+@keyframes smoke-float {
+  0%   { opacity: 0; transform: translateY(0) scaleX(1) scaleY(1); }
+  15%  { opacity: 0.7; }
+  50%  { opacity: 0.3; transform: translateY(-140px) scaleX(2) scaleY(1.3); }
+  100% { opacity: 0; transform: translateY(-300px) scaleX(3) scaleY(1.6); }
+}
+@keyframes cinematic-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes line-expand {
+  from { opacity: 0; width: 0; }
+  to   { opacity: 1; width: 4rem; }
+}
+@keyframes scrollPulse {
+  0%, 100% { transform: translateY(-100%); }
+  50%       { transform: translateY(300%); }
+}
+
+/* ── Gallery animations ──────────────────────────────────────── */
+@keyframes gallery-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.gallery-track {
+  animation: gallery-scroll 40s linear infinite;
+}
+.gallery-track:hover {
+  animation-play-state: paused;
+}
+
+/* ── Reviews animations ──────────────────────────────────────── */
+@keyframes testimonials-scroll-up {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-33.3333%); }
 }

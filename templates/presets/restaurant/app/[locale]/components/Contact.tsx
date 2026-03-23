@@ -8,6 +8,7 @@ interface ContactDict {
   title_line2: string;
   body: string;
   book_cta: string;
+  order_cta: string;
   phone: string;
   email: string;
   address: string;
@@ -16,17 +17,19 @@ interface ContactDict {
 }
 
 interface ContactMapDict {
+  address: string;
   mapsEmbedUrl: string;
-  mapsDirectionsUrl: string;
   mapTitle: string;
 }
 
 export default function Contact({
   contact,
   contactMap,
+  orderUrl,
 }: {
   contact: ContactDict;
   contactMap: ContactMapDict;
+  orderUrl: string;
 }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -66,7 +69,7 @@ export default function Contact({
               {/* Phone */}
               <motion.a
                 href={`tel:${contact.phone}`}
-                className="flex items-center gap-3 text-sm text-zinc-700 transition-colors hover:text-indigo-600"
+                className="flex cursor-pointer items-center gap-3 text-sm text-zinc-700 transition-colors hover:text-indigo-600"
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.15 }}
               >
@@ -93,7 +96,7 @@ export default function Contact({
                 href={contact.map_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3 text-sm text-zinc-700 transition-colors hover:text-indigo-600"
+                className="flex cursor-pointer items-start gap-3 text-sm text-zinc-700 transition-colors hover:text-indigo-600"
                 whileHover={{ x: 4 }}
                 transition={{ duration: 0.15 }}
               >
@@ -120,14 +123,26 @@ export default function Contact({
               </motion.a>
             </div>
 
-            <motion.button
-              onClick={openReservation}
-              className="mt-2 w-full rounded-xl bg-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 lg:w-fit"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              {contact.book_cta}
-            </motion.button>
+            <div className="mt-2 flex flex-col gap-3 lg:flex-row">
+              <motion.button
+                onClick={openReservation}
+                className="cursor-pointer w-full rounded-xl bg-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 lg:w-fit"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {contact.book_cta}
+              </motion.button>
+              <motion.a
+                href={orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-zinc-200 bg-white px-8 py-4 text-base font-semibold text-zinc-800 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 lg:w-fit"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {contact.order_cta}
+              </motion.a>
+            </div>
           </motion.div>
 
           {/* Right — map */}

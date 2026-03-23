@@ -21,7 +21,7 @@ export default function LanguageSwitcher({ currentLocale, scrolled }: { currentL
         <span key={locale} className="flex items-center gap-1">
           <button
             onClick={() => switchLocale(locale)}
-            className={`uppercase tracking-wider transition-colors ${
+            className={`cursor-pointer uppercase tracking-wider transition-colors ${
               currentLocale === locale
                 ? scrolled ? "text-indigo-600 font-semibold" : "text-white font-semibold"
                 : scrolled ? "text-zinc-400 hover:text-zinc-700" : "text-white/40 hover:text-white/70"
