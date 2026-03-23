@@ -373,36 +373,78 @@ for (const tmpl of TEMPLATES) {
   // 5. Public assets (merge into public/ with template prefix to avoid conflicts)
   const pubSrc = path.join(presetDir, "public");
   if (fs.existsSync(pubSrc)) {
-    for (const file of fs.readdirSync(pubSrc)) {
-      // Use template-prefixed name to avoid collisions
-      cpFile(path.join(pubSrc, file), path.join(SITE_DIR, `public/${tmpl}-${file}`));
-      console.log(`  [copy] public/${tmpl}-${file}`);
+    for (const entry of fs.readdirSync(pubSrc, { withFileTypes: true })) {
+      const destName = `${tmpl}-${entry.name}`;
+      if (entry.isDirectory()) {
+        cpDir(path.join(pubSrc, entry.name), path.join(SITE_DIR, `public/${destName}`));
+        console.log(`  [copy] public/${destName}/ (directory)`);
+      } else {
+        cpFile(path.join(pubSrc, entry.name), path.join(SITE_DIR, `public/${destName}`));
+        console.log(`  [copy] public/${destName}`);
+      }
     }
   }
 }
 
-// ── Fix hero image references ────────────────────────────────────────────────
-// Templates reference /hero.jpg, but we renamed to <template>-hero.jpg
+// ── Fix public asset references ──────────────────────────────────────────────
+// Templates reference /hero.jpg, /about.jpg, /gallery/*, /menu/* etc.
+// We renamed them to <template>-hero.jpg, <template>-gallery/*, etc.
 for (const tmpl of TEMPLATES) {
+  const presetDir = path.join(TOOL_ROOT, "templates/presets", tmpl);
+  const pubSrc = path.join(presetDir, "public");
+  if (!fs.existsSync(pubSrc)) continue;
+
+  // Collect all public entries (files and directories) that need path rewriting
+  const pubEntries = fs.readdirSync(pubSrc, { withFileTypes: true });
+
+  // Files to rewrite: all .tsx in components/, plus page.tsx and layout.tsx
+  const filesToFix = [];
   const compDir = path.join(SITE_DIR, `app/[locale]/${tmpl}/components`);
   for (const file of fs.readdirSync(compDir)) {
-    if (!file.endsWith(".tsx")) continue;
-    const filePath = path.join(compDir, file);
+    if (file.endsWith(".tsx")) filesToFix.push(path.join(compDir, file));
+  }
+  filesToFix.push(path.join(SITE_DIR, `app/[locale]/${tmpl}/page.tsx`));
+  filesToFix.push(path.join(SITE_DIR, `app/[locale]/${tmpl}/layout.tsx`));
+
+  for (const filePath of filesToFix) {
     let content = fs.readFileSync(filePath, "utf8");
-    if (content.includes('"/hero.jpg"') || content.includes("'/hero.jpg'")) {
-      content = content.replace(/["']\/hero\.jpg["']/g, `"/${tmpl}-hero.jpg"`);
+    let changed = false;
+    for (const entry of pubEntries) {
+      // Replace "/hero.jpg" → "/restaurant-hero.jpg", "/gallery/" → "/restaurant-gallery/"
+      const pattern = entry.isDirectory()
+        ? new RegExp(`(["'])\\/` + entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `\\/`, "g")
+        : new RegExp(`(["'])\\/` + entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `(["'])`, "g");
+      const replacement = entry.isDirectory()
+        ? `$1/${tmpl}-${entry.name}/`
+        : `$1/${tmpl}-${entry.name}$2`;
+      const updated = content.replace(pattern, replacement);
+      if (updated !== content) { content = updated; changed = true; }
+    }
+    if (changed) {
       fs.writeFileSync(filePath, content, "utf8");
-      console.log(`  [fix] ${tmpl}/components/${file} — hero.jpg → ${tmpl}-hero.jpg`);
+      console.log(`  [fix] ${path.relative(SITE_DIR, filePath)} — public asset paths prefixed`);
     }
   }
-  // Also check page.tsx and layout.tsx
-  for (const f of [`app/[locale]/${tmpl}/page.tsx`, `app/[locale]/${tmpl}/layout.tsx`]) {
-    const filePath = path.join(SITE_DIR, f);
-    let content = fs.readFileSync(filePath, "utf8");
-    if (content.includes('"/hero.jpg"') || content.includes("'/hero.jpg'")) {
-      content = content.replace(/["']\/hero\.jpg["']/g, `"/${tmpl}-hero.jpg"`);
-      fs.writeFileSync(filePath, content, "utf8");
-      console.log(`  [fix] ${f} — hero.jpg → ${tmpl}-hero.jpg`);
+
+  // Also fix dictionary references to public assets (e.g. menu item images)
+  const dictDir = path.join(SITE_DIR, `dictionaries/${tmpl}`);
+  if (fs.existsSync(dictDir)) {
+    for (const dictFile of fs.readdirSync(dictDir)) {
+      if (!dictFile.endsWith(".json")) continue;
+      const dictPath = path.join(dictDir, dictFile);
+      let content = fs.readFileSync(dictPath, "utf8");
+      let changed = false;
+      for (const entry of pubEntries) {
+        if (entry.isDirectory()) {
+          const pattern = new RegExp(`\\/` + entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + `\\/`, "g");
+          const updated = content.replace(pattern, `/${tmpl}-${entry.name}/`);
+          if (updated !== content) { content = updated; changed = true; }
+        }
+      }
+      if (changed) {
+        fs.writeFileSync(dictPath, content, "utf8");
+        console.log(`  [fix] dictionaries/${tmpl}/${dictFile} — public asset paths prefixed`);
+      }
     }
   }
 }
