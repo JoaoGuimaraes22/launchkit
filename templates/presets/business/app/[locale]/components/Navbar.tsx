@@ -23,6 +23,7 @@ interface NavbarProps {
 export default function Navbar({ locale, nav }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useEffect(() => {
     let rafId: number;
@@ -39,6 +40,22 @@ export default function Navbar({ locale, nav }: NavbarProps) {
       cancelAnimationFrame(rafId);
     };
   }, []);
+
+  useEffect(() => {
+    const ids = ["home", ...nav.links.map((l) => l.id)];
+    const observers: IntersectionObserver[] = [];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+        { threshold: 0.3 }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, [nav.links]);
 
   const handleNavClick = (id: string) => {
     setMenuOpen(false);
@@ -70,11 +87,15 @@ export default function Navbar({ locale, nav }: NavbarProps) {
           <button
             key={link.id}
             onClick={() => handleNavClick(link.id)}
-            className={`text-sm font-medium transition-colors hover:opacity-70 ${
+            aria-current={activeSection === link.id ? "true" : undefined}
+            className={`relative text-sm font-medium transition-colors hover:opacity-70 ${
               scrolled ? "text-zinc-700" : "text-white/80"
             }`}
           >
             {link.label}
+            {activeSection === link.id && (
+              <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-indigo-500" />
+            )}
           </button>
         ))}
         <LanguageSwitcher currentLocale={locale} scrolled={scrolled} />
@@ -119,7 +140,10 @@ export default function Navbar({ locale, nav }: NavbarProps) {
               <button
                 key={link.id}
                 onClick={() => handleNavClick(link.id)}
-                className="text-left text-sm font-medium text-zinc-700 transition-colors hover:text-indigo-600"
+                aria-current={activeSection === link.id ? "true" : undefined}
+                className={`text-left text-sm font-medium transition-colors hover:text-indigo-600 ${
+                  activeSection === link.id ? "text-indigo-600" : "text-zinc-700"
+                }`}
               >
                 {link.label}
               </button>

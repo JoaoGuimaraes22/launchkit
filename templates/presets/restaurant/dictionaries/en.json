@@ -1,0 +1,138 @@
+{
+  "navbar": {
+    "logo": "YOUR_BUSINESS",
+    "cta": "Reserve",
+    "links": [
+      { "id": "about", "label": "About" },
+      { "id": "menu", "label": "Menu" },
+      { "id": "reviews", "label": "Reviews" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contact" }
+    ]
+  },
+  "hero": {
+    "logo": "YOUR_BUSINESS",
+    "tagline": "A short line that captures your restaurant's unique vibe and what makes it special.",
+    "cta": "Reserve a Table",
+    "cta_secondary": "View Menu",
+    "stats": [
+      { "value": "0K+", "label": "Meals Served" },
+      { "value": "0★", "label": "Average Rating" },
+      { "value": "0+", "label": "Years Open" }
+    ]
+  },
+  "about": {
+    "title_line1": "OUR",
+    "title_line2": "STORY",
+    "body": "A paragraph about your restaurant — who you are, your culinary philosophy, and what inspires your menu. Keep it warm and inviting.\n\nA second paragraph about your ingredients, sourcing, or what makes dining with you a unique experience.",
+    "stats": [
+      { "value": "0+", "label": "Years Open" },
+      { "value": "0+", "label": "Happy Guests" },
+      { "value": "0+", "label": "Menu Items" }
+    ]
+  },
+  "menu": {
+    "title": "Our Menu",
+    "subtitle": "Fresh ingredients, prepared daily with care",
+    "categories": [
+      {
+        "key": "starters",
+        "label": "Starters",
+        "items": [
+          { "name": "Bruschetta", "description": "Toasted sourdough with heirloom tomatoes, basil and olive oil", "price": "$9", "image": "" },
+          { "name": "Soup of the Day", "description": "Ask your server for today's seasonal selection", "price": "$8", "image": "" },
+          { "name": "Charcuterie Board", "description": "Cured meats, artisan cheeses and house-made pickles", "price": "$18", "image": "" },
+          { "name": "Calamari Fritti", "description": "Lightly battered with lemon aioli", "price": "$14", "image": "" }
+        ]
+      },
+      {
+        "key": "mains",
+        "label": "Mains",
+        "items": [
+          { "name": "Grilled Salmon", "description": "With seasonal vegetables and lemon-caper butter", "price": "$26", "image": "" },
+          { "name": "Beef Tenderloin", "description": "8oz with truffle mashed potatoes and red wine jus", "price": "$34", "image": "" },
+          { "name": "Mushroom Risotto", "description": "Arborio rice with wild mushrooms and parmesan", "price": "$22", "image": "" },
+          { "name": "Roast Chicken", "description": "Half bird with herb butter and roasted potatoes", "price": "$24", "image": "" }
+        ]
+      },
+      {
+        "key": "desserts",
+        "label": "Desserts",
+        "items": [
+          { "name": "Tiramisu", "description": "Classic Italian dessert with espresso and mascarpone", "price": "$10", "image": "" },
+          { "name": "Chocolate Lava Cake", "description": "Warm dark chocolate with vanilla bean ice cream", "price": "$11", "image": "" },
+          { "name": "Panna Cotta", "description": "Vanilla cream with seasonal berry compote", "price": "$9", "image": "" }
+        ]
+      },
+      {
+        "key": "drinks",
+        "label": "Drinks",
+        "items": [
+          { "name": "House Wine", "description": "Red or white — ask for today's selection, glass", "price": "$8", "image": "" },
+          { "name": "Craft Beer", "description": "Local rotating tap selection, pint", "price": "$7", "image": "" },
+          { "name": "Fresh Lemonade", "description": "Squeezed to order with mint", "price": "$5", "image": "" },
+          { "name": "Specialty Coffee", "description": "Espresso, cappuccino or flat white", "price": "$5", "image": "" }
+        ]
+      }
+    ]
+  },
+  "reviews": {
+    "title_line1": "WHAT GUESTS",
+    "title_line2": "SAY",
+    "subtitle": "Real feedback from our guests.",
+    "items": [
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null },
+      { "quote": "Placeholder review — replace with a real quote from a guest about the dining experience.", "name": "Guest Name", "role": "Via Google", "avatar": null }
+    ]
+  },
+  "faq": {
+    "title_line1": "COMMON",
+    "title_line2": "QUESTIONS",
+    "items": [
+      { "question": "Do I need a reservation?", "answer": "Placeholder answer — describe your reservation policy and walk-in availability." },
+      { "question": "What are your opening hours?", "answer": "Placeholder answer — list your opening hours for lunch and dinner service." },
+      { "question": "Do you cater for dietary requirements?", "answer": "Placeholder answer — describe your options for allergies, vegan, gluten-free, etc." },
+      { "question": "Do you offer takeaway or delivery?", "answer": "Placeholder answer — describe your takeaway/delivery options and platforms." },
+      { "question": "Can I book for a private event?", "answer": "Placeholder answer — describe your private dining or event options." },
+      { "question": "Where can I park?", "answer": "Placeholder answer — describe nearby parking options or public transport access." }
+    ]
+  },
+  "contact": {
+    "title_line1": "FIND",
+    "title_line2": "US",
+    "body": "We'd love to welcome you. Drop by, give us a call, or book a table online.",
+    "book_cta": "Book a Table",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "address": "YOUR_ADDRESS",
+    "hours": "Tue–Sun 12pm–11pm",
+    "map_link": "https://maps.google.com/?q=YOUR_ADDRESS"
+  },
+  "contactMap": {
+    "mapsEmbedUrl": "YOUR_MAPS_EMBED_URL",
+    "mapsDirectionsUrl": "YOUR_MAPS_DIRECTIONS_URL",
+    "mapTitle": "Our location on Google Maps"
+  },
+  "footer": {
+    "tagline": "Short brand tagline — your restaurant in one sentence.",
+    "address": "YOUR_ADDRESS",
+    "hours": "Tue–Sun 12pm–11pm",
+    "phone": "YOUR_PHONE",
+    "email": "YOUR_EMAIL",
+    "copyright": "© 2025 YOUR_BUSINESS. All rights reserved.",
+    "nav_links": [
+      { "id": "about", "label": "About" },
+      { "id": "menu", "label": "Menu" },
+      { "id": "reviews", "label": "Reviews" },
+      { "id": "faq", "label": "FAQ" },
+      { "id": "contact", "label": "Contact" }
+    ]
+  }
+}

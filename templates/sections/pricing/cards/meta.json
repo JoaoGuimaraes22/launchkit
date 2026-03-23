@@ -2,7 +2,7 @@
   "componentName": "Pricing",
   "dictKey": "pricing",
   "navLink": { "id": "pricing", "label": { "en": "Pricing", "pt": "Preços" } },
-  "templates": ["business"],
+  "templates": ["business", "restaurant"],
   "defaultAfter": "reviews",
   "pageSection": true,
   "props": {

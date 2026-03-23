@@ -2,7 +2,7 @@
   "componentName": "GoogleReviews",
   "dictKey": "googleReviews",
   "navLink": null,
-  "templates": ["portfolio", "business"],
+  "templates": ["portfolio", "business", "restaurant"],
   "defaultAfter": "reviews",
   "pageSection": true,
   "props": {

@@ -32,7 +32,8 @@ export default function Pricing({ pricing }: { pricing: PricingDict }) {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="pricing" ref={ref} className="py-20 px-6 md:px-10">
+    <section id="pricing" ref={ref} className="px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32">
+      <div className="mx-auto max-w-6xl">
       <motion.div {...fadeUp(inView)}>
         <h2 className="text-sm font-semibold uppercase tracking-widest text-indigo-600">
           {pricing.title_line1}
@@ -108,6 +109,7 @@ export default function Pricing({ pricing }: { pricing: PricingDict }) {
           {pricing.disclaimer}
         </motion.p>
       )}
+      </div>
     </section>
   );
 }

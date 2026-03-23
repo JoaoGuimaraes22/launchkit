@@ -3,7 +3,7 @@
   "dictKey": "reserveBar",
   "navLink": null,
   "pageSection": false,
-  "templates": ["business"],
+  "templates": ["business", "restaurant"],
   "defaultAfter": null,
   "props": {
     "i18n": "reserveBar={dict.reserveBar}",

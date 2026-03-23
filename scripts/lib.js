@@ -338,6 +338,7 @@ function copyTemplateFiles(type) {
   copyDir(`templates/presets/${type}/app`, "app");
   copyDir(`templates/presets/${type}/dictionaries`, "dictionaries");
   copyDir(`templates/presets/${type}/public`, "public");
+  copyFile(`templates/presets/${type}/BOOTSTRAP.md`, "BOOTSTRAP.md", { optional: true });
 }
 
 // Copies base scaffold (package.json, tsconfig, configs, base app/) into the target project.

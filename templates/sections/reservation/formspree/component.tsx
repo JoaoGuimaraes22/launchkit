@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
-// TODO: TEMPLATE — Set FORMSPREE_ID below to your form ID — get it at formspree.io
-const FORMSPREE_ID = "YOUR_FORMSPREE_ID";
+const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID ?? "";
 
 interface ReservationDict {
   title: string;
@@ -45,6 +44,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [note, setNote] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -61,10 +61,30 @@ export default function Reservation({ reservation }: { reservation: ReservationD
   }, []);
 
   useEffect(() => {
+    if (!open) return;
+    const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
+      'button, input, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusable?.[0]?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") { close(); return; }
+      if (e.key === "Tab") {
+        const all = Array.from(
+          modalRef.current?.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          ) ?? []
+        );
+        const first = all[0];
+        const last = all[all.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first?.focus();
+        }
+      }
     };
-    if (open) window.addEventListener("keydown", onKey);
+    window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, close]);
 
@@ -93,7 +113,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
     selectedDate?.getMonth() === viewMonth &&
     selectedDate?.getDate() === day;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: { preventDefault(): void }) => {
     e.preventDefault();
     if (!selectedDate || !selectedTime || !selectedGuests) return;
     setStatus("submitting");
@@ -133,7 +153,14 @@ export default function Reservation({ reservation }: { reservation: ReservationD
       className="fixed inset-0 z-60 flex items-end justify-center bg-zinc-900/80 backdrop-blur-sm sm:items-center"
       onClick={(e) => { if (e.target === e.currentTarget) close(); }}
     >
-      <div className="relative w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white sm:rounded-3xl" style={{ maxHeight: "90dvh" }}>
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reservation-title"
+        className="relative w-full max-w-lg overflow-y-auto rounded-t-3xl bg-white sm:rounded-3xl"
+        style={{ maxHeight: "90dvh" }}
+      >
         {/* Close button */}
         <button
           onClick={close}
@@ -153,7 +180,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="mb-2 text-2xl font-bold">{reservation.success_title}</h2>
+              <h2 id="reservation-title" className="mb-2 text-2xl font-bold">{reservation.success_title}</h2>
               <p className="mb-8 text-zinc-500">{reservation.success_body}</p>
               <button onClick={reset} className="text-sm font-semibold text-indigo-600 hover:underline">
                 {reservation.back_cta}
@@ -162,7 +189,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold">{reservation.title}</h2>
+                <h2 id="reservation-title" className="text-2xl font-bold">{reservation.title}</h2>
                 <p className="mt-1 text-sm text-zinc-500">{reservation.subtitle}</p>
               </div>
 

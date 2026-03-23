@@ -78,7 +78,7 @@ Hook execution order: `afterEnable` → after `standardEnable`; `beforeDisable` 
   "contact": { "title_line1", "title_line2", "body", "form_*", "email", "github", "linkedin" }
 }
 ```
-Section-owned keys: `work`, `reviews` (testimonials), `skills`.
+Section-owned keys: `work`, `reviews`, `skills`.
 
 **Business base:** `navbar`, `hero`, `about`, `services`, `reviews` (with `rating`), `faq`, `contact` (with `phone`, `address`, `whatsapp`, `map_link`), `footer`
 

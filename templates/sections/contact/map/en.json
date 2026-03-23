@@ -1,10 +1,4 @@
 {
-  "title_line1": "Find Us",
-  "title_line2": "Our Location",
-  "subtitle": "Come visit us. We'd love to meet you in person.",
-  "addressLabel": "Address",
-  "address": "YOUR_ADDRESS",
-  "directionsLabel": "Get Directions",
   "mapsEmbedUrl": "YOUR_MAPS_EMBED_URL",
   "mapsDirectionsUrl": "YOUR_MAPS_DIRECTIONS_URL",
   "mapTitle": "Our location on Google Maps"

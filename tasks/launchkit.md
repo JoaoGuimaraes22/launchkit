@@ -1,5 +1,10 @@
 # launchkit — Generator Tool
 
+## Always do
+
+- Update references and docs
+- Commit and push to git after success
+
 `node scripts/setup.js --name my-project --output ../` creates a standalone Next.js project. Tool repo stays clean; generated projects are self-contained with a `.launchkit` file.
 
 **Stack:** Next.js 16 App Router · React 19 · TypeScript · Tailwind CSS v4 · Framer Motion
@@ -35,7 +40,7 @@ scripts/
   components.js     --project → add/remove/status for UI atoms
   validate.js       --project → check placeholders, TODOs, images, .env.local
   status.js         --project → read-only project state
-  templates/        business.js · blank.js (auto-discovered)
+  templates/        business.js · restaurant.js · blank.js (auto-discovered)
   presets/          business.js · restaurant.js (auto-discovered)
 configs/
   setup/languages/  Language select — writes i18n-config.ts, get-dictionary.ts
@@ -46,6 +51,7 @@ templates/
     base/           Clean Next.js scaffold + i18n infrastructure
     blank/          Minimal scaffold
     business/       Hero, About, Services, Reviews, FAQ, Contact, Footer
+    restaurant/     Hero (dark), About, Menu, Reviews (scrolling), FAQ, Contact (map), Footer
   sections/         — see Section Library below —
   components/
     button/primary/   Solid + outline CTA, accent-aware
@@ -72,7 +78,8 @@ hero/webgl/             WebGL shader hero; swaps Hero ↔ HeroFull (universal up
 hero/parallax/          rAF parallax hero; swaps Hero ↔ ParallaxHero (business upgrade)
 about/default/          Business about — image + stats grid (business)
 services/default/       Business services — icon cards grid (business)
-reviews/default/        Testimonial cards with star rating (business)
+reviews/default/        Static grid with star ratings (business)
+reviews/scrolling/      Scrolling multi-column testimonial cards (universal)
 faq/default/            Accordion FAQ with expand/collapse (business)
 process/default/        Numbered process steps with animations (business)
 contact/default/        Business contact — phone, address, hours, WhatsApp (business)
@@ -83,7 +90,6 @@ contact/default/        Business contact — phone, address, hours, WhatsApp (bu
 ```text
 skills/grid/            Categorized grid cards with animated progress bars (universal)
 skills/bars/            Flat horizontal progress bars list (universal)
-testimonials/scrolling/ Scrolling multi-column testimonial cards (universal)
 contact-form/business/  Resend contact API route with phone (business)
 projects/default/       Project gallery + detail pages with slug routes (universal)
 chatbot/default/        Dialogflow ChatWidget + API route + ChatNudge (universal)
@@ -109,9 +115,9 @@ team/spotlight/         2-col parallax image, glassmorphic stats overlay, tags +
 | Niche               | Sections to add                                                                            |
 | ------------------- | ------------------------------------------------------------------------------------------ |
 | Gym / Fitness       | `schedule/weekly` + `pricing/cards` + `stats/counters` + `team/spotlight` + `floating-cta` |
-| Restaurant / Café   | preset: `restaurant` (menu + reserve-bar + pricing + map + stats + reviews CTA)            |
+| Restaurant / Café   | template: `restaurant` + preset: `restaurant` (stats + gallery + pricing + reservation + CTA) |
 | Services / Agency   | `floating-cta` + `contact-form` + `google-reviews` + `booking/calendly` + `stats/counters` |
-| Agency / Studio     | `projects/default` + `testimonials/scrolling` + `hero/webgl` + `skills/grid`               |
+| Agency / Studio     | `projects/default` + `reviews/scrolling` + `hero/webgl` + `skills/grid`                    |
 | Retail / E-commerce | `reserve-bar` + `pricing/cards` + `gallery-strip` + `google-reviews` + `contact/map`       |
 
 ## Placeholder Markers

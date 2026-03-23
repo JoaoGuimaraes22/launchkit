@@ -1,11 +1,7 @@
-const AVATAR_COLORS = [
-  "bg-indigo-100 text-indigo-700",
-  "bg-blue-100 text-blue-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-amber-100 text-amber-700",
-  "bg-rose-100 text-rose-700",
-  "bg-cyan-100 text-cyan-700",
-];
+"use client";
+
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 interface ReviewItem {
   quote: string;
@@ -20,6 +16,15 @@ interface ReviewsDict {
   subtitle: string;
   items: ReviewItem[];
 }
+
+const AVATAR_COLORS = [
+  "bg-indigo-100 text-indigo-700",
+  "bg-blue-100 text-blue-700",
+  "bg-emerald-100 text-emerald-700",
+  "bg-amber-100 text-amber-700",
+  "bg-rose-100 text-rose-700",
+  "bg-cyan-100 text-cyan-700",
+];
 
 function StarRating({ count }: { count: number }) {
   return (
@@ -42,28 +47,53 @@ function StarRating({ count }: { count: number }) {
   );
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as const },
+  }),
+};
+
 export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
-    <section id="reviews" className="bg-zinc-50 px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32">
+    <section
+      id="reviews"
+      ref={ref}
+      className="bg-zinc-50 px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32"
+    >
       <div className="mx-auto max-w-6xl">
-        {/* Heading */}
-        <div className="mb-12">
+        <motion.div
+          className="mb-12"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
+        >
           <h2 className="mb-3 font-black uppercase leading-none tracking-tight text-4xl sm:text-5xl md:text-6xl">
             <span className="block text-zinc-900">{reviews.title_line1}</span>
             <span className="block text-zinc-200">{reviews.title_line2}</span>
           </h2>
           <p className="text-sm text-zinc-500">{reviews.subtitle}</p>
-        </div>
+        </motion.div>
 
-        {/* Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {reviews.items.map((item, i) => (
-            <div
+            <motion.div
               key={i}
               className="flex flex-col gap-4 rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm"
+              custom={i}
+              variants={cardVariants}
+              initial="hidden"
+              animate={inView ? "visible" : "hidden"}
             >
               <StarRating count={item.rating} />
-              <p className="flex-1 text-sm leading-relaxed text-zinc-700">&ldquo;{item.quote}&rdquo;</p>
+              <p className="flex-1 text-sm leading-relaxed text-zinc-700">
+                &ldquo;{item.quote}&rdquo;
+              </p>
               <div className="flex items-center gap-3">
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
@@ -77,7 +107,7 @@ export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
                   <div className="text-xs text-zinc-500">{item.role}</div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

@@ -1,0 +1,11 @@
+{
+  "logo": "YOUR_BUSINESS",
+  "tagline": "Uma frase curta que capta o ambiente único do seu restaurante e o que o torna especial.",
+  "cta": "Reservar Mesa",
+  "cta_secondary": "Ver Menu",
+  "stats": [
+    { "value": "0K+", "label": "Refeições Servidas" },
+    { "value": "0★", "label": "Avaliação Média" },
+    { "value": "0+", "label": "Anos Abertos" }
+  ]
+}

@@ -2,7 +2,7 @@
   "componentName": "StatsCounters",
   "dictKey": "statsCounters",
   "navLink": null,
-  "templates": ["portfolio", "business"],
+  "templates": ["portfolio", "business", "restaurant"],
   "defaultAfter": "hero",
   "pageSection": true,
   "props": {

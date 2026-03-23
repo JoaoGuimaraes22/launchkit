@@ -5,7 +5,7 @@
     "id": "menu",
     "label": { "en": "Menu", "pt": "Menu" }
   },
-  "templates": ["business"],
+  "templates": ["business", "restaurant"],
   "defaultAfter": "about",
   "props": {
     "i18n": "menu={dict.menu}",

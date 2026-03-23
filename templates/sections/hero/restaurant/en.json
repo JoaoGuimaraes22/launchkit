@@ -1,0 +1,11 @@
+{
+  "logo": "YOUR_BUSINESS",
+  "tagline": "A short line that captures your restaurant's unique vibe and what makes it special.",
+  "cta": "Reserve a Table",
+  "cta_secondary": "View Menu",
+  "stats": [
+    { "value": "0K+", "label": "Meals Served" },
+    { "value": "0★", "label": "Average Rating" },
+    { "value": "0+", "label": "Years Open" }
+  ]
+}

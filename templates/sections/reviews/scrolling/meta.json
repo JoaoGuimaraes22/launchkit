@@ -1,0 +1,13 @@
+{
+  "componentName": "Reviews",
+  "dictKey": "reviews",
+  "navLink": { "id": "reviews", "label": { "en": "Reviews", "pt": "Avaliações" } },
+  "pageSection": true,
+  "templates": ["business", "portfolio", "restaurant"],
+  "defaultAfter": "services",
+  "props": { "i18n": "reviews={dict.reviews}", "collapsed": "reviews={dict.reviews}" },
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

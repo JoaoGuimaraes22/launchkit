@@ -1,10 +1,4 @@
 {
-  "title_line1": "Encontre-nos",
-  "title_line2": "A Nossa Localização",
-  "subtitle": "Venha visitar-nos. Adoraríamos conhecê-lo pessoalmente.",
-  "addressLabel": "Morada",
-  "address": "YOUR_ADDRESS",
-  "directionsLabel": "Obter Direções",
   "mapsEmbedUrl": "YOUR_MAPS_EMBED_URL",
   "mapsDirectionsUrl": "YOUR_MAPS_DIRECTIONS_URL",
   "mapTitle": "A nossa localização no Google Maps"

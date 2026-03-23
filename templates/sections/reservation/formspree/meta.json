@@ -3,7 +3,7 @@
   "dictKey": "reservation",
   "navLink": null,
   "pageSection": false,
-  "templates": ["business"],
+  "templates": ["business", "restaurant"],
   "defaultAfter": null,
   "props": {
     "i18n": "reservation={dict.reservation}",

@@ -179,9 +179,10 @@ async function main() {
     templateKey = typeArg;
   } else {
     const descriptions = {
-      portfolio: "Portfolio     — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
-      business:  "Business Site — local business (services, reviews, FAQ, contact, footer)",
-      blank:     "Blank         — minimal scaffold, no components (clean starting point)",
+      portfolio:  "Portfolio     — personal showcase (WebGL hero, sidebar, chatbot, project gallery)",
+      business:   "Business Site — local business (services, reviews, FAQ, contact, footer)",
+      restaurant: "Restaurant    — dining venue (dark hero, menu, scrolling reviews, map contact)",
+      blank:      "Blank         — minimal scaffold, no components (clean starting point)",
     };
     const choices = templateKeys.map((k) => descriptions[k] || k.charAt(0).toUpperCase() + k.slice(1));
     const choice = await askChoice(rl, "[0] Project type?", choices);
@@ -281,6 +282,12 @@ async function main() {
         console.error(`\n  [warn] Failed to add section "${s.name}" — continuing.\n`);
       }
     }
+  }
+
+  // ── Run preset afterSections hook (for installs that bypass sections.js) ──
+  if (chosenPreset && chosenPreset.afterSections) {
+    const presetState = JSON.parse(fs.readFileSync(path.join(absOutput, ".launchkit"), "utf8"));
+    await chosenPreset.afterSections({ projectDir: absOutput, lib: require("./lib"), state: presetState });
   }
 
   // ── npm install (single pass after all sections are applied) ──────────────

@@ -1,14 +1,11 @@
 {
-  "componentName": "ContactMap",
+  "componentName": null,
   "dictKey": "contactMap",
-  "navLink": { "id": "location", "label": { "en": "Location", "pt": "Localização" } },
-  "templates": ["business"],
+  "navLink": null,
+  "templates": ["business", "restaurant"],
   "defaultAfter": "contact",
-  "pageSection": true,
-  "props": {
-    "i18n": "contactMap={dict.contactMap}",
-    "collapsed": "contactMap={dict.contactMap}"
-  },
+  "pageSection": false,
+  "props": {},
   "collapsePatches": [],
   "accentColorToken": "indigo",
   "dependencies": [],

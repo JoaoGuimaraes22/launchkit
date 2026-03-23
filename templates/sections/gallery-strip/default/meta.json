@@ -2,7 +2,7 @@
   "componentName": "GalleryStrip",
   "dictKey": "galleryStrip",
   "navLink": null,
-  "templates": ["portfolio", "business"],
+  "templates": ["portfolio", "business", "restaurant"],
   "defaultAfter": "about",
   "props": {
     "i18n": "galleryStrip={dict.galleryStrip}",

@@ -1,0 +1,13 @@
+{
+  "componentName": "Hero",
+  "dictKey": "hero",
+  "navLink": null,
+  "pageSection": false,
+  "templates": ["business", "restaurant"],
+  "defaultAfter": null,
+  "props": {},
+  "collapsePatches": [],
+  "accentColorToken": "indigo",
+  "dependencies": [],
+  "extraFiles": []
+}

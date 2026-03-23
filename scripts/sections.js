@@ -615,7 +615,8 @@ function standardDisable(sectionName, meta) {
 function findNavIdForComponent(componentName) {
   const map = {
     Work: "work",
-    Reviews: "testimonials",
+    Reviews: "reviews",
+    Menu: "menu",
     Services: "services",
     Process: "process",
     About: "about",
