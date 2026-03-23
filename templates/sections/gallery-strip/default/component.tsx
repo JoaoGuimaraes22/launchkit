@@ -11,11 +11,7 @@ interface GalleryStripDict {
   images: GalleryImage[];
 }
 
-export default function GalleryStrip({
-  galleryStrip,
-}: {
-  galleryStrip: GalleryStripDict;
-}) {
+export default function GalleryStrip({ galleryStrip }: { galleryStrip: GalleryStripDict }) {
   // Duplicate the array for seamless infinite loop
   const images = [...galleryStrip.images, ...galleryStrip.images];
 

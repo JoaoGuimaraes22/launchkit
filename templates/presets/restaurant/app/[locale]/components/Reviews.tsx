@@ -17,6 +17,10 @@ interface ReviewsDict {
   items: TestimonialItem[];
 }
 
+interface ReviewsProps {
+  reviews: ReviewsDict;
+}
+
 const AVATAR_COLORS = [
   { bg: "bg-indigo-100", text: "text-indigo-700" },
   { bg: "bg-blue-100", text: "text-blue-700" },
@@ -74,6 +78,7 @@ function ScrollColumn({
   globalIndexOffset: number;
 }) {
   const prefersReduced = useReducedMotion();
+  // Triple the array: moving -33.333% of total height = exactly 1 set height → seamless loop
   const tripled = [...items, ...items, ...items];
 
   return (
@@ -84,7 +89,7 @@ function ScrollColumn({
           prefersReduced
             ? {}
             : {
-                animation: `reviews-scroll-up ${duration} linear infinite`,
+                animation: `testimonials-scroll-up ${duration} linear infinite`,
               }
         }
       >
@@ -100,7 +105,7 @@ function ScrollColumn({
   );
 }
 
-export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
+export default function Reviews({ reviews }: ReviewsProps) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -108,21 +113,15 @@ export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
   const col1 = reviews.items.slice(0, third);
   const col2 = reviews.items.slice(third, third * 2);
   const col3 = reviews.items.slice(third * 2);
+  // Mobile: all items in one column
   const allItems = reviews.items;
 
   return (
     <section
-      id="reviews"
+      id="testimonials"
       ref={ref}
       className="px-6 py-16 md:px-8 md:py-24 xl:px-16 xl:py-32 bg-zinc-50"
     >
-      <style>{`
-        @keyframes reviews-scroll-up {
-          from { transform: translateY(0); }
-          to   { transform: translateY(-33.3333%); }
-        }
-      `}</style>
-
       <div className="mx-auto max-w-6xl">
         <motion.div
           className="leading-none mb-12"
@@ -141,6 +140,7 @@ export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
           )}
         </motion.div>
 
+        {/* Scrolling columns container */}
         <motion.div
           className="relative h-150 md:h-175 overflow-hidden"
           initial={{ opacity: 0 }}
@@ -151,16 +151,22 @@ export default function Reviews({ reviews }: { reviews: ReviewsDict }) {
             ease: [0.16, 1, 0.3, 1] as const,
           }}
         >
+          {/* Gradient fades */}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b from-zinc-50 to-transparent z-10" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-zinc-50 to-transparent z-10" />
 
+          {/* Mobile: single column (all items) */}
           <div className="md:hidden h-full">
             <ScrollColumn items={allItems} duration="65s" globalIndexOffset={0} />
           </div>
 
+          {/* Desktop: 3 columns at different speeds */}
           <div className="hidden md:flex gap-4 h-full">
+            {/* Left — fastest */}
             <ScrollColumn items={col1} duration="20s" globalIndexOffset={0} />
+            {/* Middle — slowest */}
             <ScrollColumn items={col2} duration="35s" globalIndexOffset={3} />
+            {/* Right — medium */}
             <ScrollColumn items={col3} duration="25s" globalIndexOffset={6} />
           </div>
         </motion.div>

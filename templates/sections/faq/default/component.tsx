@@ -29,7 +29,7 @@ export default function FAQ({ faq }: { faq: FAQDict }) {
           className="mb-12 font-black uppercase leading-none tracking-tight text-4xl sm:text-5xl md:text-6xl"
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
           <span className="block text-zinc-900">{faq.title_line1}</span>
           <span className="block text-zinc-200">{faq.title_line2}</span>
@@ -42,7 +42,7 @@ export default function FAQ({ faq }: { faq: FAQDict }) {
               key={i}
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease: [0.16, 1, 0.3, 1] as const }}
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.06, ease: [0.16, 1, 0.3, 1] }}
             >
               <button
                 id={`faq-btn-${i}`}
@@ -63,7 +63,7 @@ export default function FAQ({ faq }: { faq: FAQDict }) {
                   strokeLinejoin="round"
                   className="shrink-0 text-indigo-500"
                   animate={{ rotate: openIndex === i ? 180 : 0 }}
-                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 >
                   <path d="m6 9 6 6 6-6" />
                 </motion.svg>
@@ -78,7 +78,7 @@ export default function FAQ({ faq }: { faq: FAQDict }) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] as const }}
+                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                     style={{ overflow: "hidden" }}
                   >
                     <div className="px-6 pb-5">

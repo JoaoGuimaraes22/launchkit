@@ -3,7 +3,13 @@
 import { usePathname, useRouter } from "next/navigation";
 import { i18n, type Locale } from "../../../i18n-config";
 
-export default function LanguageSwitcher({ currentLocale, scrolled }: { currentLocale: Locale; scrolled: boolean }) {
+export default function LanguageSwitcher({
+  currentLocale,
+  scrolled,
+}: {
+  currentLocale: Locale;
+  scrolled: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -23,8 +29,12 @@ export default function LanguageSwitcher({ currentLocale, scrolled }: { currentL
             onClick={() => switchLocale(locale)}
             className={`cursor-pointer uppercase tracking-wider transition-colors ${
               currentLocale === locale
-                ? scrolled ? "text-indigo-600 font-semibold" : "text-white font-semibold"
-                : scrolled ? "text-zinc-400 hover:text-zinc-700" : "text-white/40 hover:text-white/70"
+                ? scrolled
+                  ? "text-indigo-600 font-semibold"
+                  : "text-white font-semibold"
+                : scrolled
+                  ? "text-zinc-400 hover:text-zinc-700"
+                  : "text-white/40 hover:text-white/70"
             }`}
           >
             {locale}

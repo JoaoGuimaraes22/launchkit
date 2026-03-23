@@ -19,24 +19,24 @@ interface MenuCategory {
 interface MenuDict {
   title: string;
   subtitle: string;
+  chefs_pick: string;
   categories: MenuCategory[];
 }
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const gridVariants = {
-  hidden: { opacity: 0, y: 12 },
+  hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    y: 0,
-    transition: { staggerChildren: 0.07, delayChildren: 0.04, duration: 0.25, ease },
+    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
   },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.18, ease } },
+  exit: { opacity: 0, transition: { duration: 0.12, ease: [0.4, 0, 1, 1] as const } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
+  hidden: { opacity: 0, y: 18, scale: 0.97 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease } },
 };
 
 function ItemCard({ item }: { item: MenuItem }) {
@@ -45,7 +45,6 @@ function ItemCard({ item }: { item: MenuItem }) {
       className="group overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm flex flex-col"
       variants={cardVariants}
       whileHover={{ y: -4, boxShadow: "0 12px 36px 0 rgba(0,0,0,0.12)" }}
-      suppressHydrationWarning
     >
       <div className="relative h-40 w-full overflow-hidden bg-zinc-100">
         {item.image && (
@@ -56,8 +55,9 @@ function ItemCard({ item }: { item: MenuItem }) {
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
-              (e.currentTarget as HTMLImageElement).parentElement!.classList.add("bg-zinc-100");
-              (e.currentTarget as HTMLImageElement).style.display = "none";
+              const el = e.currentTarget as HTMLImageElement;
+              el.parentElement?.classList.add("bg-zinc-100");
+              el.style.display = "none";
             }}
           />
         )}
@@ -86,13 +86,13 @@ export default function Menu({ menu }: { menu: MenuDict }) {
         {/* Header */}
         <motion.div
           className="mb-12 text-center"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 28, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease }}
+          transition={{ duration: 0.7, ease }}
         >
-          <h2 suppressHydrationWarning className="text-4xl font-black tracking-tight sm:text-5xl">{menu.title}</h2>
-          <p suppressHydrationWarning className="mt-4 text-lg text-zinc-500">{menu.subtitle}</p>
+          <h2 className="text-4xl font-black tracking-tight sm:text-5xl">{menu.title}</h2>
+          <p className="mt-4 text-lg text-zinc-500">{menu.subtitle}</p>
         </motion.div>
 
         {/* Tab bar */}
@@ -103,14 +103,12 @@ export default function Menu({ menu }: { menu: MenuDict }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5, delay: 0.1, ease }}
-          suppressHydrationWarning
         >
           {menu.categories.map((cat) => (
             <button
               key={cat.key}
               onClick={() => setActiveKey(cat.key)}
-              suppressHydrationWarning
-              className={`relative shrink-0 rounded-full px-5 py-2 text-sm font-semibold ${
+              className={`relative shrink-0 cursor-pointer rounded-full px-5 py-2 text-sm font-semibold ${
                 activeKey === cat.key ? "text-white" : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
@@ -121,7 +119,7 @@ export default function Menu({ menu }: { menu: MenuDict }) {
                 <motion.span
                   layoutId="tab-pill"
                   className="absolute inset-0 rounded-full bg-indigo-600"
-                  transition={{ duration: 0.3, ease }}
+                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
                 />
               )}
               <span className="relative z-10">{cat.label}</span>
@@ -129,7 +127,6 @@ export default function Menu({ menu }: { menu: MenuDict }) {
           ))}
         </motion.div>
 
-        {/* Menu grid — mode="sync" avoids the SSR/client mismatch that mode="wait" causes */}
         <AnimatePresence mode="sync">
           {activeCategory && (
             <motion.div
@@ -139,7 +136,6 @@ export default function Menu({ menu }: { menu: MenuDict }) {
               initial="hidden"
               animate="visible"
               exit="exit"
-              suppressHydrationWarning
             >
               {/* Highlight card */}
               {highlightItem && (
@@ -147,19 +143,17 @@ export default function Menu({ menu }: { menu: MenuDict }) {
                   className="relative overflow-hidden rounded-2xl bg-zinc-900 text-white sm:col-span-2 lg:col-span-1 lg:row-span-2"
                   variants={cardVariants}
                   whileHover={{ scale: 1.015, boxShadow: "0 16px 48px 0 rgba(0,0,0,0.22)" }}
-                  suppressHydrationWarning
                 >
                   {highlightItem.image && (
-                    <div suppressHydrationWarning className="relative h-52 w-full sm:h-64 lg:h-80 overflow-hidden">
+                    <div className="relative h-52 w-full sm:h-64 lg:h-80 overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={highlightItem.image}
                         alt={highlightItem.name}
-                        suppressHydrationWarning
                         className="h-full w-full object-cover opacity-80 transition-transform duration-500 hover:scale-105"
                         onError={(e) => {
-                          (e.currentTarget as HTMLImageElement).parentElement!.style.display =
-                            "none";
+                          const el = e.currentTarget as HTMLImageElement;
+                          if (el.parentElement) el.parentElement.style.display = "none";
                         }}
                       />
                       <div className="absolute inset-0 bg-linear-to-t from-zinc-900/70 to-transparent" />
@@ -167,7 +161,7 @@ export default function Menu({ menu }: { menu: MenuDict }) {
                   )}
                   <div className="p-6">
                     <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-indigo-400">
-                      Chef&apos;s Pick
+                      {menu.chefs_pick}
                     </p>
                     <h3 className="text-xl font-bold">{highlightItem.name}</h3>
                     <p className="mt-2 text-sm text-zinc-300">{highlightItem.description}</p>

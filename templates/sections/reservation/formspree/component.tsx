@@ -48,7 +48,6 @@ export default function Reservation({ reservation }: { reservation: ReservationD
 
   const close = useCallback(() => {
     setOpen(false);
-    document.body.style.overflow = "";
     setStatus("idle");
     setSelectedDate(null);
     setSelectedTime("");
@@ -56,6 +55,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
     setName("");
     setContact("");
     setNote("");
+    document.body.style.overflow = "";
   }, []);
 
   useEffect(() => {
@@ -69,6 +69,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
 
   useEffect(() => {
     if (!open) return;
+    // Auto-focus first focusable element on open
     const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
       'button, input, textarea, [tabindex]:not([tabindex="-1"])'
     );
@@ -120,7 +121,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
     selectedDate?.getMonth() === viewMonth &&
     selectedDate?.getDate() === day;
 
-  const handleSubmit = async (e: { preventDefault(): void }) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedDate || !selectedTime || !selectedGuests) return;
     setStatus("submitting");
@@ -171,7 +172,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
         {/* Close button */}
         <button
           onClick={close}
-          className="cursor-pointer absolute right-4 top-4 z-10 rounded-full bg-zinc-100 p-2 text-zinc-500 hover:bg-zinc-200"
+          className="absolute right-4 top-4 z-10 cursor-pointer rounded-full bg-zinc-100 p-2 text-zinc-500 hover:bg-zinc-200"
           aria-label="Close"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -206,13 +207,13 @@ export default function Reservation({ reservation }: { reservation: ReservationD
                 <div className="rounded-2xl border border-zinc-200 p-4">
                   {/* Month nav */}
                   <div className="mb-3 flex items-center justify-between">
-                    <button type="button" onClick={prevMonth} className="rounded-lg p-1.5 hover:bg-zinc-100">
+                    <button type="button" onClick={prevMonth} className="cursor-pointer rounded-lg p-1.5 hover:bg-zinc-100">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m15 18-6-6 6-6" /></svg>
                     </button>
                     <span className="text-sm font-semibold">
                       {reservation.months[viewMonth]} {viewYear}
                     </span>
-                    <button type="button" onClick={nextMonth} className="rounded-lg p-1.5 hover:bg-zinc-100">
+                    <button type="button" onClick={nextMonth} className="cursor-pointer rounded-lg p-1.5 hover:bg-zinc-100">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m9 18 6-6-6-6" /></svg>
                     </button>
                   </div>
@@ -237,10 +238,10 @@ export default function Reservation({ reservation }: { reservation: ReservationD
                           onClick={() => setSelectedDate(new Date(viewYear, viewMonth, day))}
                           className={`rounded-lg py-1.5 text-sm font-medium transition-colors ${
                             sel
-                              ? "bg-indigo-600 text-white"
+                              ? "cursor-pointer bg-indigo-600 text-white"
                               : past
                               ? "cursor-not-allowed text-zinc-300"
-                              : "hover:bg-indigo-50 hover:text-indigo-600"
+                              : "cursor-pointer hover:bg-indigo-50 hover:text-indigo-600"
                           }`}
                         >
                           {day}
@@ -260,7 +261,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
                       key={t}
                       type="button"
                       onClick={() => setSelectedTime(t)}
-                      className={`rounded-xl border py-2 text-xs font-medium transition-colors ${
+                      className={`cursor-pointer rounded-xl border py-2 text-xs font-medium transition-colors ${
                         selectedTime === t
                           ? "border-indigo-600 bg-indigo-600 text-white"
                           : "border-zinc-200 hover:border-indigo-300 hover:text-indigo-600"
@@ -281,7 +282,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
                       key={g}
                       type="button"
                       onClick={() => setSelectedGuests(g)}
-                      className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+                      className={`cursor-pointer rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
                         selectedGuests === g
                           ? "border-indigo-600 bg-indigo-600 text-white"
                           : "border-zinc-200 hover:border-indigo-300 hover:text-indigo-600"
@@ -323,7 +324,7 @@ export default function Reservation({ reservation }: { reservation: ReservationD
               <button
                 type="submit"
                 disabled={!selectedDate || !selectedTime || !selectedGuests || status === "submitting"}
-                className="cursor-pointer w-full rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full cursor-pointer rounded-xl bg-indigo-600 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {status === "submitting" ? "…" : reservation.confirm_cta}
               </button>

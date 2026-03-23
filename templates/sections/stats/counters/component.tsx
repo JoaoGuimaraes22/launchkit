@@ -18,7 +18,8 @@ interface StatsCountersDict {
 function useCountUp(target: number, duration: number, active: boolean, skip: boolean) {
   const [value, setValue] = useState(() => skip ? target : 0);
   useEffect(() => {
-    if (skip || !active) return;
+    if (skip) return;
+    if (!active) return;
     const start = performance.now();
     const frame = (now: number) => {
       const progress = Math.min((now - start) / duration, 1);
@@ -55,7 +56,7 @@ export default function StatsCounters({ statsCounters }: { statsCounters: StatsC
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section ref={ref} className="border-y border-neutral-200 bg-neutral-50 px-6 py-4 md:px-10">
+    <section ref={ref} className="border-y border-neutral-200 bg-neutral-50 px-6 py-4 md:px-8">
       {(statsCounters.title_line1 || statsCounters.title_line2) && (
         <motion.div
           className="mb-6 text-center"
