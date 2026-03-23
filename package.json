@@ -12,6 +12,8 @@
     "reset": "node scripts/reset.js",
     "validate": "node scripts/validate.js",
     "status": "node scripts/status.js",
-    "sections": "node scripts/sections.js"
+    "sections": "node scripts/sections.js",
+    "showcase": "node scripts/build-showcase.js",
+    "dev": "cd site && npm run dev"
   }
 }
