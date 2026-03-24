@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { type Locale } from "../../i18n-config";
 import { getDictionary } from "../../get-dictionary";
-import { MotionConfig } from "framer-motion";
+import { MotionConfig } from "motion";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://YOUR_DOMAIN.vercel.app";
 

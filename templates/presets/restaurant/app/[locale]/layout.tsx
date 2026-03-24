@@ -4,7 +4,7 @@ import { getDictionary } from "../../get-dictionary";
 import ScrollProgress from "./components/ScrollProgress";
 import Navbar from "./components/Navbar";
 import LangSetter from "./components/LangSetter";
-import { MotionConfig } from "framer-motion";
+import { MotionConfig } from "motion";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gutsy.pt";
 

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "motion";
 
 interface Stat {
   value: string;
